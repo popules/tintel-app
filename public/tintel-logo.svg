@@ -1,0 +1,27 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="256" height="256" rx="56" fill="#0b0d12"/>
+  <g filter="url(#f0)">
+    <path d="M72 172c0-44.183 35.817-80 80-80h32" stroke="url(#g0)" stroke-width="20" stroke-linecap="round"/>
+  </g>
+  <g filter="url(#f1)">
+    <path d="M184 84c0 44.183-35.817 80-80 80H72" stroke="url(#g1)" stroke-width="20" stroke-linecap="round"/>
+  </g>
+  <defs>
+    <linearGradient id="g0" x1="72" y1="92" x2="184" y2="92" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#38bdf8"/>
+      <stop offset="1" stop-color="#22d3ee"/>
+    </linearGradient>
+    <linearGradient id="g1" x1="184" y1="164" x2="72" y2="164" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#a78bfa"/>
+      <stop offset="1" stop-color="#22c55e"/>
+    </linearGradient>
+    <filter id="f0" x="42" y="72" width="172" height="130" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0  0 0 0 0 0.7  0 0 0 0 1  0 0 0 1 0"/>
+    </filter>
+    <filter id="f1" x="42" y="76" width="172" height="130" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 1  0 0 0 0 0.7  0 0 0 0 0  0 0 0 1 0"/>
+    </filter>
+  </defs>
+</svg>
