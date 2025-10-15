@@ -1,15 +1,19 @@
-// app/page.tsx (Final Corrected Version)
+// src/app/page.tsx (Final Vercel-Ready Version)
 export const dynamic = "force-dynamic";
 
-// --- THIS IS THE FIX: Using the correct import path ---
 import JobsExplorer from "@/components/JobsExplorer";
 
 // This is a Vercel-specific environment variable that gives us the production URL.
-const PROD_BASE_URL = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
+// It will automatically be defined by the Vercel platform.
+const PROD_BASE_URL = process.env.VERCEL_URL 
+    ? `https://${process.env.VERCEL_URL}` 
+    : 'http://localhost:3000';
 
 export default function Page() {
   // This logic correctly determines the base URL whether in production on Vercel or running locally.
-  const baseUrl = process.env.NODE_ENV === 'production' ? PROD_BASE_URL : 'http://localhost:3000';
+  const baseUrl = process.env.NODE_ENV === 'production' 
+    ? PROD_BASE_URL 
+    : 'http://localhost:3000';
                   
   return (
     <main className="min-h-screen">
@@ -27,3 +31,4 @@ export default function Page() {
     </main>
   );
 }
+
