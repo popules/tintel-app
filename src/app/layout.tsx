@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import "../styles/tintel.css";
+// --- THIS IS THE FIX: Using the correct, absolute import path ---
+import "@/styles/tintel.css";
 
 export const metadata: Metadata = {
   title: "Tintel — Talent Intelligence",
-  description: "Live talent intelligence by Tintel",
+  description: "Live talent & market intelligence by Tintel",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
