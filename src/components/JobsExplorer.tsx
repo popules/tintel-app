@@ -30,7 +30,6 @@ function formatDate(dateString?: string) {
     return 'Nyss';
 }
 
-// Uppdaterad signatur: Tar emot baseUrl som prop
 export default function JobsExplorer({ baseUrl }: { baseUrl: string }) {
   const base = baseUrl; 
   const [q, setQ] = useState("");
