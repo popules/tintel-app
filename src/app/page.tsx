@@ -1,19 +1,18 @@
-// app/page.tsx (Komplett, fixad version)
-
+// app/page.tsx (Final Corrected Version)
 export const dynamic = "force-dynamic";
 
-import JobsExplorer from "../components/JobsExplorer";
+// --- THIS IS THE FIX: Using the correct import path ---
+import JobsExplorer from "@/components/JobsExplorer";
 
-// --- THE FIX IS HERE: Updated the URL to the correct, new service ---
-const PROD_BASE_URL = "https://tintel-service-951132763829.europe-north1.run.app"; 
+// This is a Vercel-specific environment variable that gives us the production URL.
+const PROD_BASE_URL = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
 
 export default function Page() {
-  // Beräkna den absoluta bas-URL:en på servern
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 
-                  (process.env.NODE_ENV === 'production' ? PROD_BASE_URL : 'http://localhost:3000');
+  // This logic correctly determines the base URL whether in production on Vercel or running locally.
+  const baseUrl = process.env.NODE_ENV === 'production' ? PROD_BASE_URL : 'http://localhost:3000';
                   
   return (
-    <main className="min-h-screen bg-[#0b0e13] text-neutral-200">
+    <main className="min-h-screen">
       <div className="mx-auto max-w-7xl px-4 py-8">
         <header className="mb-6 flex items-end justify-between">
           <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">
@@ -22,7 +21,7 @@ export default function Page() {
           <span className="text-sm opacity-60">live från Supabase</span>
         </header>
 
-        {/* Skicka in baseUrl som prop */}
+        {/* The component now receives the correct URL */}
         <JobsExplorer baseUrl={baseUrl} />
       </div>
     </main>
