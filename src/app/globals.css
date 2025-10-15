@@ -2,33 +2,37 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+/* === Tintel UI tokens & utilities (MERGED) === */
+
+/* Glassmorphism card */
+.glass-card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 1.25rem;
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.35),
+    0 1px 0 rgba(255,255,255,0.04) inset;
+  backdrop-filter: blur(10px);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+/* Buttons */
+.btn-primary {
+  @apply inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-medium;
+  background: linear-gradient(180deg, rgba(56,189,248,0.9), rgba(56,189,248,0.7));
+  color: #0b0d12;
+  border: 1px solid rgba(56,189,248,0.9);
+}
+.btn-primary:hover { filter: brightness(1.05); }
+
+.btn-ghost {
+  @apply inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm text-gray-300 hover:bg-white/5 border border-white/10;
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+/* Chips / filter pills */
+.chip {
+  @apply rounded-xl px-3 py-1.5 text-xs bg-white/5 hover:bg-white/10 border border-white/10;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-}
+/* Links */
+.link { @apply text-gray-300 hover:text-white; }
 
