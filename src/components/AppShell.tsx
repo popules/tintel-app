@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
+import CategorySidebar from "@/components/CategorySidebar"; // Import our new component
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -45,25 +46,19 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       <div className="mx-auto max-w-7xl px-4 md:px-6">
         <div className="flex gap-6 pt-6">
           {/* Sidebar */}
-          <aside className={`w-64 shrink-0 md:relative md:translate-x-0 transition-transform ${sidebarOpen ? "translate-x-0" : "-translate-x-[110%] md:translate-x-0"} md:block`}>
-            <div className="rounded-2xl glass-card p-4">
-              <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-400">Filters</h3>
-              <div className="space-y-3">
-                <FilterGroup title="Region" items={["SE", "NO", "DK", "FI", "EU"]} />
-                <FilterGroup title="Seniority" items={["Intern", "Junior", "Mid", "Senior", "Lead"]} />
-                <FilterGroup title="Function" items={["Sales", "Tech", "Ops", "HR", "Finance"]} />
-              </div>
-            </div>
-
-            <div className="mt-6 rounded-2xl glass-card p-4">
-              <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-400">Shortcuts</h3>
-              <ul className="space-y-2 text-sm">
-                <li><a className="link" href="#">🔥 Hot roles</a></li>
-                <li><a className="link" href="#">📈 Hiring spikes</a></li>
-                <li><a className="link" href="#">⭐ Star companies</a></li>
-              </ul>
-            </div>
+          <aside className={`fixed inset-y-0 left-0 z-50 w-64 shrink-0 transform transition-transform duration-300 ease-in-out md:sticky md:top-14 md:h-[calc(100vh-56px)] md:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
+            {/* --- THIS IS THE CHANGE --- */}
+            {/* The old placeholder content is replaced with our live, data-driven component */}
+            <CategorySidebar />
           </aside>
+          
+          {/* Overlay for mobile view to close the sidebar */}
+          {sidebarOpen && (
+            <div 
+              className="fixed inset-0 z-40 bg-black/60 md:hidden"
+              onClick={() => setSidebarOpen(false)}
+            ></div>
+          )}
 
           {/* Main content */}
           <main className="w-full pb-16">
@@ -98,18 +93,5 @@ function TopNavLink({ href, label, active = false }: { href: string; label: stri
     >
       {label}
     </a>
-  );
-}
-
-function FilterGroup({ title, items }: { title: string; items: string[] }) {
-  return (
-    <div>
-      <div className="text-xs uppercase tracking-wider text-gray-400 mb-2">{title}</div>
-      <div className="flex flex-wrap gap-2">
-        {items.map((it) => (
-          <button key={it} className="chip">{it}</button>
-        ))}
-      </div>
-    </div>
   );
 }
