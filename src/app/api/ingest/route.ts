@@ -1,5 +1,5 @@
 // src/app/api/ingest/route.ts
-// --- FINAL ROBUST VERSION WITH DEDUPLICATION ---
+// --- UPGRADED TO INCLUDE COUNTY DATA ---
 
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
@@ -12,7 +12,6 @@ const CRON_TOKEN = "supersecret";
 export const dynamic = "force-dynamic";
 export const maxDuration = 300; 
 
-// The only change is here: from POST to GET
 export async function GET(req: Request) {
   console.log("LOG: Ingest function started via GET request.");
 
@@ -50,7 +49,6 @@ export async function GET(req: Request) {
     }
     console.log(`LOG: Successfully fetched ${allJobs.length} total jobs from Platsbanken.`);
     
-    // --- THIS IS THE FIX: Filter out duplicate jobs before processing ---
     const uniqueJobsMap = new Map();
     for (const job of allJobs) {
       if (job && job.id) {
@@ -59,7 +57,6 @@ export async function GET(req: Request) {
     }
     const uniqueJobs = Array.from(uniqueJobsMap.values());
     console.log(`LOG: Filtered down to ${uniqueJobs.length} unique jobs.`);
-    // --- END OF FIX ---
 
     const categoryMap = new Map();
     const jobsToUpsert = uniqueJobs.map((job: any) => {
@@ -71,10 +68,16 @@ export async function GET(req: Request) {
           });
       }
       return {
-        externalId: job.id, title: job.headline, company: job.employer?.name || "Okänt företag",
-        category: job.occupation?.label || "Okänd kategori", broad_category: broadCategoryName,
-        location: job.workplace_address?.municipality || "Okänd plats", source: "Platsbanken",
-        webbplatsurl: job.webpage_url, publishedAt: job.publication_date,
+        externalId: job.id,
+        title: job.headline,
+        company: job.employer?.name || "Okänt företag",
+        category: job.occupation?.label || "Okänd kategori",
+        broad_category: broadCategoryName,
+        location: job.workplace_address?.municipality || "Okänd plats",
+        county: job.workplace_address?.region || "Okänt län", // --- THIS IS THE ONLY NEW LINE ---
+        source: "Platsbanken",
+        webbplatsurl: job.webpage_url,
+        publishedAt: job.publication_date,
       };
     });
     
