@@ -1,5 +1,5 @@
 // src/app/api/ingest/route.ts
-// --- UPGRADED WITH BETTER LOGGING ---
+// --- FINAL VERSION USING GET METHOD FOR VERCEL CRON COMPATIBILITY ---
 
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
@@ -10,30 +10,16 @@ const SUPABASE_SERVICE_ROLE = process.env.SUPABASE_SERVICE_ROLE;
 const CRON_TOKEN = "supersecret";
 
 export const dynamic = "force-dynamic";
-// NOTE: maxDuration only works on paid Vercel plans.
 export const maxDuration = 300; 
 
-async function fetchPlatsbankenPage(offset: number, limit: number) {
-  const apiUrl = `https://jobsearch.api.jobtechdev.se/search?q=sverige&limit=${limit}&offset=${offset}`;
-  const response = await fetch(apiUrl, {
-    headers: { "Accept": "application/json", "User-Agent": "TintelApp/1.0" },
-  });
-  if (!response.ok) {
-    const errorBody = await response.text();
-    throw new Error(`Platsbanken API failed: ${response.status} ${errorBody}`);
-  }
-  return response.json();
-}
+// The only change is here: from POST to GET
+export async function GET(req: Request) {
+  console.log("LOG: Ingest function started via GET request.");
 
-export async function POST(req: Request) {
-  console.log("LOG: Ingest function started.");
-
-  // --- VERCEL CRON JOB COMPATIBILITY ---
-  const cronTokenHeader = req.headers.get("x-cron-token");
   const { searchParams } = new URL(req.url);
   const cronTokenQuery = searchParams.get("cron-token");
 
-  if (cronTokenHeader !== CRON_TOKEN && cronTokenQuery !== CRON_TOKEN) {
+  if (cronTokenQuery !== CRON_TOKEN) {
     console.error("LOG: Unauthorized access attempt.");
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -63,8 +49,6 @@ export async function POST(req: Request) {
       }
     }
     console.log(`LOG: Successfully fetched ${allJobs.length} total jobs from Platsbanken.`);
-
-    // (The rest of the logic remains the same...)
     
     const validJobs = allJobs.filter(job => job && job.id);
     const categoryMap = new Map();
@@ -108,4 +92,16 @@ export async function POST(req: Request) {
     console.error("LOG: Ingestion CRASHED:", error);
     return NextResponse.json({ error: "Ingestion process failed.", details: error.message }, { status: 500 });
   }
+}
+
+async function fetchPlatsbankenPage(offset: number, limit: number) {
+  const apiUrl = `https://jobsearch.api.jobtechdev.se/search?q=sverige&limit=${limit}&offset=${offset}`;
+  const response = await fetch(apiUrl, {
+    headers: { "Accept": "application/json", "User-Agent": "TintelApp/1.0" },
+  });
+  if (!response.ok) {
+    const errorBody = await response.text();
+    throw new Error(`Platsbanken API failed: ${response.status} ${errorBody}`);
+  }
+  return response.json();
 }
