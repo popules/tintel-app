@@ -2,7 +2,8 @@
   "crons": [
     {
       "path": "/api/ingest?cron-token=supersecret",
-      "schedule": "0 4 * * *"
+      "schedule": "0 4 * * *",
+      "method": "POST"
     }
   ]
 }
