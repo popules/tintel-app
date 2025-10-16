@@ -1,5 +1,5 @@
 // src/app/api/ingest/route.ts
-// --- FINAL VERSION USING GET METHOD FOR VERCEL CRON COMPATIBILITY ---
+// --- FINAL ROBUST VERSION WITH DEDUPLICATION ---
 
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
@@ -50,10 +50,19 @@ export async function GET(req: Request) {
     }
     console.log(`LOG: Successfully fetched ${allJobs.length} total jobs from Platsbanken.`);
     
-    const validJobs = allJobs.filter(job => job && job.id);
-    const categoryMap = new Map();
+    // --- THIS IS THE FIX: Filter out duplicate jobs before processing ---
+    const uniqueJobsMap = new Map();
+    for (const job of allJobs) {
+      if (job && job.id) {
+        uniqueJobsMap.set(job.id, job);
+      }
+    }
+    const uniqueJobs = Array.from(uniqueJobsMap.values());
+    console.log(`LOG: Filtered down to ${uniqueJobs.length} unique jobs.`);
+    // --- END OF FIX ---
 
-    const jobsToUpsert = validJobs.map((job: any) => {
+    const categoryMap = new Map();
+    const jobsToUpsert = uniqueJobs.map((job: any) => {
       const broadCategoryName = job.occupation_field?.label || null;
       if (job.occupation?.concept_id && job.occupation_field?.concept_id) {
           categoryMap.set(job.occupation.concept_id, {
