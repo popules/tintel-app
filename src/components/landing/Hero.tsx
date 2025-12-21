@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, CheckCircle2, Radar } from "lucide-react";
+import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
 
 export function Hero() {
@@ -90,11 +90,16 @@ export function Hero() {
                         {/* Main Content */}
                         <div className="flex-1 bg-white/5 rounded-lg border border-white/5 flex flex-col gap-4 p-4">
                             <div className="h-32 bg-indigo-500/10 rounded-lg border border-indigo-500/20 w-full animate-pulse" />
-                            <div className="grid grid-cols-3 gap-4">
-                                <div className="h-40 bg-white/5 rounded-lg" />
-                                <div className="h-40 bg-white/5 rounded-lg" />
-                                <div className="h-40 bg-white/5 rounded-lg" />
-                            </div>
+                            <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-all group">
+                                <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform duration-300">
+                                    <span className="text-white font-black text-lg -mt-0.5 leading-none tracking-tighter">t</span>
+                                </div>
+                                <span className="font-bold text-lg tracking-tighter text-white">
+                                    tintel
+                                </span>
+                            </Link>
+                            <div className="h-40 bg-white/5 rounded-lg" />
+                            <div className="h-40 bg-white/5 rounded-lg" />
                         </div>
                     </div>
 

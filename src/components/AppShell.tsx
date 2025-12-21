@@ -21,12 +21,16 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                 aria-label="Toggle navigation"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                  <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                  <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                 </svg>
               </button>
-              <Link href="/" className="flex items-center gap-2">
-                <Image src="/tintel-logo.svg" alt="Tintel" width={24} height={24} />
-                <span className="font-semibold tracking-tight text-white text-lg">tintel</span>
+              <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-all group">
+                <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform duration-300">
+                  <span className="text-white font-black text-lg -mt-0.5 leading-none tracking-tighter">t</span>
+                </div>
+                <span className="font-bold text-lg tracking-tighter text-white">
+                  tintel
+                </span>
               </Link>
             </div>
             <div className="hidden md:flex items-center gap-1">
@@ -51,10 +55,10 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             {/* The old placeholder content is replaced with our live, data-driven component */}
             <CategorySidebar />
           </aside>
-          
+
           {/* Overlay for mobile view to close the sidebar */}
           {sidebarOpen && (
-            <div 
+            <div
               className="fixed inset-0 z-40 bg-black/60 md:hidden"
               onClick={() => setSidebarOpen(false)}
             ></div>
