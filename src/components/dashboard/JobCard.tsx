@@ -87,37 +87,39 @@ export function JobCard({ job, index, initialSaved = false }: JobCardProps) {
     const handleEnrich = async (e: React.MouseEvent) => {
         e.preventDefault()
         e.stopPropagation()
-        setEnriching(true)
-
+        setEnriching(true);
+        // Call our new API
         try {
-            const res = await fetch(`/api/scrape-job?url=${encodeURIComponent(job.webbplatsurl)}`)
-            const data = await res.json()
+            const res = await fetch(`/api/scrape-job?url=${encodeURIComponent(job.webbplatsurl)}`); // Corrected to job.webbplatsurl
+            const data = await res.json();
 
-            if (data.email) {
-                setLead({
-                    name: data.name || "Hiring Manager",
-                    role: data.role || "Recruiter",
-                    email: data.email,
-                    phone: "N/A" // Phone is harder to regex reliably without formatting
-                })
-                // Also save the explanation/description for the "View Ad" feature
-                setAdConfig({ description: data.description })
-            } else {
-                throw new Error("No data found")
-            }
-        } catch (err) {
-            // Fallback to mock if scrape fails (e.g. some sites block bots)
-            const mockStart = job.company.substring(0, 1).toUpperCase()
+            // Should now get real data or nulls
             setLead({
-                name: mockStart === 'A' ? "Anna Andersson (Mock)" : "Erik Svensson (Mock)",
-                role: "Talent Acquisition Manager",
-                email: `rekrytering@${job.company.toLowerCase().replace(/\s/g, '')}.se`,
-                phone: "+46 70 123 45 67"
-            })
+                name: data.name || "Hiring Manager",
+                role: data.role || "Recruiter",
+                email: data.email || null, // Allow null to show specific UI
+                avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${data.email || job.company}`,
+                company: job.company
+            });
+            // Also save the explanation/description for the "View Ad" feature if available
+            if (data.description) {
+                setAdConfig({ description: data.description });
+            }
+
+        } catch (e) {
+            console.error(e);
+            toast.error("Could not find contact details.");
+            setLead({ // Set a generic lead to indicate no direct contact found
+                name: "No direct contact found",
+                role: "N/A",
+                email: null,
+                avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${job.company}`,
+                company: job.company
+            });
         } finally {
-            setEnriching(false)
+            setEnriching(false);
         }
-    }
+    };
 
     const [pitch, setPitch] = useState<string | null>(null)
     const [generatingPitch, setGeneratingPitch] = useState(false)
@@ -219,24 +221,26 @@ Tintel Recruiter`
                         {lead && (
                             <motion.div
                                 initial={{ opacity: 0, height: 0 }}
-                                animate={{ opacity: 1, height: 'auto' }}
-                                className="mt-4 p-3 rounded-lg bg-indigo-500/10 border border-indigo-500/20 backdrop-blur-md"
-                            >
-                                <div className="text-[10px] uppercase tracking-wider text-indigo-500 font-bold mb-2 flex items-center gap-1">
-                                    <div className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
-                                    Decision Maker Found
-                                </div>
-                                <div className="flex items-start gap-3">
-                                    <div className="h-8 w-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-xs text-white font-bold">
-                                        {lead.name[0]}
+                            <div className="mt-4 p-3 bg-muted/50 rounded-lg flex items-center justify-between animate-in fade-in slide-in-from-top-2">
+                                <div className="flex items-center gap-3">
+                                    <div className="h-10 w-10 rounded-full bg-background border flex items-center justify-center overflow-hidden">
+                                        <img src={lead.avatar} alt={lead.name} className="h-full w-full object-cover" />
                                     </div>
-                                    <div className="space-y-0.5">
-                                        <div className="text-sm font-semibold text-foreground">{lead.name}</div>
-                                        <div className="text-xs text-muted-foreground">{lead.role}</div>
-                                        <div className="text-xs text-indigo-400 mt-1 select-all">{lead.email}</div>
+                                    <div>
+                                        <p className="text-sm font-semibold">{lead.name}</p>
+                                        <p className="text-xs text-muted-foreground">{lead.role}</p>
+                                        {lead.email ? (
+                                             <a href={`mailto:${lead.email}`} className="text-xs text-blue-500 hover:underline block">{lead.email}</a>
+                                        ) : (
+                                            <span className="text-xs text-amber-600 block">Indirect contact only</span>
+                                        )}
                                     </div>
                                 </div>
-                            </motion.div>
+                                <div className="flex items-center gap-1 text-xs font-medium text-green-600 bg-green-100 px-2 py-1 rounded-full">
+                                    <Check className="h-3 w-3" />
+                                    {lead.email ? "Direct Contact" : "Company Identified"}
+                                </div>
+                            </div>
                         )}
                     </div>
                 </CardContent>
