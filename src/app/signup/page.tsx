@@ -17,6 +17,7 @@ export default function SignupPage() {
     const [fullName, setFullName] = useState('')
     const [loading, setLoading] = useState(false)
     const [submitted, setSubmitted] = useState(false)
+    const [requestSent, setRequestSent] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const router = useRouter()
     const supabase = createClient()
@@ -34,12 +35,25 @@ export default function SignupPage() {
             .single()
 
         if (allowedError || !allowed) {
-            setError("Tintel is currently in private beta. Please contact hello@tintel.se to request an invite.")
+            // NOT WHITELISTED -> Submit an Access Request instead
+            const { error: requestError } = await supabase
+                .from('access_requests')
+                .upsert({
+                    email: email.toLowerCase(),
+                    full_name: fullName,
+                    status: 'pending'
+                }, { onConflict: 'email' })
+
+            if (requestError) {
+                setError("Something went wrong. Please try again or contact hello@tintel.se")
+            } else {
+                setRequestSent(true)
+            }
             setLoading(false)
             return
         }
 
-        // 2. Proceed with Signup
+        // 2. Proceed with Signup (They are whitelisted!)
         const { data, error: signupError } = await supabase.auth.signUp({
             email,
             password,
@@ -54,12 +68,47 @@ export default function SignupPage() {
         if (signupError) {
             setError(signupError.message)
             setLoading(false)
+        } else if (data.session) {
+            // Confirmation is OFF in Supabase - Logged in immediately
+            router.push('/dashboard')
+            router.refresh()
         } else {
-            // Note: If email confirmation is enabled in Supabase, 
-            // the user will not be logged in immediately.
+            // Confirmation is ON in Supabase - Show verification UI
             setSubmitted(true)
             setLoading(false)
         }
+    }
+
+    if (requestSent) {
+        return (
+            <div className="flex min-h-screen items-center justify-center bg-muted/20 p-4">
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="w-full max-w-sm"
+                >
+                    <Card className="border-0 shadow-lg shadow-indigo-500/10 backdrop-blur-sm bg-background/80 p-8 text-center space-y-6">
+                        <div className="flex justify-center">
+                            <div className="h-20 w-20 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-500">
+                                <span className="text-4xl font-black italic">t</span>
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            <h2 className="text-2xl font-bold tracking-tight">Request Received</h2>
+                            <p className="text-muted-foreground">
+                                Thanks for your interest! We've received your request for <span className="text-foreground font-medium">{email}</span>.
+                            </p>
+                        </div>
+                        <div className="bg-indigo-500/5 border border-indigo-500/10 p-4 rounded-xl text-sm text-indigo-400">
+                            Our team is reviewing requests manually. You'll receive an email as soon as you're invited.
+                        </div>
+                        <Button className="w-full bg-white text-black hover:bg-white/90 font-bold h-12 rounded-xl" onClick={() => router.push('/')}>
+                            Back to Home
+                        </Button>
+                    </Card>
+                </motion.div>
+            </div>
+        )
     }
 
     if (submitted) {
@@ -107,7 +156,7 @@ export default function SignupPage() {
                         </div>
                         <CardTitle className="text-2xl font-bold tracking-tight">Request Access</CardTitle>
                         <CardDescription>
-                            Tintel is currently invite-only
+                            Tintel is currently in private beta
                         </CardDescription>
                     </CardHeader>
                     <form onSubmit={handleSignup}>
@@ -118,18 +167,18 @@ export default function SignupPage() {
                                 </div>
                             )}
                             <div className="grid gap-2">
-                                <Label htmlFor="fullname">Full Name</Label>
+                                <Label htmlFor="fullname font-semibold">Full Name</Label>
                                 <Input
                                     id="fullname"
                                     placeholder="John Doe"
                                     required
                                     value={fullName}
                                     onChange={(e) => setFullName(e.target.value)}
-                                    className="bg-muted/50 rounded-xl"
+                                    className="bg-muted/50 rounded-xl h-11"
                                 />
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="email">Email</Label>
+                                <Label htmlFor="email font-semibold">Email</Label>
                                 <Input
                                     id="email"
                                     type="email"
@@ -137,25 +186,25 @@ export default function SignupPage() {
                                     required
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="bg-muted/50 rounded-xl"
+                                    className="bg-muted/50 rounded-xl h-11"
                                 />
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="password">Password</Label>
+                                <Label htmlFor="password font-semibold">Password</Label>
                                 <Input
                                     id="password"
                                     type="password"
+                                    placeholder="••••••••"
                                     required
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="bg-muted/50 rounded-xl"
+                                    className="bg-muted/50 rounded-xl h-11"
                                 />
                             </div>
                         </CardContent>
                         <CardFooter className="flex flex-col gap-4">
-                            <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-200 h-11 rounded-xl" disabled={loading}>
-                                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                Request Access
+                            <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-500/20 h-12 rounded-xl font-bold" disabled={loading}>
+                                {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Request Invite"}
                             </Button>
                             <p className="text-xs text-center text-muted-foreground">
                                 Already have an account?{' '}
