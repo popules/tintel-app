@@ -1,22 +1,24 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { supabase } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/client";
+import { Header } from "@/components/dashboard/Header";
+import { FilterSidebar } from "@/components/dashboard/FilterSidebar";
+import { JobCard } from "@/components/dashboard/JobCard";
+import { StatsRow } from "@/components/dashboard/Stats";
+import { Loader2 } from "lucide-react";
 
 // --- TYPE DEFINITIONS ---
-type JobPost = {
+interface JobPost {
   id: string;
   title: string;
   company: string;
-  city: string;
-  created_at: string;
+  broad_category: string;
+  location: string;
+  county: string;
   webbplatsurl: string;
-};
+  created_at: string;
+}
 type LocationData = {
   county: string;
   location: string;
@@ -24,20 +26,21 @@ type LocationData = {
 
 // --- MAIN PAGE COMPONENT ---
 export default function Home() {
+  const supabase = createClient();
   // --- STATE MANAGEMENT ---
   const [jobPosts, setJobPosts] = useState<JobPost[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [locations, setLocations] = useState<LocationData[]>([]);
   const [availableCities, setAvailableCities] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  
+
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedCounty, setSelectedCounty] = useState<string | null>(null);
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
   // --- DATA FETCHING ---
-  const fetchJobs = async () => { // <-- THIS IS THE CORRECTED LINE
+  const fetchJobs = async () => {
     setIsLoading(true);
     let query = supabase.from("job_posts").select("*").order("created_at", { ascending: false }).limit(100);
 
@@ -51,7 +54,7 @@ export default function Home() {
       console.error("Error fetching jobs:", error);
       setJobPosts([]);
     } else {
-      setJobPosts(data);
+      setJobPosts(data || []);
     }
     setIsLoading(false);
   };
@@ -63,8 +66,8 @@ export default function Home() {
 
       const { data: locData } = await supabase.from("job_posts").select("county, location");
       if (locData) {
-          const uniqueLocations = Array.from(new Map(locData.map(item => [`${item.county}-${item.location}`, item])).values());
-          setLocations(uniqueLocations.filter(l => l.county && l.location));
+        const uniqueLocations = Array.from(new Map(locData.map(item => [`${item.county}-${item.location}`, item])).values());
+        setLocations(uniqueLocations.filter(l => l.county && l.location));
       }
       fetchJobs();
     };
@@ -101,7 +104,7 @@ export default function Home() {
       prev.includes(category) ? prev.filter((c) => c !== category) : [...prev, category]
     );
   };
-  
+
   const uniqueCounties = [...new Set(locations.map(l => l.county))];
   const specialCases = ["Okänt län", "Obestämd ort", "Utomlands"];
   const finalSortedCounties = uniqueCounties.sort((a, b) => {
@@ -113,84 +116,72 @@ export default function Home() {
   });
 
   return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground">
-      <header className="sticky top-0 z-10 flex items-center h-16 px-4 border-b bg-background/95 backdrop-blur-sm md:px-6">
-        <h1 className="text-xl font-bold">tintel</h1>
-      </header>
-      <main className="flex flex-1 w-full p-4 md:p-6">
-        <div className="grid w-full gap-6 grid-cols-[280px_1fr]">
-          <aside className="flex flex-col gap-4">
-            <Card className="w-full h-fit">
-              <CardHeader><CardTitle>Categories</CardTitle></CardHeader>
-              <CardContent className="flex flex-col gap-3">
-                {categories.map((cat) => (
-                  <div key={cat} className="flex items-center space-x-2">
-                    <Checkbox id={cat} checked={selectedCategories.includes(cat)} onCheckedChange={() => handleCategoryToggle(cat)} />
-                    <label htmlFor={cat} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer">{cat}</label>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          </aside>
-          
-          <section className="flex flex-col gap-4">
-            <div className="grid grid-cols-3 gap-4">
-              <Input
-                placeholder="Search by job title..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="col-span-3 md:col-span-1"
-              />
-              <Select onValueChange={(value) => setSelectedCounty(value === "all" ? null : value)} value={selectedCounty || 'all'}>
-                <SelectTrigger className={!selectedCounty ? "text-muted-foreground" : "text-foreground"}>
-                    <SelectValue placeholder="Select a county..." />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Counties</SelectItem>
-                  {finalSortedCounties.map((county) => (
-                    <SelectItem key={county} value={county}>
-                      {county === "Okänt län" ? "Obestämd ort" : county}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Select onValueChange={(value) => setSelectedCity(value === "all" ? null : value)} value={selectedCity || 'all'} disabled={!selectedCounty}>
-                <SelectTrigger className={!selectedCity ? "text-muted-foreground" : "text-foreground"}>
-                    <SelectValue placeholder="Select a city..." />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Cities</SelectItem>
-                  {availableCities.map((city) => (
-                    <SelectItem key={city} value={city}>
-                      {city === "Okänd plats" ? "Obestämd ort" : city}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+    <div className="flex flex-col min-h-screen bg-background text-foreground font-sans">
+      <Header searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+
+      <main className="flex flex-1 w-full">
+        <FilterSidebar
+          categories={categories}
+          selectedCategories={selectedCategories}
+          handleCategoryToggle={handleCategoryToggle}
+          selectedCounty={selectedCounty}
+          setSelectedCounty={setSelectedCounty}
+          counties={finalSortedCounties}
+          selectedCity={selectedCity}
+          setSelectedCity={setSelectedCity}
+          cities={availableCities}
+        />
+
+        <section className="flex-1 p-4 md:p-8 overflow-y-auto h-[calc(100vh-4rem)] bg-muted/5">
+          <div className="max-w-7xl mx-auto space-y-8">
+            <StatsRow />
+
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold tracking-tight">Active Jobs</h2>
+                <p className="text-muted-foreground text-sm">Find your next client or career move.</p>
+              </div>
+              <div className="flex items-center gap-2 bg-background p-1 rounded-lg border shadow-sm">
+                <span className="text-xs font-medium px-2 py-1 bg-muted rounded">
+                  {isLoading ? "..." : jobPosts.length} matches
+                </span>
+              </div>
             </div>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Jobs Explorer</CardTitle>
-                <CardDescription>{isLoading ? "Loading..." : `Showing ${jobPosts.length} results`}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {jobPosts.map((job) => (
-                    <a key={job.id} href={job.webbplatsurl} target="_blank" rel="noopener noreferrer" className="block">
-                      <Card className="transition-all duration-200 hover:shadow-lg hover:border-primary">
-                        <CardHeader>
-                          <CardTitle className="text-lg">{job.title}</CardTitle>
-                          <CardDescription>{job.company} - {job.city}</CardDescription>
-                        </CardHeader>
-                      </Card>
-                    </a>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </section>
-        </div>
+            {isLoading && jobPosts.length === 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className="h-[220px] rounded-xl border bg-card/50 p-6 space-y-4">
+                    <div className="flex justify-between items-start">
+                      <div className="space-y-2 w-3/4">
+                        <div className="h-5 w-1/3 bg-muted rounded animate-pulse" />
+                        <div className="h-6 w-3/4 bg-muted rounded animate-pulse" />
+                      </div>
+                      <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
+                    </div>
+                    <div className="space-y-2 pt-4">
+                      <div className="h-4 w-1/2 bg-muted rounded animate-pulse" />
+                      <div className="h-4 w-1/3 bg-muted rounded animate-pulse" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 pb-20">
+                {jobPosts.map((job, index) => (
+                  <JobCard key={job.id} job={job as any} index={index} />
+                ))}
+              </div>
+            )}
+
+            {!isLoading && jobPosts.length === 0 && (
+              <div className="flex h-64 flex-col items-center justify-center text-muted-foreground bg-muted/20 rounded-2xl border-2 border-dashed border-muted">
+                <p className="text-lg font-medium">No jobs found matching your criteria.</p>
+                <p className="text-sm">Try adjusting your filters or search term.</p>
+              </div>
+            )}
+          </div>
+        </section>
       </main>
     </div>
   );
