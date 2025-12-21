@@ -1,7 +1,14 @@
-import { type NextRequest } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { updateSession } from '@/lib/supabase/middleware'
 
 export async function middleware(request: NextRequest) {
+    const hostname = request.headers.get('host')
+
+    // Redirect 'app.tintel.se' root to dashboard
+    if (hostname && (hostname.startsWith('app.') || hostname.startsWith('app-')) && request.nextUrl.pathname === '/') {
+        return NextResponse.redirect(new URL('/dashboard', request.url));
+    }
+
     return await updateSession(request)
 }
 
