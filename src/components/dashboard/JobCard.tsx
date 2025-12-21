@@ -138,21 +138,33 @@ export function JobCard({ job, index, initialSaved = false }: JobCardProps) {
         setGeneratingPitch(true)
 
         // Mock AI delay
-        await new Promise(resolve => setTimeout(resolve, 1500))
+        await new Promise(resolve => setTimeout(resolve, 800))
 
-        const pitchText = `Subject: Candidate for ${job.title} role
+        const name = lead?.name ? lead.name.split(' ')[0] : "Hiring Team";
+        const company = job.company;
+        const role = job.title;
 
-Hi ${lead ? lead.name.split(' ')[0] : 'Scanning... (Hiring Manager)'},
+        const templates = [
+            {
+                type: 'Direct',
+                se: `Hej ${name},\n\nJag såg att ni söker en ${role} på ${company}.\n\nJag har en konsult tillgänglig omgående som matchar profilen perfekt (5+ års erfarenhet). Är du öppen för ett kort intro-samtal i veckan?\n\nBästa,\n[Ditt Namn]`,
+                en: `Hi ${name},\n\nI saw that ${company} is looking for a ${role}.\n\nI have a consultant available immediately who matches this profile perfectly (5+ years exp). Are you open to a quick intro call this week?\n\nBest,\n[Your Name]`
+            },
+            {
+                type: 'Helpful',
+                se: `Hej ${name},\n\nNoterade er annons för ${role}. Hur går det med rekryteringen?\n\nVi har precis avslutat ett liknande uppdrag och har en stjärna ledig som skulle passa bra in hos er på ${company}. Ska jag skicka över profilen?\n\nMed vänlig hälsning,\n[Ditt Namn]`,
+                en: `Hi ${name},\n\nNoticed your ad for the ${role} position. How is the recruitment going?\n\nWe just finished a similar assignment and have a star candidate available who would fit right in at ${company}. Should I send over the profile?\n\nKind regards,\n[Your Name]`
+            },
+            {
+                type: 'Short',
+                se: `Tjena ${name},\n\nSöker ni fortfarande en ${role}? Har en toppkandidat som är redo att köra igång.\n\n/ [Ditt Namn]`,
+                en: `Hi ${name},\n\nAre you still looking for a ${role}? I have a top candidate ready to start.\n\n/ [Your Name]`
+            }
+        ];
 
-I saw that ${job.company} is looking for a ${job.title} in ${job.location}. 
+        const randomTemplate = templates[Math.floor(Math.random() * templates.length)];
 
-I have a consultant available who matches this profile perfectly. They have 5+ years of experience and are available immediately.
-
-Are you open to a quick intro call this week?
-
-Best,
-[Your Name]
-Tintel Recruiter`
+        const pitchText = `🇸🇪 SWEDISH (${randomTemplate.type})\n${randomTemplate.se}\n\n==========================\n\n🇬🇧 ENGLISH (${randomTemplate.type})\n${randomTemplate.en}`;
 
         setPitch(pitchText)
         setGeneratingPitch(false)
