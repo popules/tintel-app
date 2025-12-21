@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Github, Twitter, Linkedin, Gem } from "lucide-react";
+import { Github, Twitter, Linkedin } from "lucide-react";
 
 export function Footer() {
     return (
@@ -10,8 +10,8 @@ export function Footer() {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
                     <div className="space-y-4">
                         <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-all group">
-                            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:scale-110 transition-transform duration-300">
-                                <Gem className="h-5 w-5 text-white fill-white/10" />
+                            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform duration-300">
+                                <span className="text-white font-black text-xl -mt-0.5 leading-none tracking-tighter">t</span>
                             </div>
                             <span className="font-bold text-2xl text-white tracking-tighter">tintel</span>
                         </Link>
