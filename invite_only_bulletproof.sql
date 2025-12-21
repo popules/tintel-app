@@ -17,14 +17,17 @@ CREATE TABLE IF NOT EXISTS public.access_requests (
 ALTER TABLE public.allowed_emails ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.access_requests ENABLE ROW LEVEL SECURITY;
 
--- 4. Policies
--- Anyone can read their own request status or check if whitelisted (simplified)
+-- 4. Policies (Safely recreated)
+DROP POLICY IF EXISTS "Anyone can check whitelist" ON public.allowed_emails;
 CREATE POLICY "Anyone can check whitelist" ON public.allowed_emails FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Anyone can submit a request" ON public.access_requests;
 CREATE POLICY "Anyone can submit a request" ON public.access_requests FOR INSERT WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Anyone can check their own request" ON public.access_requests;
 CREATE POLICY "Anyone can check their own request" ON public.access_requests FOR SELECT USING (true);
 
 -- 5. BACKEND GUARD (TRIGGER)
--- Stops any signup for an email NOT in the allowed_emails table.
 CREATE OR REPLACE FUNCTION public.check_allowed_email()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -41,7 +44,6 @@ CREATE TRIGGER on_auth_user_created
     BEFORE INSERT ON auth.users
     FOR EACH ROW EXECUTE FUNCTION public.check_allowed_email();
 
--- 6. HELPER: APPROVAL FUNCTION
--- You can run this in SQL to approve a request:
--- INSERT INTO allowed_emails (email) SELECT email FROM access_requests WHERE email = 'target@example.com';
--- UPDATE access_requests SET status = 'approved' WHERE email = 'target@example.com';
+-- 6. ADD YOURSELF TO TEST
+INSERT INTO public.allowed_emails (email) VALUES ('anton@tintel.se') 
+ON CONFLICT (email) DO NOTHING;

@@ -94,13 +94,13 @@ export default function SignupPage() {
                             </div>
                         </div>
                         <div className="space-y-2">
-                            <h2 className="text-2xl font-bold tracking-tight">Request Received</h2>
+                            <h2 className="text-2xl font-bold tracking-tight">Application Received</h2>
                             <p className="text-muted-foreground">
-                                Thanks for your interest! We've received your request for <span className="text-foreground font-medium">{email}</span>.
+                                Thank you for your interest. We've added <span className="text-foreground font-medium">{email}</span> to our partner queue.
                             </p>
                         </div>
                         <div className="bg-indigo-500/5 border border-indigo-500/10 p-4 rounded-xl text-sm text-indigo-400">
-                            Our team is reviewing requests manually. You'll receive an email as soon as you're invited.
+                            To maintain platform quality, we approve new partners manually. You will receive an invitation link once your access is ready.
                         </div>
                         <Button className="w-full bg-white text-black hover:bg-white/90 font-bold h-12 rounded-xl" onClick={() => router.push('/')}>
                             Back to Home
@@ -154,9 +154,9 @@ export default function SignupPage() {
                                 <span className="text-white font-black text-3xl -mt-1 leading-none tracking-tighter">t</span>
                             </div>
                         </div>
-                        <CardTitle className="text-2xl font-bold tracking-tight">Request Access</CardTitle>
+                        <CardTitle className="text-2xl font-bold tracking-tight">Partner Access</CardTitle>
                         <CardDescription>
-                            Tintel is currently in private beta
+                            Membership is currently by invitation only
                         </CardDescription>
                     </CardHeader>
                     <form onSubmit={handleSignup}>
@@ -204,7 +204,7 @@ export default function SignupPage() {
                         </CardContent>
                         <CardFooter className="flex flex-col gap-4">
                             <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-500/20 h-12 rounded-xl font-bold" disabled={loading}>
-                                {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Request Invite"}
+                                {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Apply for Access"}
                             </Button>
                             <p className="text-xs text-center text-muted-foreground">
                                 Already have an account?{' '}
