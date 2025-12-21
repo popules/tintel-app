@@ -43,7 +43,14 @@ export default function Home() {
   // --- DATA FETCHING ---
   const fetchJobs = async () => {
     setIsLoading(true);
-    let query = supabase.from("job_posts").select("*").order("created_at", { ascending: false }).limit(100);
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+
+    let query = supabase
+      .from("job_posts")
+      .select("*")
+      .gt("created_at", thirtyDaysAgo) // THE GOLDEN FILTER: Only show active leads
+      .order("created_at", { ascending: false })
+      .limit(100);
 
     if (selectedCategories.length > 0) query = query.in("broad_category", selectedCategories);
     if (selectedCounty) query = query.eq("county", selectedCounty);

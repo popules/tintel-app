@@ -47,7 +47,10 @@ export default function CompanyPage() {
     }, [companyName, supabase]);
 
     // Calculate Intelligence
-    const totalJobs = jobs.length;
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    const activeJobs = jobs.filter(j => new Date(j.created_at) > thirtyDaysAgo);
+    const historicalJobs = jobs.filter(j => new Date(j.created_at) <= thirtyDaysAgo);
+
     const locations = jobs.reduce((acc: any, job) => {
         const loc = job.location || "Unknown";
         acc[loc] = (acc[loc] || 0) + 1;
@@ -74,7 +77,10 @@ export default function CompanyPage() {
                             <div className="flex items-center gap-2 text-muted-foreground mt-1">
                                 <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {topLocations[0]?.[0] || 'Sweden'}</span>
                                 <span>•</span>
-                                <span className="text-green-500 font-medium flex items-center gap-1"><TrendingUp className="h-3 w-3" /> Hiring Aggressively</span>
+                                <span className={activeJobs.length > 0 ? "text-green-500 font-medium flex items-center gap-1" : "text-amber-500 font-medium flex items-center gap-1"}>
+                                    <TrendingUp className="h-3 w-3" />
+                                    {activeJobs.length > 0 ? "Currently Hiring" : "Monitoring History"}
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -87,28 +93,28 @@ export default function CompanyPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <Card className="bg-muted/30 border-0">
                         <CardHeader className="flex flex-row items-center justify-between pb-2">
-                            <CardTitle className="text-sm font-medium text-muted-foreground">Active Roles</CardTitle>
+                            <CardTitle className="text-sm font-medium text-muted-foreground">Active Leads</CardTitle>
                             <Briefcase className="h-4 w-4 text-indigo-500" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-3xl font-bold">{totalJobs}</div>
+                            <div className="text-3xl font-bold">{activeJobs.length}</div>
                             <p className="text-xs text-muted-foreground mt-1">open positions right now</p>
                         </CardContent>
                     </Card>
                     <Card className="bg-muted/30 border-0">
                         <CardHeader className="flex flex-row items-center justify-between pb-2">
-                            <CardTitle className="text-sm font-medium text-muted-foreground">Hiring Velocity</CardTitle>
-                            <TrendingUp className="h-4 w-4 text-green-500" />
+                            <CardTitle className="text-sm font-medium text-muted-foreground">Market History</CardTitle>
+                            <TrendingUp className="h-4 w-4 text-amber-500" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-3xl font-bold">+{growth}%</div>
-                            <p className="text-xs text-muted-foreground mt-1">increase this month</p>
+                            <div className="text-3xl font-bold">{historicalJobs.length}</div>
+                            <p className="text-xs text-muted-foreground mt-1">past roles analyzed</p>
                         </CardContent>
                     </Card>
                     <Card className="bg-muted/30 border-0 md:col-span-2">
                         <CardHeader className="flex flex-row items-center justify-between pb-2">
-                            <CardTitle className="text-sm font-medium text-muted-foreground">Top Locations</CardTitle>
-                            <MapPin className="h-4 w-4 text-amber-500" />
+                            <CardTitle className="text-sm font-medium text-muted-foreground">Hiring Hotspots</CardTitle>
+                            <MapPin className="h-4 w-4 text-rose-500" />
                         </CardHeader>
                         <CardContent className="flex gap-4 flex-wrap">
                             {topLocations.map(([loc, count]: any) => (
@@ -128,7 +134,7 @@ export default function CompanyPage() {
                 {/* Job List */}
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                        <h2 className="text-xl font-bold tracking-tight">Active Opportunities</h2>
+                        <h2 className="text-xl font-bold tracking-tight">Recruitment Pipeline</h2>
                         {filterLocation && (
                             <Button variant="ghost" size="sm" onClick={() => setFilterLocation(null)} className="text-muted-foreground h-auto p-0 hover:bg-transparent hover:text-foreground">
                                 Clear filter ({filterLocation})
@@ -144,9 +150,23 @@ export default function CompanyPage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {jobs
                                 .filter(job => filterLocation ? job.location === filterLocation : true)
-                                .map((job, i) => (
-                                    <JobCard key={job.id} job={job} index={i} />
-                                ))}
+                                .map((job, i) => {
+                                    const isActive = new Date(job.created_at) > thirtyDaysAgo;
+                                    return (
+                                        <div key={job.id} className="relative group">
+                                            {!isActive && (
+                                                <div className="absolute top-4 right-4 z-10">
+                                                    <Badge variant="secondary" className="bg-muted text-muted-foreground border-0 opacity-80 backdrop-blur-sm">
+                                                        Historical Ad
+                                                    </Badge>
+                                                </div>
+                                            )}
+                                            <div className={!isActive ? "opacity-75 grayscale-[0.5] transition-all group-hover:grayscale-0 group-hover:opacity-100" : ""}>
+                                                <JobCard job={job} index={i} />
+                                            </div>
+                                        </div>
+                                    );
+                                })}
                         </div>
                     )}
                     {!loading && jobs.filter(job => filterLocation ? job.location === filterLocation : true).length === 0 && (
