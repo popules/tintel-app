@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { MapPin, Building2, ExternalLink, CalendarDays, Briefcase, Bookmark, ChevronRight, Heart } from "lucide-react"
+import { MapPin, Building2, ExternalLink, CalendarDays, Briefcase, Bookmark, ChevronRight, Heart, UserSearch, Loader2, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
 import { createClient } from "@/lib/supabase/client"
@@ -76,6 +76,28 @@ export function JobCard({ job, index, initialSaved = false }: JobCardProps) {
         }
     }
 
+    const [enriching, setEnriching] = useState(false)
+    const [lead, setLead] = useState<any>(null)
+
+    const handleEnrich = async (e: React.MouseEvent) => {
+        e.preventDefault()
+        e.stopPropagation()
+        setEnriching(true)
+
+        // Mock API call delay
+        await new Promise(resolve => setTimeout(resolve, 2000))
+
+        // Mock data logic based on company to make it feel slightly real
+        const mockStart = job.company.substring(0, 1).toUpperCase()
+        setLead({
+            name: mockStart === 'A' ? "Anna Andersson" : "Erik Svensson",
+            role: "Talent Acquisition Manager",
+            email: `rekrytering@${job.company.toLowerCase().replace(/\s/g, '')}.se`,
+            phone: "+46 70 123 45 67"
+        })
+        setEnriching(false)
+    }
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -129,26 +151,75 @@ export function JobCard({ job, index, initialSaved = false }: JobCardProps) {
                         <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-muted-foreground">
                             <div className="flex items-center gap-1.5">
                                 <MapPin className="h-3 w-3" />
-                                {job.location || "Remote / Unknown"}
+                                <{job.location || "Remote / Unknown"}
                             </div>
                             <div className="flex items-center gap-1.5">
                                 <CalendarDays className="h-3 w-3" />
                                 {new Date(job.created_at).toLocaleDateString()}
                             </div>
                         </div>
+
+                        {/* Enriched Lead Data Prototype */}
+                        {lead && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: 'auto' }}
+                                className="mt-4 p-3 rounded-lg bg-indigo-500/10 border border-indigo-500/20 backdrop-blur-md"
+                            >
+                                <div className="text-[10px] uppercase tracking-wider text-indigo-500 font-bold mb-2 flex items-center gap-1">
+                                    <div className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
+                                    Decision Maker Found
+                                </div>
+                                <div className="flex items-start gap-3">
+                                    <div className="h-8 w-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-xs text-white font-bold">
+                                        {lead.name[0]}
+                                    </div>
+                                    <div className="space-y-0.5">
+                                        <div className="text-sm font-semibold text-foreground">{lead.name}</div>
+                                        <div className="text-xs text-muted-foreground">{lead.role}</div>
+                                        <div className="text-xs text-indigo-400 mt-1 select-all">{lead.email}</div>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )}
                     </div>
                 </CardContent>
 
-                <CardFooter className="pt-2 pb-4 z-10 relative">
+                <CardFooter className="pt-2 pb-4 z-10 relative gap-2 flex-col">
+                    {!lead ? (
+                        <Button
+                            className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-md shadow-indigo-500/20 border-0"
+                            onClick={handleEnrich}
+                            disabled={enriching}
+                        >
+                            {enriching ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Scanning LinkedIn...
+                                </>
+                            ) : (
+                                <>
+                                    <UserSearch className="mr-2 h-4 w-4" />
+                                    Find Decision Maker
+                                </>
+                            )}
+                        </Button>
+                    ) : (
+                        <Button variant="outline" className="w-full border-green-500/30 text-green-600 hover:bg-green-500/10 hover:text-green-700 bg-green-500/5">
+                            <Check className="mr-2 h-4 w-4" />
+                            Lead Saved to CRM
+                        </Button>
+                    )}
+
                     <a
                         href={job.webbplatsurl}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="w-full"
                     >
-                        <Button className="w-full bg-background hover:bg-indigo-50 dark:bg-muted dark:hover:bg-indigo-950/30 text-foreground hover:text-indigo-600 border border-input shadow-sm group/btn transition-all">
-                            <span className="mr-2">View Details</span>
-                            <ChevronRight className="h-3.5 w-3.5 opacity-50 group-hover/btn:translate-x-0.5 transition-transform" />
+                        <Button variant="ghost" className="w-full text-muted-foreground hover:text-foreground">
+                            <span className="mr-2">View Job Ad</span>
+                            <ExternalLink className="h-3.5 w-3.5 opacity-50" />
                         </Button>
                     </a>
                 </CardFooter>
