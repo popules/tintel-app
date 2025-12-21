@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { MapPin, Building2, ExternalLink, CalendarDays, Briefcase, Bookmark, ChevronRight, Heart, UserSearch, Loader2, Check } from "lucide-react"
+import { MapPin, Building2, ExternalLink, CalendarDays, Briefcase, Bookmark, ChevronRight, Heart, UserSearch, Loader2, Check, Wand2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
 import { createClient } from "@/lib/supabase/client"
@@ -96,6 +96,35 @@ export function JobCard({ job, index, initialSaved = false }: JobCardProps) {
             phone: "+46 70 123 45 67"
         })
         setEnriching(false)
+    }
+
+    const [pitch, setPitch] = useState<string | null>(null)
+    const [generatingPitch, setGeneratingPitch] = useState(false)
+
+    const handleGeneratePitch = async (e: React.MouseEvent) => {
+        e.preventDefault()
+        e.stopPropagation()
+        setGeneratingPitch(true)
+
+        // Mock AI delay
+        await new Promise(resolve => setTimeout(resolve, 1500))
+
+        const pitchText = `Subject: Candidate for ${job.title} role
+
+Hi ${lead ? lead.name.split(' ')[0] : 'Scanning... (Hiring Manager)'},
+
+I saw that ${job.company} is looking for a ${job.title} in ${job.location}. 
+
+I have a consultant available who matches this profile perfectly. They have 5+ years of experience and are available immediately.
+
+Are you open to a quick intro call this week?
+
+Best,
+[Your Name]
+Tintel Recruiter`
+
+        setPitch(pitchText)
+        setGeneratingPitch(false)
     }
 
     return (
@@ -193,28 +222,74 @@ export function JobCard({ job, index, initialSaved = false }: JobCardProps) {
 
                 <CardFooter className="pt-2 pb-4 z-10 relative gap-2 flex-col">
                     {!lead ? (
-                        <Button
-                            className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-md shadow-indigo-500/20 border-0"
-                            onClick={handleEnrich}
-                            disabled={enriching}
-                        >
-                            {enriching ? (
-                                <>
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Scanning LinkedIn...
-                                </>
-                            ) : (
-                                <>
-                                    <UserSearch className="mr-2 h-4 w-4" />
-                                    Find Decision Maker
-                                </>
-                            )}
-                        </Button>
+                        <div className="grid grid-cols-2 gap-2 w-full">
+                            <Button
+                                className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-md shadow-indigo-500/20 border-0"
+                                onClick={handleEnrich}
+                                disabled={enriching}
+                            >
+                                {enriching ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                    <>
+                                        <UserSearch className="mr-2 h-4 w-4" />
+                                        Find Lead
+                                    </>
+                                )}
+                            </Button>
+                            <Button
+                                variant="outline"
+                                className="w-full border-indigo-500/20 text-indigo-600 hover:bg-indigo-50"
+                                onClick={handleGeneratePitch}
+                                disabled={generatingPitch}
+                            >
+                                {generatingPitch ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                    <>
+                                        <Wand2 className="mr-2 h-4 w-4" />
+                                        Draft Pitch
+                                    </>
+                                )}
+                            </Button>
+                        </div>
                     ) : (
-                        <Button variant="outline" className="w-full border-green-500/30 text-green-600 hover:bg-green-500/10 hover:text-green-700 bg-green-500/5">
-                            <Check className="mr-2 h-4 w-4" />
-                            Lead Saved to CRM
-                        </Button>
+                        <div className="w-full space-y-2">
+                            <Button variant="outline" className="w-full border-green-500/30 text-green-600 hover:bg-green-500/10 hover:text-green-700 bg-green-500/5 cursor-default">
+                                <Check className="mr-2 h-4 w-4" />
+                                Lead Saved
+                            </Button>
+                            <Button
+                                variant="outline"
+                                className="w-full border-indigo-500/20 text-indigo-600 hover:bg-indigo-50"
+                                onClick={handleGeneratePitch}
+                                disabled={generatingPitch}
+                            >
+                                {generatingPitch ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                    <>
+                                        <Wand2 className="mr-2 h-4 w-4" />
+                                        {pitch ? "Regenerate Pitch" : "Draft Pitch"}
+                                    </>
+                                )}
+                            </Button>
+                        </div>
+                    )}
+
+                    {pitch && (
+                        <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            className="mt-2 w-full"
+                        >
+                            <div className="relative rounded-md border bg-muted/50 p-3 text-xs font-mono text-muted-foreground whitespace-pre-wrap">
+                                {pitch}
+                                <Button size="sm" variant="ghost" className="absolute top-1 right-1 h-6 w-6 p-0" onClick={() => { navigator.clipboard.writeText(pitch) }}>
+                                    <Check className="h-3 w-3" />
+                                </Button>
+                            </div>
+                        </motion.div>
                     )}
 
                     <a
