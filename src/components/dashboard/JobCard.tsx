@@ -1,7 +1,9 @@
 import { useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { MapPin, Building2, ExternalLink, CalendarDays, Briefcase, Bookmark, ChevronRight, Heart, UserSearch, Loader2, Check, Wand2 } from "lucide-react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { MapPin, Building2, ExternalLink, CalendarDays, Briefcase, Bookmark, ChevronRight, Heart, UserSearch, Loader2, Check, Wand2, FileText, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
 import { createClient } from "@/lib/supabase/client"
@@ -310,17 +312,58 @@ Tintel Recruiter`
                         </motion.div>
                     )}
 
-                    <a
-                        href={job.webbplatsurl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-full"
-                    >
-                        <Button variant="ghost" className="w-full text-muted-foreground hover:text-foreground">
-                            <span className="mr-2">View Job Ad</span>
-                            <ExternalLink className="h-3.5 w-3.5 opacity-50" />
-                        </Button>
-                    </a>
+                    <div className="flex gap-2 w-full">
+                        <Dialog open={viewingAd} onOpenChange={setViewingAd}>
+                            <DialogTrigger asChild>
+                                <Button
+                                    variant="ghost"
+                                    className="w-full text-muted-foreground hover:text-foreground"
+                                    onClick={async (e) => {
+                                        // If we already have the description, just open
+                                        if (adConfig?.description) return;
+
+                                        // Otherwise, scrape it first
+                                        e.preventDefault();
+                                        setLoading(true); // Reuse loading state or add new one
+                                        try {
+                                            const res = await fetch(`/api/scrape-job?url=${encodeURIComponent(job.webbplatsurl)}`)
+                                            const data = await res.json()
+                                            setAdConfig({ description: data.description || "No description available." })
+                                            setViewingAd(true)
+                                        } catch (err) {
+                                            // Fallback to external if scrape fails
+                                            window.open(job.webbplatsurl, '_blank')
+                                        } finally {
+                                            setLoading(false)
+                                        }
+                                    }}
+                                >
+                                    <span className="mr-2">View Job Ad</span>
+                                    {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <FileText className="h-3.5 w-3.5 opacity-50" />}
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col">
+                                <DialogHeader>
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <Badge variant="outline" className="w-fit">{job.company}</Badge>
+                                        <span className="text-xs text-muted-foreground">{job.location}</span>
+                                    </div>
+                                    <DialogTitle className="text-xl">{job.title}</DialogTitle>
+                                </DialogHeader>
+                                <ScrollArea className="flex-1 mt-4 p-4 rounded-md bg-muted/30 text-sm leading-relaxed border">
+                                    <div className="whitespace-pre-wrap font-sans">
+                                        {adConfig?.description}
+                                    </div>
+                                </ScrollArea>
+                                <div className="mt-4 flex justify-end gap-2">
+                                    <Button variant="outline" onClick={() => setViewingAd(false)}>Close</Button>
+                                    <Button onClick={() => window.open(job.webbplatsurl, '_blank')}>
+                                        Open Original <ExternalLink className="ml-2 h-4 w-4" />
+                                    </Button>
+                                </div>
+                            </DialogContent>
+                        </Dialog>
+                    </div>
                 </CardFooter>
             </Card>
         </motion.div>
