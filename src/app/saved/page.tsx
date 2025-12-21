@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Header } from "@/components/dashboard/Header";
 import { JobCard } from "@/components/dashboard/JobCard";
 import { motion } from "framer-motion";
-import { Loader2, Kanban, columns as KanbanIcon, ArrowRight } from "lucide-react";
+import { Loader2, Kanban, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface SavedJob {

@@ -88,12 +88,16 @@ export function JobCard({ job, index, initialSaved = false }: JobCardProps) {
         await new Promise(resolve => setTimeout(resolve, 2000))
 
         // Mock data logic based on company to make it feel slightly real
-        const mockStart = job.company.substring(0, 1).toUpperCase()
+        const names = ["Anna Andersson", "Erik Svensson", "Lars Johansson", "Maria Nilsson", "Karin Lindberg", "Per Eklund", "Eva Berg", "Karl Olofsson"];
+        const randomName = names[Math.floor(Math.random() * names.length)];
+        const roles = ["Talent Acquisition Manager", "CTO", "Head of Engineering", "HR Manager", "CEO"];
+        const randomRole = roles[Math.floor(Math.random() * roles.length)];
+
         setLead({
-            name: mockStart === 'A' ? "Anna Andersson" : "Erik Svensson",
-            role: "Talent Acquisition Manager",
-            email: `rekrytering@${job.company.toLowerCase().replace(/\s/g, '')}.se`,
-            phone: "+46 70 123 45 67"
+            name: randomName,
+            role: randomRole,
+            email: `${randomName.split(' ')[0].toLowerCase()}@${job.company.toLowerCase().replace(/[^a-z]/g, '')}.se`,
+            phone: `+46 7${Math.floor(Math.random() * 9)} ${Math.floor(Math.random() * 1000)} ${Math.floor(Math.random() * 100)}`
         })
         setEnriching(false)
     }

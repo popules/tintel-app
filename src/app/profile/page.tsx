@@ -6,13 +6,14 @@ import { Header } from "@/components/dashboard/Header";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress"; // Need to ensure this exists or use standard div
 import { User, Mail, Trophy, Target, TrendingUp, Shield } from "lucide-react";
 
-// Simple Progress component if not in UI lib yet, or we assume shadcn installed it.
-// If not installed, I'll use a standard implementation.
-// Let's assume user has it or I can mock it easily.
-// I'll stick to basic tailwind for progress to be safe.
+// Simple Progress component since shadcn might not be installed
+const Progress = ({ value = 0, className = "" }: { value?: number, className?: string }) => (
+    <div className={`w-full bg-secondary h-2 rounded-full overflow-hidden ${className}`}>
+        <div className="bg-indigo-500 h-full rounded-full transition-all duration-500 ease-out" style={{ width: `${value}%` }} />
+    </div>
+);
 
 export default function ProfilePage() {
     const [loading, setLoading] = useState(true);
@@ -39,15 +40,57 @@ export default function ProfilePage() {
         fetchProfile();
     }, [supabase]);
 
-    // Mock gamification data if not in DB yet
-    const stats = {
-        leadsContacted: 12,
+    // Real-time stats
+    const [stats, setStats] = useState({
+        leadsContacted: 0,
         leadsGoal: 50,
-        savedJobs: 5, // We could fetch this count real-time
-        responseRate: "15%",
+        savedJobs: 0,
+        responseRate: "15%", // Still hardcoded for now as we don't track emails
         currentLevel: "Scout",
         nextLevel: "Hunter"
-    };
+    });
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            if (!user) return;
+
+            // Count total saved jobs
+            const { count: savedCount } = await supabase
+                .from('saved_jobs')
+                .select('*', { count: 'exact', head: true })
+                .eq('user_id', user.id);
+
+            // Count leads in pipeline (status != 'new')
+            const { count: contactedCount } = await supabase
+                .from('saved_jobs')
+                .select('*', { count: 'exact', head: true })
+                .eq('user_id', user.id)
+                .neq('status', 'new');
+
+            // Determine level
+            const totalLeads = contactedCount || 0;
+            let currentLevel = "Scout";
+            let nextLevel = "Hunter";
+            let goal = 50;
+
+            if (totalLeads >= 50) {
+                currentLevel = "Hunter";
+                nextLevel = "Elite";
+                goal = 150;
+            }
+
+            setStats({
+                leadsContacted: totalLeads,
+                leadsGoal: goal,
+                savedJobs: savedCount || 0,
+                responseRate: "15%",
+                currentLevel,
+                nextLevel
+            });
+        };
+
+        if (user) fetchStats();
+    }, [user, supabase]);
 
     const progress = (stats.leadsContacted / stats.leadsGoal) * 100;
 

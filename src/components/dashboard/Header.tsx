@@ -1,7 +1,7 @@
 "use client";
 
 import { Input } from "@/components/ui/input"
-import { Search, Bell, Radar, LogOut, User } from "lucide-react"
+import { Search, Bell, Radar, LogOut, User, Kanban } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
 import { createClient } from "@/lib/supabase/client"
@@ -19,11 +19,11 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 interface HeaderProps {
-    searchTerm: string
-    setSearchTerm: (term: string) => void
+    searchTerm?: string
+    setSearchTerm?: (term: string) => void
 }
 
-export function Header({ searchTerm, setSearchTerm }: HeaderProps) {
+export function Header({ searchTerm = "", setSearchTerm = () => { } }: HeaderProps) {
     const [user, setUser] = useState<any>(null)
     const [profile, setProfile] = useState<any>(null)
     const supabase = createClient()
@@ -124,6 +124,12 @@ export function Header({ searchTerm, setSearchTerm }: HeaderProps) {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-56">
                                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                                <DropdownMenuItem className="cursor-pointer" asChild>
+                                    <Link href="/saved" className="flex items-center w-full">
+                                        <Kanban className="mr-2 h-4 w-4" />
+                                        <span>My Pipeline</span>
+                                    </Link>
+                                </DropdownMenuItem>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem className="cursor-pointer" asChild>
                                     <Link href="/profile" className="flex items-center w-full">
