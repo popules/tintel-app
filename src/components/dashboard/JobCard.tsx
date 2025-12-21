@@ -108,7 +108,7 @@ export function JobCard({ job, index, initialSaved = false }: JobCardProps) {
 
         } catch (e) {
             console.error(e);
-            toast.error("Could not find contact details.");
+            alert("Could not find contact details.");
             setLead({ // Set a generic lead to indicate no direct contact found
                 name: "No direct contact found",
                 role: "N/A",
@@ -221,7 +221,9 @@ Tintel Recruiter`
                         {lead && (
                             <motion.div
                                 initial={{ opacity: 0, height: 0 }}
-                            <div className="mt-4 p-3 bg-muted/50 rounded-lg flex items-center justify-between animate-in fade-in slide-in-from-top-2">
+                                animate={{ opacity: 1, height: 'auto' }}
+                                className="mt-4 p-3 bg-muted/50 rounded-lg flex items-center justify-between"
+                            >
                                 <div className="flex items-center gap-3">
                                     <div className="h-10 w-10 rounded-full bg-background border flex items-center justify-center overflow-hidden">
                                         <img src={lead.avatar} alt={lead.name} className="h-full w-full object-cover" />
@@ -230,7 +232,7 @@ Tintel Recruiter`
                                         <p className="text-sm font-semibold">{lead.name}</p>
                                         <p className="text-xs text-muted-foreground">{lead.role}</p>
                                         {lead.email ? (
-                                             <a href={`mailto:${lead.email}`} className="text-xs text-blue-500 hover:underline block">{lead.email}</a>
+                                            <a href={`mailto:${lead.email}`} className="text-xs text-blue-500 hover:underline block">{lead.email}</a>
                                         ) : (
                                             <span className="text-xs text-amber-600 block">Indirect contact only</span>
                                         )}
@@ -240,7 +242,7 @@ Tintel Recruiter`
                                     <Check className="h-3 w-3" />
                                     {lead.email ? "Direct Contact" : "Company Identified"}
                                 </div>
-                            </div>
+                            </motion.div>
                         )}
                     </div>
                 </CardContent>
