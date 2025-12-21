@@ -1,20 +1,15 @@
-```typescript
 import { type NextRequest, NextResponse } from 'next/server'
 import { updateSession } from '@/lib/supabase/middleware'
 
 export async function middleware(request: NextRequest) {
     const url = request.nextUrl
-    const host = request.headers.get('x-forwarded-host') || request.headers.get('host') || '';
-
-    // Debugging (visible in Vercel logs)
-    // console.log(`Middleware: Hostname = ${ host }, Path = ${ url.pathname } `) // Removed as per instruction
+    const host = request.headers.get('host') || ''
 
     // Redirect 'app.' subdomain root to dashboard
-    // We check both host and x-forwarded-host for Vercel edge consistency
-    const isApp = host.startsWith('app.');
+    const isApp = host.startsWith('app.') || host.includes('.app.')
 
     if (isApp && url.pathname === '/') {
-        return NextResponse.redirect(new URL('/dashboard', request.url), { status: 307 });
+        return NextResponse.redirect(new URL('/dashboard', request.url));
     }
 
     return await updateSession(request)
