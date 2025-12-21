@@ -1,7 +1,7 @@
 "use client";
 
 import { Input } from "@/components/ui/input"
-import { Search, Bell, User, LayoutDashboard, Database, Send, Settings, LogOut, Sparkles, Kanban } from 'lucide-react'
+import { Search, Bell, User, LayoutDashboard, Database, Send, Settings, LogOut, Gem, Kanban } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
 import { createClient } from "@/lib/supabase/client"
@@ -51,8 +51,8 @@ export function Header({ searchTerm = "", setSearchTerm = () => { } }: HeaderPro
     return (
         <header className="sticky top-0 z-30 w-full border-b bg-background/80 backdrop-blur-xl px-4 md:px-6 h-16 flex items-center justify-between transition-all duration-300">
             <Link href="/dashboard" className="flex items-center gap-3 hover:opacity-80 transition-all group">
-                <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-indigo-500/20 rotate-2 group-hover:rotate-6 transition-transform duration-300">
-                    <Sparkles className="h-4 w-4 text-white fill-white/20" />
+                <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:scale-110 transition-transform duration-300">
+                    <Gem className="h-4 w-4 text-white fill-white/10" />
                 </div>
                 <span className="font-bold text-xl tracking-tighter bg-gradient-to-br from-foreground to-muted-foreground bg-clip-text text-transparent">
                     tintel
