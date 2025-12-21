@@ -1,10 +1,10 @@
-"use client";
-
+import { useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { MapPin, Building2, ExternalLink, CalendarDays, Briefcase, Bookmark, ChevronRight } from "lucide-react"
+import { MapPin, Building2, ExternalLink, CalendarDays, Briefcase, Bookmark, ChevronRight, Heart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
+import { createClient } from "@/lib/supabase/client"
 
 interface JobPost {
     id: string
@@ -15,8 +15,61 @@ interface JobPost {
     webbplatsurl: string
 }
 
-export function JobCard({ job, index }: { job: JobPost; index: number }) {
+interface JobCardProps {
+    job: JobPost
+    index: number
+    initialSaved?: boolean
+}
+
+export function JobCard({ job, index, initialSaved = false }: JobCardProps) {
     const isRecent = new Date(job.created_at) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const [saved, setSaved] = useState(initialSaved)
+    const [loading, setLoading] = useState(false)
+    const supabase = createClient()
+
+    const handleSaveToggle = async (e: React.MouseEvent) => {
+        e.preventDefault()
+        e.stopPropagation()
+
+        if (loading) return
+        setLoading(true)
+
+        try {
+            const { data: { user } } = await supabase.auth.getUser()
+
+            if (!user) {
+                // Redirect logic could go here, or just fail silently/toast
+                window.location.href = '/login'
+                return
+            }
+
+            if (saved) {
+                const { error } = await supabase
+                    .from('saved_jobs')
+                    .delete()
+                    .eq('job_id', job.id)
+                    .eq('user_id', user.id)
+
+                if (error) throw error
+                setSaved(false)
+            } else {
+                const { error } = await supabase
+                    .from('saved_jobs')
+                    .insert({
+                        job_id: job.id,
+                        user_id: user.id,
+                        job_data: job
+                    })
+
+                if (error) throw error
+                setSaved(true)
+            }
+        } catch (error) {
+            console.error('Error toggling save:', error)
+        } finally {
+            setLoading(false)
+        }
+    }
 
     return (
         <motion.div
@@ -47,8 +100,14 @@ export function JobCard({ job, index }: { job: JobPost; index: number }) {
                                 {job.title}
                             </CardTitle>
                         </div>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 -mr-2 text-muted-foreground hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 rounded-full">
-                            <Bookmark className="h-4 w-4" />
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 -mr-2 text-muted-foreground hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 rounded-full"
+                            onClick={handleSaveToggle}
+                            disabled={loading}
+                        >
+                            <Heart className={`h-4 w-4 transition-colors ${saved ? "fill-red-500 text-red-500" : ""}`} />
                         </Button>
                     </div>
                 </CardHeader>
