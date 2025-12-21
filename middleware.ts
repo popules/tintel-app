@@ -2,12 +2,16 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { updateSession } from '@/lib/supabase/middleware'
 
 export async function middleware(request: NextRequest) {
-    const hostname = request.headers.get('host') || ''
+    const url = request.nextUrl
+    const hostname = url.hostname
 
-    // Redirect 'app.tintel.se' or any 'app.' subdomain root to dashboard
-    const isAppSubdomain = hostname.startsWith('app.') || hostname.includes('.app.') || hostname.split('-')[0] === 'app'
+    // Debugging (visible in Vercel logs)
+    console.log(`Middleware: Hostname=${hostname}, Path=${url.pathname}`)
 
-    if (isAppSubdomain && request.nextUrl.pathname === '/') {
+    // Redirect 'app.' subdomain root to dashboard
+    const isAppSubdomain = hostname.startsWith('app.') || hostname.includes('.app.')
+
+    if (isAppSubdomain && url.pathname === '/') {
         return NextResponse.redirect(new URL('/dashboard', request.url));
     }
 
