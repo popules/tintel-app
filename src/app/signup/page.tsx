@@ -45,7 +45,7 @@ export default function SignupPage() {
                 }, { onConflict: 'email' })
 
             if (requestError) {
-                setError("Something went wrong. Please try again or contact hello@tintel.se")
+                setError("Our partner queue is currently full. Please try again later or contact hello@tintel.se.")
             } else {
                 setRequestSent(true)
             }
