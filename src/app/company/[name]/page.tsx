@@ -9,17 +9,23 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Building2, MapPin, Users, TrendingUp, Briefcase } from "lucide-react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 
 export default function CompanyPage() {
     const params = useParams();
+    const router = useRouter();
     const companyName = decodeURIComponent(params.name as string);
 
     const [jobs, setJobs] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const supabase = createClient();
+
+    const handleMonitor = () => {
+        // Mock functionality
+        alert(`Now monitoring ${companyName}. You will receive alerts for new roles.`);
+    };
 
     useEffect(() => {
         const fetchCompanyJobs = async () => {
@@ -71,7 +77,7 @@ export default function CompanyPage() {
                             </div>
                         </div>
                     </div>
-                    <Button size="lg" className="bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-500/20">
+                    <Button size="lg" className="bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-500/20 transition-all active:scale-95" onClick={handleMonitor}>
                         Monitor Company
                     </Button>
                 </div>
@@ -103,9 +109,13 @@ export default function CompanyPage() {
                             <CardTitle className="text-sm font-medium text-muted-foreground">Top Locations</CardTitle>
                             <MapPin className="h-4 w-4 text-amber-500" />
                         </CardHeader>
-                        <CardContent className="flex gap-4">
+                        <CardContent className="flex gap-4 flex-wrap">
                             {topLocations.map(([loc, count]: any) => (
-                                <div key={loc} className="flex items-center gap-2 bg-background p-2 px-3 rounded-lg border">
+                                <div
+                                    key={loc}
+                                    className="flex items-center gap-2 bg-background p-2 px-3 rounded-lg border cursor-pointer hover:bg-muted transition-colors"
+                                    onClick={() => router.push(`/?search=&location=${encodeURIComponent(loc)}`)} // Simple search redirect
+                                >
                                     <span className="font-semibold">{loc}</span>
                                     <Badge variant="secondary">{count}</Badge>
                                 </div>

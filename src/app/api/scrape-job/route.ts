@@ -13,7 +13,16 @@ export async function GET(req: NextRequest) {
         if (pbIdMatch) {
             const adId = pbIdMatch[1];
             try {
-                const apiRes = await fetch(`https://arbetsformedlingen.se/rest/pb/annons/${adId}`);
+                // Mimic a real browser request to avoid 403/Blocking
+                const apiRes = await fetch(`https://arbetsformedlingen.se/rest/pb/annons/${adId}`, {
+                    headers: {
+                        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                        "Accept": "application/json, text/plain, */*",
+                        "Referer": "https://arbetsformedlingen.se/platsbanken/annonser/" + adId,
+                        "Accept-Language": "sv-SE,sv;q=0.9,en-US;q=0.8,en;q=0.7",
+                    }
+                });
+
                 if (apiRes.ok) {
                     const adData = await apiRes.json();
 
@@ -22,13 +31,14 @@ export async function GET(req: NextRequest) {
                     const contactPerson = adData.arbetsplats?.kontaktpersoner?.[0]; // Array of contacts
 
                     const email = applicationContact || contactPerson?.epost || null;
-                    const name = contactPerson?.namn || contactPerson?.fornamn ? `${contactPerson.fornamn} ${contactPerson.efternamn}` : null;
-                    const description = adData.beskrivning?.text || adData.annonstext;
+                    const name = contactPerson?.namn || (contactPerson?.fornamn ? `${contactPerson.fornamn} ${contactPerson.efternamn}` : null);
+                    // Prioritize annonstext which is usually HTML
+                    const description = adData.annonstext || adData.beskrivning?.text;
 
                     if (email || description) {
                         return NextResponse.json({
-                            email: email || `rekrytering@${new URL(url).hostname}`,
-                            name: name || "Hiring Manager", // Often null in PB JSON if not explicit
+                            email: email || null,
+                            name: name || "Hiring Manager",
                             description: description || "Job description data found via API.",
                             role: contactPerson?.befattning || "Recruiter",
                             source: "API"
@@ -42,7 +52,9 @@ export async function GET(req: NextRequest) {
 
         const response = await fetch(url, {
             headers: {
-                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+                "Referer": "https://www.google.com/"
             }
         });
 
@@ -52,6 +64,14 @@ export async function GET(req: NextRequest) {
 
         const html = await response.text();
 
+        // Detect "Generic Start Page" trap
+        if (html.includes("Letar du efter ett nytt jobb? I Platsbanken hittar du")) {
+            return NextResponse.json({
+                error: "Access Denied: Scraper blocked or redirected to homepage.",
+                description: "Cannot view this ad due to site protection. Please click 'Open Original'."
+            }, { status: 403 });
+        }
+
         // 1. Extract Email (mailto:)
         // Regex looks for mailto: followed by email
         const emailMatch = html.match(/mailto:([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/);
@@ -60,7 +80,7 @@ export async function GET(req: NextRequest) {
         // 2. Extract Name
         // This is tricky without DOM, but often name is within 100-200 chars before the email or "Kontakt" header.
         // Or sometimes logic: "Kontakt: Firstname Lastname"
-        // Let's try to find the name in the text preceding the email link code
+        // Let's try to find text appearing before the email if we found one.
         let name = null;
         if (email) {
             // Try to find the name in the text preceding the email link code
@@ -93,7 +113,7 @@ export async function GET(req: NextRequest) {
         }
 
         return NextResponse.json({
-            email: email || `rekrytering@${new URL(url).hostname}`,
+            email: email || null,
             name: name || "Hiring Manager",
             description: description || "Could not extract description. Please view original ad.",
             role: "Recruiter / Manager", // hardcoded assumption
