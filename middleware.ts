@@ -2,10 +2,12 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { updateSession } from '@/lib/supabase/middleware'
 
 export async function middleware(request: NextRequest) {
-    const hostname = request.headers.get('host')
+    const hostname = request.headers.get('host') || ''
 
-    // Redirect 'app.tintel.se' root to dashboard
-    if (hostname && (hostname.startsWith('app.') || hostname.startsWith('app-')) && request.nextUrl.pathname === '/') {
+    // Redirect 'app.tintel.se' or any 'app.' subdomain root to dashboard
+    const isAppSubdomain = hostname.startsWith('app.') || hostname.includes('.app.') || hostname.split('-')[0] === 'app'
+
+    if (isAppSubdomain && request.nextUrl.pathname === '/') {
         return NextResponse.redirect(new URL('/dashboard', request.url));
     }
 

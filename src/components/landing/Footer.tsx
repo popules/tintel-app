@@ -9,14 +9,14 @@ export function Footer() {
             <div className="container px-4 md:px-6 mx-auto">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
                     <div className="space-y-4">
-                        <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-                            <div className="rounded-lg bg-indigo-600 p-1.5">
-                                <Radar className="h-4 w-4 text-white" />
+                        <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-all group">
+                            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-indigo-500/20 rotate-3 group-hover:rotate-0 transition-transform duration-300">
+                                <span className="text-white font-black text-xl -rotate-3 group-hover:rotate-0 transition-transform">T</span>
                             </div>
-                            <span className="font-bold text-xl text-white">tintel</span>
+                            <span className="font-bold text-2xl text-white tracking-tighter">tintel</span>
                         </Link>
                         <p className="text-muted-foreground text-sm max-w-xs">
-                            The intelligent operating system for modern recruitment agencies. Built in Stockholm.
+                            The intelligent operating system for modern recruitment agencies. Built in Gothenburg.
                         </p>
                     </div>
 
