@@ -79,10 +79,42 @@ export function Header({ searchTerm, setSearchTerm }: HeaderProps) {
                             <span className="text-xs font-semibold text-foreground">{profile?.full_name || user.email}</span>
                             <span className="text-[10px] text-muted-foreground capitalize">{profile?.membership_tier || "Free"} Account</span>
                         </div>
-                        <Button variant="ghost" size="icon" className="relative text-muted-foreground hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 rounded-xl transition-colors">
-                            <Bell className="h-5 w-5" />
-                            <span className="absolute top-2.5 right-2.5 h-2 w-2 rounded-full bg-red-500 border-2 border-background animate-pulse" />
-                        </Button>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon" className="relative text-muted-foreground hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 rounded-xl transition-colors">
+                                    <Bell className="h-5 w-5" />
+                                    <span className="absolute top-2.5 right-2.5 h-2 w-2 rounded-full bg-red-500 border-2 border-background animate-pulse" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-80">
+                                <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <div className="max-h-[300px] overflow-y-auto">
+                                    <DropdownMenuItem className="cursor-pointer flex flex-col items-start gap-1 p-3 bg-muted/30">
+                                        <div className="flex w-full justify-between font-medium">
+                                            <span>Welcome to Tintel!</span>
+                                            <span className="text-[10px] text-muted-foreground">Just now</span>
+                                        </div>
+                                        <p className="text-xs text-muted-foreground line-clamp-2">
+                                            Start finding your next client or career move today. Complete your profile to get noticed.
+                                        </p>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem className="cursor-pointer flex flex-col items-start gap-1 p-3">
+                                        <div className="flex w-full justify-between font-medium">
+                                            <span>Profile Completed</span>
+                                            <span className="text-[10px] text-muted-foreground">2m ago</span>
+                                        </div>
+                                        <p className="text-xs text-muted-foreground line-clamp-2">
+                                            You've reached the Scout rank level!
+                                        </p>
+                                    </DropdownMenuItem>
+                                </div>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem className="cursor-pointer justify-center text-xs text-muted-foreground">
+                                    View all notifications
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
 
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
