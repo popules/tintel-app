@@ -50,7 +50,7 @@ export function Header({ searchTerm = "", setSearchTerm = () => { } }: HeaderPro
 
     return (
         <header className="sticky top-0 z-30 w-full border-b bg-background/80 backdrop-blur-xl px-4 md:px-6 h-16 flex items-center justify-between transition-all duration-300">
-            <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+            <Link href="/dashboard" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
                 <div className="rounded-lg bg-gradient-to-tr from-indigo-600 to-purple-600 p-1.5 shadow-lg shadow-indigo-500/20">
                     <Radar className="h-4 w-4 text-white" />
                 </div>
