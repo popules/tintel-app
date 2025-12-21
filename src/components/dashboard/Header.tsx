@@ -93,9 +93,11 @@ export function Header({ searchTerm, setSearchTerm }: HeaderProps) {
                             <DropdownMenuContent align="end" className="w-56">
                                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem className="cursor-pointer">
-                                    <User className="mr-2 h-4 w-4" />
-                                    <span>Profile</span>
+                                <DropdownMenuItem className="cursor-pointer" asChild>
+                                    <Link href="/profile" className="flex items-center w-full">
+                                        <User className="mr-2 h-4 w-4" />
+                                        <span>Profile</span>
+                                    </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem onClick={handleSignOut} className="text-red-500 cursor-pointer focus:text-red-500">
