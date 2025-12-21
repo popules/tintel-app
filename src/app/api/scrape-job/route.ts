@@ -7,117 +7,113 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ error: "Missing URL" }, { status: 400 });
     }
 
+    // Helper to find email in text
+    const extractEmail = (text: string) => {
+        if (!text) return null;
+        const emailMatch = text.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/);
+        return emailMatch ? emailMatch[1] : null;
+    };
+
     try {
-        // Special handling for Platsbanken (using their internal API if possible)
-        const pbIdMatch = url.match(/platsbanken\/annonser\/(\d+)/);
+        // Strategy 1: Platsbanken ID detection
+        const pbIdMatch = url.match(/platsbanken\/annonser\/(\d+)/) || url.match(/platsbanken\/annons\/(\d+)/);
+
         if (pbIdMatch) {
             const adId = pbIdMatch[1];
+            let adData: any = null;
+            let source = "Internal_API";
+
+            // Attempt 1: Internal API (Best for Contacts)
             try {
-                // Mimic a real browser request to avoid 403/Blocking
                 const apiRes = await fetch(`https://arbetsformedlingen.se/rest/pb/annons/${adId}`, {
                     headers: {
-                        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-                        "Accept": "application/json, text/plain, */*",
-                        "Referer": "https://arbetsformedlingen.se/platsbanken/annonser/" + adId,
-                        "Accept-Language": "sv-SE,sv;q=0.9,en-US;q=0.8,en;q=0.7",
+                        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko)",
+                        "Accept": "application/json"
                     }
                 });
-
                 if (apiRes.ok) {
-                    const adData = await apiRes.json();
-
-                    // Extract rich data from JSON
-                    const applicationContact = adData.ansokan?.epostadress;
-                    const contactPerson = adData.arbetsplats?.kontaktpersoner?.[0]; // Array of contacts
-
-                    const email = applicationContact || contactPerson?.epost || null;
-                    const name = contactPerson?.namn || (contactPerson?.fornamn ? `${contactPerson.fornamn} ${contactPerson.efternamn}` : null);
-                    // Prioritize annonstext which is usually HTML
-                    const description = adData.annonstext || adData.beskrivning?.text;
-
-                    if (email || description) {
-                        return NextResponse.json({
-                            email: email || null,
-                            name: name || "Hiring Manager",
-                            description: description || "Job description data found via API.",
-                            role: contactPerson?.befattning || "Recruiter",
-                            source: "API"
-                        });
-                    }
+                    adData = await apiRes.json();
                 }
-            } catch (e) {
-                console.log("PB API failed, falling back to HTML", e);
+            } catch (e) { console.log("Internal API failed", e); }
+
+            // Attempt 2: Public JobTech API (Reliable for Description)
+            if (!adData) {
+                try {
+                    const publicRes = await fetch(`https://jobsearch.api.jobtechdev.se/search?q=${adId}`, {
+                        headers: { "Accept": "application/json" }
+                    });
+                    if (publicRes.ok) {
+                        const publicData = await publicRes.json();
+                        if (publicData.hits && publicData.hits.length > 0) {
+                            const hit = publicData.hits[0];
+                            adData = {
+                                // Map JobTech format to our expectation
+                                beskrivning: { text: hit.description.text },
+                                rubrik: hit.headline,
+                                ansokan: hit.application_details,
+                                arbetsplats: hit.workplace_address,
+                                isPublic: true
+                            };
+                            source = "Public_API";
+                        }
+                    }
+                } catch (e) { console.log("Public API failed", e); }
+            }
+
+            if (adData) {
+                // Extract Data
+                const description = adData.beskrivning?.text || adData.annonstext || "";
+
+                // Try to find contact info
+                let email = null;
+                let name = null;
+                let role = "Recruiter";
+
+                if (adData.isPublic) {
+                    // JobTech data structure
+                    email = adData.ansokan?.email || extractEmail(description);
+                    name = "Hiring Manager"; // Public API often hides names
+                } else {
+                    // Internal data structure
+                    const contact = adData.arbetsplats?.kontaktpersoner?.[0];
+                    email = adData.ansokan?.epostadress || contact?.epost || extractEmail(description);
+                    name = contact?.namn || (contact?.fornamn ? `${contact.fornamn} ${contact.efternamn}` : null);
+                    role = contact?.befattning || role;
+                }
+
+                return NextResponse.json({
+                    email: email || null,
+                    name: name || "Hiring Manager",
+                    description: description || "Job description found.",
+                    role: role,
+                    source: source
+                });
             }
         }
 
+        // Fallback: Generic HTML Scrape (for non-PB URLs)
         const response = await fetch(url, {
             headers: {
-                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
-                "Referer": "https://www.google.com/"
+                "User-Agent": "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
             }
         });
 
-        if (!response.ok) {
-            return NextResponse.json({ error: "Failed to fetch page" }, { status: response.status });
-        }
+        if (!response.ok) return NextResponse.json({ error: "Fetch failed" }, { status: 500 });
 
         const html = await response.text();
-
-        // Detect "Generic Start Page" trap
-        if (html.includes("Letar du efter ett nytt jobb? I Platsbanken hittar du")) {
-            return NextResponse.json({
-                error: "Access Denied: Scraper blocked or redirected to homepage.",
-                description: "Cannot view this ad due to site protection. Please click 'Open Original'."
-            }, { status: 403 });
+        if (html.includes("Letar du efter ett nytt jobb?")) {
+            return NextResponse.json({ error: "Protected Site" }, { status: 403 });
         }
 
-        // 1. Extract Email (mailto:)
-        // Regex looks for mailto: followed by email
-        const emailMatch = html.match(/mailto:([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/);
-        const email = emailMatch ? emailMatch[1] : null;
-
-        // 2. Extract Name
-        // This is tricky without DOM, but often name is within 100-200 chars before the email or "Kontakt" header.
-        // Or sometimes logic: "Kontakt: Firstname Lastname"
-        // Let's try to find text appearing before the email if we found one.
-        let name = null;
-        if (email) {
-            // Try to find the name in the text preceding the email link code
-            // e.g. "Bhavana Repal<br><a href='mailto:..."
-            // We search for capitalized words before the email occurrence in HTML
-            const emailIndex = html.indexOf(email);
-            const context = html.substring(Math.max(0, emailIndex - 300), emailIndex);
-
-            // Look for generic name patterns (2 capitalized words) not inside tags tags
-            // This is very loose but better than nothing
-            const nameMatch = context.match(/>\s*([A-Z][a-z]+ [A-Z][a-z]+)\s*</) || context.match(/([A-Z][a-z]+ [A-Z][a-z]+)/);
-            // Refined: Platsbanken often behaves like: <div class="...">Name Lastname</div> ... <a href="mailto:...">
-            if (nameMatch) {
-                name = nameMatch[1];
-            }
-        }
-
-        // 3. Extract Description
-        // Specific checks for common meta tags or container classes
-        let description = "";
-        // Platsbanken JS fallback (if API failed): usually in a scripted variable or meta
-        const descMatch = html.match(/<div[^>]*class="[^"]*job-description[^"]*"[^>]*>([\s\S]*?)<\/div>/i) || html.match(/<article[^>]*>([\s\S]*?)<\/article>/i);
-
-        if (descMatch) {
-            description = descMatch[1].replace(/<[^>]*>/g, ' ').slice(0, 1000) + "...";
-        } else {
-            // Fallback: Title meta tag description?
-            const metaDesc = html.match(/<meta name="description" content="([^"]*)"/i);
-            if (metaDesc) description = metaDesc[1];
-        }
+        const email = extractEmail(html);
+        const description = (html.match(/<article[^>]*>([\s\S]*?)<\/article>/i) || [])[1]?.replace(/<[^>]*>/g, ' ').slice(0, 1000) || "";
 
         return NextResponse.json({
-            email: email || null,
-            name: name || "Hiring Manager",
-            description: description || "Could not extract description. Please view original ad.",
-            role: "Recruiter / Manager", // hardcoded assumption
-            scraped: true
+            email: email,
+            name: "Hiring Manager",
+            description: description,
+            role: "Recruiter",
+            source: "HTML_Scrape"
         });
 
     } catch (error) {
