@@ -47,7 +47,9 @@ export default function Home() {
     if (selectedCategories.length > 0) query = query.in("broad_category", selectedCategories);
     if (selectedCounty) query = query.eq("county", selectedCounty);
     if (selectedCity) query = query.eq("location", selectedCity);
-    if (searchTerm) query = query.ilike("title", `%${searchTerm}%`);
+    if (searchTerm) {
+      query = query.or(`title.ilike.%${searchTerm}%,company.ilike.%${searchTerm}%`);
+    }
 
     const { data, error } = await query;
     if (error) {

@@ -145,7 +145,13 @@ export function JobCard({ job, index, initialSaved = false }: JobCardProps) {
                             <div className="p-1 rounded bg-muted text-muted-foreground">
                                 <Building2 className="h-3.5 w-3.5" />
                             </div>
-                            {job.company}
+                            <a
+                                href={`/?search=${encodeURIComponent(job.company)}`}
+                                className="hover:text-indigo-600 hover:underline transition-colors cursor-pointer"
+                                title={`View all jobs at ${job.company}`}
+                            >
+                                {job.company}
+                            </a>
                         </div>
 
                         <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-muted-foreground">
