@@ -20,8 +20,8 @@ export function LandingHeader() {
         <header className={`fixed top-0 z-50 w-full transition-all duration-300 ${scrolled ? "bg-background/80 backdrop-blur-xl border-b border-white/10 py-3" : "bg-transparent py-5"}`}>
             <div className="container px-4 md:px-6 mx-auto flex items-center justify-between">
                 <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-all group">
-                    <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-indigo-500/20 rotate-3 group-hover:rotate-0 transition-transform duration-300">
-                        <span className="text-white font-black text-xl -rotate-3 group-hover:rotate-0 transition-transform">T</span>
+                    <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-indigo-500/20 rotate-3 group-hover:rotate-12 transition-transform duration-300">
+                        <Sparkles className="h-6 w-6 text-white fill-white/20 animate-pulse" />
                     </div>
                     <span className="font-bold text-2xl tracking-tighter text-white">
                         tintel
