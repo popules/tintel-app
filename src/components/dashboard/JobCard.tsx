@@ -71,8 +71,9 @@ export function JobCard({ job, index, initialSaved = false }: JobCardProps) {
 
                 if (error) throw error
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error toggling save:', error)
+            alert(`Save failed: ${error.message || "Unknown error"}`);
             setSaved(previousSaved) // Revert on error
             // toast.error("Failed to save job")
         }
