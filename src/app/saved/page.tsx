@@ -10,10 +10,11 @@ import { Button } from "@/components/ui/button";
 
 interface SavedJob {
     id: number;
-    job_id: string;
+    job_id: string; // Changed to BigInt in DB but String in JS usually safe
     user_id: string;
     created_at: string;
-    job_data: any;
+    job_data: any; // Legacy JSON column
+    job_posts?: any; // Joined Data from Foreign Key
     status: 'new' | 'contacted' | 'meeting' | 'closed';
     pitch?: string;
 }
@@ -37,11 +38,12 @@ export default function SavedJobsPage() {
         if (user) {
             const { data, error } = await supabase
                 .from('saved_jobs')
-                .select('*')
+                .select('*, job_posts(*)') // Join with actual job data
                 .eq('user_id', user.id)
                 .order('created_at', { ascending: false });
 
             if (data) setJobs(data as SavedJob[]);
+            if (error) console.error("Error fetching saved jobs:", error);
         }
         setLoading(false);
     };
@@ -100,32 +102,35 @@ export default function SavedJobsPage() {
                                         </div>
 
                                         <div className="flex flex-col gap-3 flex-1 overflow-y-auto max-h-[calc(100vh-250px)]">
-                                            {columnJobs.map((item, index) => (
-                                                <div key={item.id} className="relative group">
-                                                    <div className="scale-90 origin-top-left transform transition-all duration-200 group-hover:scale-95">
-                                                        <JobCard job={item.job_data} index={index} initialSaved={true} />
-                                                    </div>
+                                            {columnJobs.map((item, index) => {
+                                                const jobData = item.job_posts || item.job_data;
+                                                if (!jobData) return null; // Safe guard against corrupt data
+                                                return (
+                                                    <div key={item.id} className="relative group">
+                                                        <div className="scale-90 origin-top-left transform transition-all duration-200 group-hover:scale-95">
+                                                            <JobCard job={jobData} index={index} initialSaved={true} />
+                                                        </div>
 
-                                                    {/* Quick Move Actions Overlay */}
-                                                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-black/50 backdrop-blur-md rounded-lg p-1 flex gap-1 z-50">
-                                                        {COLUMNS.map(c => (
-                                                            c.id !== item.status && (
-                                                                <button
-                                                                    key={c.id}
-                                                                    onClick={(e) => {
-                                                                        e.preventDefault();
-                                                                        handleMoveStatus(item, c.id);
-                                                                    }}
-                                                                    className={`w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold border transition-colors ${c.color} bg-background hover:brightness-110`}
-                                                                    title={`Move to ${c.label}`}
-                                                                >
-                                                                    {c.label[0]}
-                                                                </button>
-                                                            )
-                                                        ))}
+                                                        {/* Quick Move Actions Overlay */}
+                                                        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-black/50 backdrop-blur-md rounded-lg p-1 flex gap-1 z-50">
+                                                            {COLUMNS.map(c => (
+                                                                c.id !== item.status && (
+                                                                    <button
+                                                                        key={c.id}
+                                                                        onClick={(e) => {
+                                                                            e.preventDefault();
+                                                                            handleMoveStatus(item, c.id);
+                                                                        }}
+                                                                        className={`w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold border transition-colors ${c.color} bg-background hover:brightness-110`}
+                                                                        title={`Move to ${c.label}`}
+                                                                    >
+                                                                        {c.label[0]}
+                                                                    </button>
+                                                                )
+                                                            ))}
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            ))}
+                                                ))}
                                             {columnJobs.length === 0 && (
                                                 <div className="h-32 rounded-lg border-2 border-dashed border-muted flex items-center justify-center text-muted-foreground text-xs">
                                                     Empty Stage
