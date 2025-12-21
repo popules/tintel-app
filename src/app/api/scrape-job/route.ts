@@ -8,6 +8,38 @@ export async function GET(req: NextRequest) {
     }
 
     try {
+        // Special handling for Platsbanken (using their internal API if possible)
+        const pbIdMatch = url.match(/platsbanken\/annonser\/(\d+)/);
+        if (pbIdMatch) {
+            const adId = pbIdMatch[1];
+            try {
+                const apiRes = await fetch(`https://arbetsformedlingen.se/rest/pb/annons/${adId}`);
+                if (apiRes.ok) {
+                    const adData = await apiRes.json();
+
+                    // Extract rich data from JSON
+                    const applicationContact = adData.ansokan?.epostadress;
+                    const contactPerson = adData.arbetsplats?.kontaktpersoner?.[0]; // Array of contacts
+
+                    const email = applicationContact || contactPerson?.epost || null;
+                    const name = contactPerson?.namn || contactPerson?.fornamn ? `${contactPerson.fornamn} ${contactPerson.efternamn}` : null;
+                    const description = adData.beskrivning?.text || adData.annonstext;
+
+                    if (email || description) {
+                        return NextResponse.json({
+                            email: email || `rekrytering@${new URL(url).hostname}`,
+                            name: name || "Hiring Manager", // Often null in PB JSON if not explicit
+                            description: description || "Job description data found via API.",
+                            role: contactPerson?.befattning || "Recruiter",
+                            source: "API"
+                        });
+                    }
+                }
+            } catch (e) {
+                console.log("PB API failed, falling back to HTML", e);
+            }
+        }
+
         const response = await fetch(url, {
             headers: {
                 "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
@@ -28,7 +60,7 @@ export async function GET(req: NextRequest) {
         // 2. Extract Name
         // This is tricky without DOM, but often name is within 100-200 chars before the email or "Kontakt" header.
         // Or sometimes logic: "Kontakt: Firstname Lastname"
-        // Let's try to find text appearing before the email if we found one.
+        // Let's try to find the name in the text preceding the email link code
         let name = null;
         if (email) {
             // Try to find the name in the text preceding the email link code
@@ -47,13 +79,13 @@ export async function GET(req: NextRequest) {
         }
 
         // 3. Extract Description
-        // Platsbanken usually puts description in `job-ads-description` or similar.
-        // We'll take a simplistic approach: specific marker or just body text
-        // Platsbanken: <div class="job-description"> ... </div>
+        // Specific checks for common meta tags or container classes
         let description = "";
+        // Platsbanken JS fallback (if API failed): usually in a scripted variable or meta
         const descMatch = html.match(/<div[^>]*class="[^"]*job-description[^"]*"[^>]*>([\s\S]*?)<\/div>/i) || html.match(/<article[^>]*>([\s\S]*?)<\/article>/i);
+
         if (descMatch) {
-            description = descMatch[1].replace(/<[^>]*>/g, ' ').slice(0, 1000) + "..."; // Strip tags and truncate
+            description = descMatch[1].replace(/<[^>]*>/g, ' ').slice(0, 1000) + "...";
         } else {
             // Fallback: Title meta tag description?
             const metaDesc = html.match(/<meta name="description" content="([^"]*)"/i);

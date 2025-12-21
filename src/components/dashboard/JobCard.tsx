@@ -195,7 +195,7 @@ Tintel Recruiter`
                                 <Building2 className="h-3.5 w-3.5" />
                             </div>
                             <a
-                                href={`/?search=${encodeURIComponent(job.company)}`}
+                                href={`/company/${encodeURIComponent(job.company)}`}
                                 className="hover:text-indigo-600 hover:underline transition-colors cursor-pointer"
                                 title={`View all jobs at ${job.company}`}
                             >
