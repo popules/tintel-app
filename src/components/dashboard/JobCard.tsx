@@ -357,8 +357,8 @@ Tintel Recruiter`
                                     </div>
                                     <DialogTitle className="text-xl">{job.title}</DialogTitle>
                                 </DialogHeader>
-                                <ScrollArea className="flex-1 mt-4 p-4 rounded-md bg-muted/30 text-sm leading-relaxed border">
-                                    <div className="whitespace-pre-wrap font-sans">
+                                <ScrollArea className="h-[60vh] w-full mt-4 rounded-md bg-muted/30 border p-4">
+                                    <div className="text-sm leading-relaxed whitespace-pre-wrap font-sans pr-4">
                                         {adConfig?.description}
                                     </div>
                                 </ScrollArea>
