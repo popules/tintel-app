@@ -58,8 +58,19 @@ export default function CompanyPage() {
     }, {});
     const topLocations = Object.entries(locations).sort((a: any, b: any) => b[1] - a[1]).slice(0, 3);
 
-    // Mock growth - random for now, but could be based on created_at vs last month
-    const growth = Math.floor(Math.random() * 50) + 10;
+    // Calculate Category Distribution (Recruitment DNA)
+    const categoryCounts = jobs.reduce((acc: any, job) => {
+        const cat = job.broad_category || "Other";
+        acc[cat] = (acc[cat] || 0) + 1;
+        return acc;
+    }, {});
+    const dna = Object.entries(categoryCounts)
+        .sort((a: any, b: any) => b[1] - a[1])
+        .slice(0, 4)
+        .map(([name, count]: [string, any]) => ({
+            name,
+            percentage: Math.round((count / jobs.length) * 100)
+        }));
 
     return (
         <div className="flex flex-col min-h-screen bg-background text-foreground font-sans">
@@ -90,43 +101,76 @@ export default function CompanyPage() {
                 </div>
 
                 {/* Intelligence Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <Card className="bg-muted/30 border-0">
-                        <CardHeader className="flex flex-row items-center justify-between pb-2">
-                            <CardTitle className="text-sm font-medium text-muted-foreground">Active Leads</CardTitle>
-                            <Briefcase className="h-4 w-4 text-indigo-500" />
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    {/* Key Stats */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:col-span-1">
+                        <Card className="bg-muted/30 border-0">
+                            <CardHeader className="flex flex-row items-center justify-between pb-2">
+                                <CardTitle className="text-sm font-medium text-muted-foreground">Active Leads</CardTitle>
+                                <Briefcase className="h-4 w-4 text-indigo-500" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-3xl font-bold">{activeJobs.length}</div>
+                                <p className="text-xs text-muted-foreground mt-1">open positions right now</p>
+                            </CardContent>
+                        </Card>
+                        <Card className="bg-muted/30 border-0">
+                            <CardHeader className="flex flex-row items-center justify-between pb-2">
+                                <CardTitle className="text-sm font-medium text-muted-foreground">Market History</CardTitle>
+                                <TrendingUp className="h-4 w-4 text-amber-500" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-3xl font-bold">{historicalJobs.length}</div>
+                                <p className="text-xs text-muted-foreground mt-1">past roles analyzed</p>
+                            </CardContent>
+                        </Card>
+                        <Card className="bg-muted/30 border-0 md:col-span-2">
+                            <CardHeader className="flex flex-row items-center justify-between pb-2">
+                                <CardTitle className="text-sm font-medium text-muted-foreground">Hiring Hotspots</CardTitle>
+                                <MapPin className="h-4 w-4 text-rose-500" />
+                            </CardHeader>
+                            <CardContent className="flex gap-4 flex-wrap">
+                                {topLocations.map(([loc, count]: any) => (
+                                    <div
+                                        key={loc}
+                                        className={`flex items-center gap-2 p-2 px-3 rounded-lg border cursor-pointer transition-colors ${filterLocation === loc ? 'bg-indigo-100 border-indigo-500 text-indigo-900' : 'bg-background hover:bg-muted'}`}
+                                        onClick={() => setFilterLocation(filterLocation === loc ? null : loc)}
+                                    >
+                                        <span className="font-semibold">{loc}</span>
+                                        <Badge variant={filterLocation === loc ? "default" : "secondary"}>{count}</Badge>
+                                    </div>
+                                ))}
+                            </CardContent>
+                        </Card>
+                    </div>
+
+                    {/* Recruitment DNA (Big Graph-like Card) */}
+                    <Card className="lg:col-span-2 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 border-indigo-500/10 shadow-xl shadow-indigo-500/5 overflow-hidden">
+                        <CardHeader className="pb-2">
+                            <CardTitle className="text-lg font-bold flex items-center gap-2">
+                                <Users className="h-5 w-5 text-indigo-500" />
+                                Recruitment DNA
+                            </CardTitle>
+                            <p className="text-xs text-muted-foreground">Historical hiring focus based on {jobs.length} roles</p>
                         </CardHeader>
-                        <CardContent>
-                            <div className="text-3xl font-bold">{activeJobs.length}</div>
-                            <p className="text-xs text-muted-foreground mt-1">open positions right now</p>
-                        </CardContent>
-                    </Card>
-                    <Card className="bg-muted/30 border-0">
-                        <CardHeader className="flex flex-row items-center justify-between pb-2">
-                            <CardTitle className="text-sm font-medium text-muted-foreground">Market History</CardTitle>
-                            <TrendingUp className="h-4 w-4 text-amber-500" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-3xl font-bold">{historicalJobs.length}</div>
-                            <p className="text-xs text-muted-foreground mt-1">past roles analyzed</p>
-                        </CardContent>
-                    </Card>
-                    <Card className="bg-muted/30 border-0 md:col-span-2">
-                        <CardHeader className="flex flex-row items-center justify-between pb-2">
-                            <CardTitle className="text-sm font-medium text-muted-foreground">Hiring Hotspots</CardTitle>
-                            <MapPin className="h-4 w-4 text-rose-500" />
-                        </CardHeader>
-                        <CardContent className="flex gap-4 flex-wrap">
-                            {topLocations.map(([loc, count]: any) => (
-                                <div
-                                    key={loc}
-                                    className={`flex items-center gap-2 p-2 px-3 rounded-lg border cursor-pointer transition-colors ${filterLocation === loc ? 'bg-indigo-100 border-indigo-500 text-indigo-900' : 'bg-background hover:bg-muted'}`}
-                                    onClick={() => setFilterLocation(filterLocation === loc ? null : loc)}
-                                >
-                                    <span className="font-semibold">{loc}</span>
-                                    <Badge variant={filterLocation === loc ? "default" : "secondary"}>{count}</Badge>
+                        <CardContent className="space-y-4 pt-4">
+                            {dna.map((item: any) => (
+                                <div key={item.name} className="space-y-1">
+                                    <div className="flex justify-between text-xs font-medium">
+                                        <span className="truncate max-w-[200px]">{item.name}</span>
+                                        <span>{item.percentage}%</span>
+                                    </div>
+                                    <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                                        <motion.div
+                                            initial={{ width: 0 }}
+                                            animate={{ width: `${item.percentage}%` }}
+                                            transition={{ duration: 1, ease: "easeOut" }}
+                                            className="h-full bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full"
+                                        />
+                                    </div>
                                 </div>
                             ))}
+                            {dna.length === 0 && <p className="text-sm text-muted-foreground italic">Insufficient historical data for DNA mapping.</p>}
                         </CardContent>
                     </Card>
                 </div>
