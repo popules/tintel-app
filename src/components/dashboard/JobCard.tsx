@@ -157,7 +157,7 @@ export function JobCard({ job, index, initialSaved = false }: JobCardProps) {
                         <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-muted-foreground">
                             <div className="flex items-center gap-1.5">
                                 <MapPin className="h-3 w-3" />
-                                <{job.location || "Remote / Unknown"}
+                                {job.location || "Remote / Unknown"}
                             </div>
                             <div className="flex items-center gap-1.5">
                                 <CalendarDays className="h-3 w-3" />
