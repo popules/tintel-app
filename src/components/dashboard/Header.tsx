@@ -1,7 +1,7 @@
 "use client";
 
 import { Input } from "@/components/ui/input"
-import { Search, Bell, Sparkles, LogOut, User } from "lucide-react"
+import { Search, Bell, Radar, LogOut, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
 import { createClient } from "@/lib/supabase/client"
@@ -50,14 +50,14 @@ export function Header({ searchTerm, setSearchTerm }: HeaderProps) {
 
     return (
         <header className="sticky top-0 z-30 w-full border-b bg-background/80 backdrop-blur-xl px-4 md:px-6 h-16 flex items-center justify-between transition-all duration-300">
-            <div className="flex items-center gap-2">
+            <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
                 <div className="rounded-lg bg-gradient-to-tr from-indigo-600 to-purple-600 p-1.5 shadow-lg shadow-indigo-500/20">
-                    <Sparkles className="h-4 w-4 text-white" />
+                    <Radar className="h-4 w-4 text-white" />
                 </div>
                 <span className="font-bold text-xl tracking-tight bg-gradient-to-br from-foreground to-muted-foreground bg-clip-text text-transparent">
                     tintel
                 </span>
-            </div>
+            </Link>
 
             <div className="flex-1 max-w-xl mx-4 md:mx-8 hidden md:block group">
                 <div className="relative transition-all duration-300 focus-within:scale-[1.02]">

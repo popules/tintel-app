@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import Link from 'next/link'
-import { Loader2, Sparkles } from 'lucide-react'
+import { Loader2, Radar } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 export default function LoginPage() {
@@ -50,7 +50,7 @@ export default function LoginPage() {
                     <CardHeader className="space-y-1 text-center">
                         <div className="flex justify-center mb-4">
                             <div className="rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 p-2.5 shadow-lg shadow-indigo-500/30">
-                                <Sparkles className="h-6 w-6 text-white" />
+                                <Radar className="h-6 w-6 text-white" />
                             </div>
                         </div>
                         <CardTitle className="text-2xl font-bold tracking-tight">Welcome back</CardTitle>

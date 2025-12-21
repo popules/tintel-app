@@ -32,18 +32,24 @@ export function JobCard({ job, index, initialSaved = false }: JobCardProps) {
         e.stopPropagation()
 
         if (loading) return
-        setLoading(true)
+
+        // Optimistic update
+        const previousSaved = saved
+        setSaved(!saved)
+
+        // Don't set loading true for UI to keep it snappy, prevent multiple clicks with internal flag if needed,
+        // but for now relying on optimistic UI is enough.
 
         try {
             const { data: { user } } = await supabase.auth.getUser()
 
             if (!user) {
-                // Redirect logic could go here, or just fail silently/toast
                 window.location.href = '/login'
                 return
             }
 
-            if (saved) {
+            if (previousSaved) {
+                // Was saved, so delete
                 const { error } = await supabase
                     .from('saved_jobs')
                     .delete()
@@ -51,8 +57,8 @@ export function JobCard({ job, index, initialSaved = false }: JobCardProps) {
                     .eq('user_id', user.id)
 
                 if (error) throw error
-                setSaved(false)
             } else {
+                // Was not saved, so insert
                 const { error } = await supabase
                     .from('saved_jobs')
                     .insert({
@@ -62,12 +68,11 @@ export function JobCard({ job, index, initialSaved = false }: JobCardProps) {
                     })
 
                 if (error) throw error
-                setSaved(true)
             }
         } catch (error) {
             console.error('Error toggling save:', error)
-        } finally {
-            setLoading(false)
+            setSaved(previousSaved) // Revert on error
+            // toast.error("Failed to save job")
         }
     }
 
