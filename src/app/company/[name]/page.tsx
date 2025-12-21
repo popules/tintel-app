@@ -114,7 +114,7 @@ export default function CompanyPage() {
                                 <div
                                     key={loc}
                                     className="flex items-center gap-2 bg-background p-2 px-3 rounded-lg border cursor-pointer hover:bg-muted transition-colors"
-                                    onClick={() => router.push(`/?search=&location=${encodeURIComponent(loc)}`)} // Simple search redirect
+                                    onClick={() => router.push(`/?search=${encodeURIComponent(companyName)}&location=${encodeURIComponent(loc)}`)} // Filter by Company AND Location
                                 >
                                     <span className="font-semibold">{loc}</span>
                                     <Badge variant="secondary">{count}</Badge>

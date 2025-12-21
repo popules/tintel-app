@@ -38,6 +38,7 @@ export default function Home() {
   const [selectedCounty, setSelectedCounty] = useState<string | null>(null);
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [savedJobIds, setSavedJobIds] = useState<Set<string>>(new Set());
 
   // --- DATA FETCHING ---
   const fetchJobs = async () => {
@@ -63,6 +64,16 @@ export default function Home() {
 
   useEffect(() => {
     const fetchFilterData = async () => {
+      // 1. Fetch User & Saved Jobs
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: savedData } = await supabase.from("saved_jobs").select("job_id").eq("user_id", user.id);
+        if (savedData) {
+          setSavedJobIds(new Set(savedData.map(d => String(d.job_id))));
+        }
+      }
+
+      // 2. Fetch Filter Data
       const { data: catData } = await supabase.from("job_categories").select("broader_name");
       if (catData) setCategories([...new Set(catData.map((c) => c.broader_name))].sort());
 
@@ -171,7 +182,7 @@ export default function Home() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 pb-20">
                 {jobPosts.map((job, index) => (
-                  <JobCard key={job.id} job={job as any} index={index} />
+                  <JobCard key={job.id} job={job as any} index={index} initialSaved={savedJobIds.has(job.id)} />
                 ))}
               </div>
             )}

@@ -6,6 +6,7 @@ import { Header } from "@/components/dashboard/Header";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import Link from "next/link";
 import { User, Mail, Trophy, Target, TrendingUp, Shield } from "lucide-react";
 
 // Simple Progress component since shadcn might not be installed
@@ -153,18 +154,20 @@ export default function ProfilePage() {
                                     </p>
                                 </CardContent>
                             </Card>
-                            <Card>
-                                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                                    <CardTitle className="text-sm font-medium text-muted-foreground">Saved Opportunities</CardTitle>
-                                    <Trophy className="h-4 w-4 text-amber-500" />
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="text-2xl font-bold">{stats.savedJobs}</div>
-                                    <p className="text-xs text-muted-foreground mt-1">
-                                        Potential deals in pipeline
-                                    </p>
-                                </CardContent>
-                            </Card>
+                            <Link href="/saved" className="block cursor-pointer transition-transform hover:scale-105">
+                                <Card className="h-full border-dashed border-2 hover:border-solid hover:border-amber-500/50 transition-colors">
+                                    <CardHeader className="flex flex-row items-center justify-between pb-2">
+                                        <CardTitle className="text-sm font-medium text-muted-foreground">Saved Opportunities</CardTitle>
+                                        <Trophy className="h-4 w-4 text-amber-500" />
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="text-2xl font-bold">{stats.savedJobs}</div>
+                                        <p className="text-xs text-muted-foreground mt-1">
+                                            Potential deals in pipeline
+                                        </p>
+                                    </CardContent>
+                                </Card>
+                            </Link>
                             <Card>
                                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                                     <CardTitle className="text-sm font-medium text-muted-foreground">Response Rate</CardTitle>
