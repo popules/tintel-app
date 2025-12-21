@@ -1,0 +1,75 @@
+import { NextRequest, NextResponse } from "next/server";
+
+export async function GET(req: NextRequest) {
+    const url = req.nextUrl.searchParams.get("url");
+
+    if (!url) {
+        return NextResponse.json({ error: "Missing URL" }, { status: 400 });
+    }
+
+    try {
+        const response = await fetch(url, {
+            headers: {
+                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+            }
+        });
+
+        if (!response.ok) {
+            return NextResponse.json({ error: "Failed to fetch page" }, { status: response.status });
+        }
+
+        const html = await response.text();
+
+        // 1. Extract Email (mailto:)
+        // Regex looks for mailto: followed by email
+        const emailMatch = html.match(/mailto:([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/);
+        const email = emailMatch ? emailMatch[1] : null;
+
+        // 2. Extract Name
+        // This is tricky without DOM, but often name is within 100-200 chars before the email or "Kontakt" header.
+        // Or sometimes logic: "Kontakt: Firstname Lastname"
+        // Let's try to find text appearing before the email if we found one.
+        let name = null;
+        if (email) {
+            // Try to find the name in the text preceding the email link code
+            // e.g. "Bhavana Repal<br><a href='mailto:..."
+            // We search for capitalized words before the email occurrence in HTML
+            const emailIndex = html.indexOf(email);
+            const context = html.substring(Math.max(0, emailIndex - 300), emailIndex);
+
+            // Look for generic name patterns (2 capitalized words) not inside tags tags
+            // This is very loose but better than nothing
+            const nameMatch = context.match(/>\s*([A-Z][a-z]+ [A-Z][a-z]+)\s*</) || context.match(/([A-Z][a-z]+ [A-Z][a-z]+)/);
+            // Refined: Platsbanken often behaves like: <div class="...">Name Lastname</div> ... <a href="mailto:...">
+            if (nameMatch) {
+                name = nameMatch[1];
+            }
+        }
+
+        // 3. Extract Description
+        // Platsbanken usually puts description in `job-ads-description` or similar.
+        // We'll take a simplistic approach: specific marker or just body text
+        // Platsbanken: <div class="job-description"> ... </div>
+        let description = "";
+        const descMatch = html.match(/<div[^>]*class="[^"]*job-description[^"]*"[^>]*>([\s\S]*?)<\/div>/i) || html.match(/<article[^>]*>([\s\S]*?)<\/article>/i);
+        if (descMatch) {
+            description = descMatch[1].replace(/<[^>]*>/g, ' ').slice(0, 1000) + "..."; // Strip tags and truncate
+        } else {
+            // Fallback: Title meta tag description?
+            const metaDesc = html.match(/<meta name="description" content="([^"]*)"/i);
+            if (metaDesc) description = metaDesc[1];
+        }
+
+        return NextResponse.json({
+            email: email || `rekrytering@${new URL(url).hostname}`,
+            name: name || "Hiring Manager",
+            description: description || "Could not extract description. Please view original ad.",
+            role: "Recruiter / Manager", // hardcoded assumption
+            scraped: true
+        });
+
+    } catch (error) {
+        console.error("Scrape error:", error);
+        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    }
+}

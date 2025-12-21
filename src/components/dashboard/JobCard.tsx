@@ -78,28 +78,42 @@ export function JobCard({ job, index, initialSaved = false }: JobCardProps) {
 
     const [enriching, setEnriching] = useState(false)
     const [lead, setLead] = useState<any>(null)
+    const [viewingAd, setViewingAd] = useState(false)
+    const [adConfig, setAdConfig] = useState<any>(null)
 
     const handleEnrich = async (e: React.MouseEvent) => {
         e.preventDefault()
         e.stopPropagation()
         setEnriching(true)
 
-        // Mock API call delay
-        await new Promise(resolve => setTimeout(resolve, 2000))
+        try {
+            const res = await fetch(`/api/scrape-job?url=${encodeURIComponent(job.webbplatsurl)}`)
+            const data = await res.json()
 
-        // Mock data logic based on company to make it feel slightly real
-        const names = ["Anna Andersson", "Erik Svensson", "Lars Johansson", "Maria Nilsson", "Karin Lindberg", "Per Eklund", "Eva Berg", "Karl Olofsson"];
-        const randomName = names[Math.floor(Math.random() * names.length)];
-        const roles = ["Talent Acquisition Manager", "CTO", "Head of Engineering", "HR Manager", "CEO"];
-        const randomRole = roles[Math.floor(Math.random() * roles.length)];
-
-        setLead({
-            name: randomName,
-            role: randomRole,
-            email: `${randomName.split(' ')[0].toLowerCase()}@${job.company.toLowerCase().replace(/[^a-z]/g, '')}.se`,
-            phone: `+46 7${Math.floor(Math.random() * 9)} ${Math.floor(Math.random() * 1000)} ${Math.floor(Math.random() * 100)}`
-        })
-        setEnriching(false)
+            if (data.email) {
+                setLead({
+                    name: data.name || "Hiring Manager",
+                    role: data.role || "Recruiter",
+                    email: data.email,
+                    phone: "N/A" // Phone is harder to regex reliably without formatting
+                })
+                // Also save the explanation/description for the "View Ad" feature
+                setAdConfig({ description: data.description })
+            } else {
+                throw new Error("No data found")
+            }
+        } catch (err) {
+            // Fallback to mock if scrape fails (e.g. some sites block bots)
+            const mockStart = job.company.substring(0, 1).toUpperCase()
+            setLead({
+                name: mockStart === 'A' ? "Anna Andersson (Mock)" : "Erik Svensson (Mock)",
+                role: "Talent Acquisition Manager",
+                email: `rekrytering@${job.company.toLowerCase().replace(/\s/g, '')}.se`,
+                phone: "+46 70 123 45 67"
+            })
+        } finally {
+            setEnriching(false)
+        }
     }
 
     const [pitch, setPitch] = useState<string | null>(null)
