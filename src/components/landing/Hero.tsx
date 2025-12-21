@@ -76,11 +76,15 @@ export function Hero() {
                     <div className="absolute inset-0 bg-gradient-to-tr from-indigo-500/10 to-purple-500/10 group-hover:opacity-100 transition-opacity" />
 
                     {/* Mock UI Elements */}
-                    <div className="absolute top-4 left-4 right-4 h-8 bg-white/5 rounded-lg flex items-center px-3 gap-2">
+                    <div className="absolute top-4 left-4 right-4 h-8 bg-white/5 rounded-lg flex items-center justify-between px-3">
                         <div className="flex gap-1.5">
                             <div className="w-2.5 h-2.5 rounded-full bg-red-500/20" />
                             <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/20" />
                             <div className="w-2.5 h-2.5 rounded-full bg-green-500/20" />
+                        </div>
+                        <div className="flex items-center gap-1.5 opacity-20">
+                            <div className="h-4 w-4 rounded bg-white" />
+                            <div className="h-2 w-8 bg-white rounded" />
                         </div>
                     </div>
 
@@ -90,16 +94,11 @@ export function Hero() {
                         {/* Main Content */}
                         <div className="flex-1 bg-white/5 rounded-lg border border-white/5 flex flex-col gap-4 p-4">
                             <div className="h-32 bg-indigo-500/10 rounded-lg border border-indigo-500/20 w-full animate-pulse" />
-                            <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-all group">
-                                <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform duration-300">
-                                    <span className="text-white font-black text-lg -mt-0.5 leading-none tracking-tighter">t</span>
-                                </div>
-                                <span className="font-bold text-lg tracking-tighter text-white">
-                                    tintel
-                                </span>
-                            </Link>
-                            <div className="h-40 bg-white/5 rounded-lg" />
-                            <div className="h-40 bg-white/5 rounded-lg" />
+                            <div className="grid grid-cols-3 gap-4">
+                                <div className="h-40 bg-white/5 rounded-lg" />
+                                <div className="h-40 bg-white/5 rounded-lg" />
+                                <div className="h-40 bg-white/5 rounded-lg" />
+                            </div>
                         </div>
                     </div>
 
