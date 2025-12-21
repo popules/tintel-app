@@ -23,8 +23,8 @@ export function Footer() {
                     <div>
                         <h4 className="font-bold text-white mb-4">Product</h4>
                         <ul className="space-y-2 text-sm text-muted-foreground">
-                            <li><Link href="#" className="hover:text-white transition-colors">Features</Link></li>
-                            <li><Link href="#" className="hover:text-white transition-colors">Pricing</Link></li>
+                            <li><Link href="/#features" className="hover:text-white transition-colors">Features</Link></li>
+                            <li><Link href="/#pricing" className="hover:text-white transition-colors">Pricing</Link></li>
                             <li><Link href="#" className="hover:text-white transition-colors">Changelog</Link></li>
                         </ul>
                     </div>
@@ -32,9 +32,9 @@ export function Footer() {
                     <div>
                         <h4 className="font-bold text-white mb-4">Company</h4>
                         <ul className="space-y-2 text-sm text-muted-foreground">
-                            <li><Link href="#" className="hover:text-white transition-colors">About</Link></li>
+                            <li><Link href="/about" className="hover:text-white transition-colors">About</Link></li>
                             <li><Link href="#" className="hover:text-white transition-colors">Careers</Link></li>
-                            <li><Link href="#" className="hover:text-white transition-colors">Contact</Link></li>
+                            <li><Link href="mailto:hello@tintel.se" className="hover:text-white transition-colors">Contact</Link></li>
                         </ul>
                     </div>
 
