@@ -29,6 +29,11 @@ export function JobCard({ job, index, initialSaved = false }: JobCardProps) {
     const [loading, setLoading] = useState(false)
     const supabase = createClient()
 
+    // Sync state when parent data arrives
+    useEffect(() => {
+        setSaved(initialSaved)
+    }, [initialSaved])
+
     const handleSaveToggle = async (e: React.MouseEvent) => {
         e.preventDefault()
         e.stopPropagation()
@@ -38,44 +43,47 @@ export function JobCard({ job, index, initialSaved = false }: JobCardProps) {
         // Optimistic update
         const previousSaved = saved
         setSaved(!saved)
-
-        // Don't set loading true for UI to keep it snappy, prevent multiple clicks with internal flag if needed,
-        // but for now relying on optimistic UI is enough.
+        setLoading(true)
 
         try {
             const { data: { user } } = await supabase.auth.getUser()
-
             if (!user) {
-                window.location.href = '/login'
+                window.location.href = "/login"
                 return
             }
 
-            if (previousSaved) {
-                // Was saved, so delete
+            if (!previousSaved) {
+                // Was not saved, so INSERT
+                const { error } = await supabase
+                    .from('saved_jobs')
+                    .insert({ user_id: user.id, job_id: job.id, status: 'new' })
+
+                if (error) {
+                    if (error.code === '23505') {
+                        // Duplicate key -> It's already saved. Keep UI as Saved.
+                        setSaved(true)
+                    } else {
+                        throw error
+                    }
+                }
+            } else {
+                // Was saved, so DELETE
                 const { error } = await supabase
                     .from('saved_jobs')
                     .delete()
-                    .eq('job_id', job.id)
-                    .eq('user_id', user.id)
-
-                if (error) throw error
-            } else {
-                // Was not saved, so insert
-                const { error } = await supabase
-                    .from('saved_jobs')
-                    .insert({
-                        job_id: job.id,
-                        user_id: user.id,
-                        job_data: job
-                    })
+                    .match({ user_id: user.id, job_id: job.id })
 
                 if (error) throw error
             }
         } catch (error: any) {
-            console.error('Error toggling save:', error)
-            alert(`Save failed: ${error.message || "Unknown error"}`);
-            setSaved(previousSaved) // Revert on error
-            // toast.error("Failed to save job")
+            console.error(error)
+            // Revert on real error (not duplicate)
+            if (error.code !== '23505') {
+                setSaved(previousSaved)
+                alert(`Save failed: ${error.message}`)
+            }
+        } finally {
+            setLoading(false)
         }
     }
 

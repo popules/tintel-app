@@ -18,6 +18,7 @@ export default function CompanyPage() {
     const companyName = decodeURIComponent(params.name as string);
 
     const [jobs, setJobs] = useState<any[]>([]);
+    const [filterLocation, setFilterLocation] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const supabase = createClient();
@@ -113,11 +114,11 @@ export default function CompanyPage() {
                             {topLocations.map(([loc, count]: any) => (
                                 <div
                                     key={loc}
-                                    className="flex items-center gap-2 bg-background p-2 px-3 rounded-lg border cursor-pointer hover:bg-muted transition-colors"
-                                    onClick={() => router.push(`/?search=${encodeURIComponent(companyName)}&location=${encodeURIComponent(loc)}`)} // Filter by Company AND Location
+                                    className={`flex items-center gap-2 p-2 px-3 rounded-lg border cursor-pointer transition-colors ${filterLocation === loc ? 'bg-indigo-100 border-indigo-500 text-indigo-900' : 'bg-background hover:bg-muted'}`}
+                                    onClick={() => setFilterLocation(filterLocation === loc ? null : loc)}
                                 >
                                     <span className="font-semibold">{loc}</span>
-                                    <Badge variant="secondary">{count}</Badge>
+                                    <Badge variant={filterLocation === loc ? "default" : "secondary"}>{count}</Badge>
                                 </div>
                             ))}
                         </CardContent>
@@ -126,21 +127,31 @@ export default function CompanyPage() {
 
                 {/* Job List */}
                 <div className="space-y-4">
-                    <h2 className="text-xl font-bold tracking-tight">Active Opportunities</h2>
+                    <div className="flex items-center justify-between">
+                        <h2 className="text-xl font-bold tracking-tight">Active Opportunities</h2>
+                        {filterLocation && (
+                            <Button variant="ghost" size="sm" onClick={() => setFilterLocation(null)} className="text-muted-foreground h-auto p-0 hover:bg-transparent hover:text-foreground">
+                                Clear filter ({filterLocation})
+                            </Button>
+                        )}
+                    </div>
+
                     {loading ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {[1, 2, 3].map((i) => <Skeleton key={i} className="h-[300px] rounded-xl" />)}
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {jobs.map((job, i) => (
-                                <JobCard key={job.id} job={job} index={i} />
-                            ))}
+                            {jobs
+                                .filter(job => filterLocation ? job.location === filterLocation : true)
+                                .map((job, i) => (
+                                    <JobCard key={job.id} job={job} index={i} />
+                                ))}
                         </div>
                     )}
-                    {!loading && jobs.length === 0 && (
+                    {!loading && jobs.filter(job => filterLocation ? job.location === filterLocation : true).length === 0 && (
                         <div className="text-center py-20 text-muted-foreground">
-                            No active jobs found for {companyName}
+                            No active jobs found in {filterLocation || companyName}
                         </div>
                     )}
                 </div>
