@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Radar } from "lucide-react";
+import { Github, Twitter, Linkedin, Sparkles } from "lucide-react";
 
 export function Footer() {
     return (

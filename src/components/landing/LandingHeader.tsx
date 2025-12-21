@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Radar } from "lucide-react";
+import { Menu, X, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export function LandingHeader() {

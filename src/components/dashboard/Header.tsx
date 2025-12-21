@@ -1,7 +1,7 @@
 "use client";
 
 import { Input } from "@/components/ui/input"
-import { Search, Bell, Radar, LogOut, User, Kanban } from "lucide-react"
+import { Search, Bell, User, LayoutDashboard, Database, Send, Settings, LogOut, Sparkles } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
 import { createClient } from "@/lib/supabase/client"
