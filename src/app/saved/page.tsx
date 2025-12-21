@@ -130,7 +130,8 @@ export default function SavedJobsPage() {
                                                             ))}
                                                         </div>
                                                     </div>
-                                                ))}
+                                                );
+                                            })}
                                             {columnJobs.length === 0 && (
                                                 <div className="h-32 rounded-lg border-2 border-dashed border-muted flex items-center justify-center text-muted-foreground text-xs">
                                                     Empty Stage
