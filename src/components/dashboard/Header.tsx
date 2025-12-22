@@ -1,8 +1,9 @@
 "use client";
 
 import { Input } from "@/components/ui/input"
-import { Search, Bell, User, LayoutDashboard, Database, Send, Settings, LogOut, Kanban } from 'lucide-react'
+import { Search, Bell, User, LayoutDashboard, Database, Send, Settings, LogOut, Kanban, TrendingUp } from 'lucide-react'
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import { motion } from "framer-motion"
 import { createClient } from "@/lib/supabase/client"
 import { useEffect, useState } from "react"
@@ -29,6 +30,9 @@ export function Header({ searchTerm = "", setSearchTerm = () => { } }: HeaderPro
     const supabase = createClient()
     const router = useRouter()
 
+    const [notifications, setNotifications] = useState<any[]>([])
+    const [unreadCount, setUnreadCount] = useState(0)
+
     useEffect(() => {
         const getUser = async () => {
             const { data: { user } } = await supabase.auth.getUser()
@@ -36,6 +40,15 @@ export function Header({ searchTerm = "", setSearchTerm = () => { } }: HeaderPro
             if (user) {
                 const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single()
                 setProfile(data)
+
+                // Fetch notifications
+                fetch('/api/notifications')
+                    .then(res => res.json())
+                    .then(json => {
+                        setNotifications(json.notifications || [])
+                        setUnreadCount(json.notifications?.filter((n: any) => !n.is_read).length || 0)
+                    })
+                    .catch(err => console.error("Notification fetch error", err))
             }
         }
         getUser()
@@ -46,6 +59,19 @@ export function Header({ searchTerm = "", setSearchTerm = () => { } }: HeaderPro
         router.refresh()
         setUser(null)
         setProfile(null)
+    }
+
+    const markAsRead = async (id: string) => {
+        try {
+            await fetch('/api/notifications', {
+                method: 'POST',
+                body: JSON.stringify({ notificationId: id })
+            })
+            setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: true } : n))
+            setUnreadCount(prev => Math.max(0, prev - 1))
+        } catch (err) {
+            console.error("Failed to mark as read", err)
+        }
     }
 
     return (
@@ -75,41 +101,57 @@ export function Header({ searchTerm = "", setSearchTerm = () => { } }: HeaderPro
                     <>
                         <div className="hidden md:flex flex-col items-end mr-2">
                             <span className="text-xs font-semibold text-foreground">{profile?.full_name || user.email}</span>
-                            <span className="text-[10px] text-muted-foreground capitalize">{profile?.membership_tier || "Free"} Account</span>
+                            <span className="text-[10px] text-indigo-500 font-bold uppercase tracking-wider">
+                                {profile?.membership_tier === 'admin' || user.email === 'antonaberg@gmail.com' ? 'Admin / Partner' : 'Partner Access'}
+                            </span>
                         </div>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" size="icon" className="relative text-muted-foreground hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 rounded-xl transition-colors">
                                     <Bell className="h-5 w-5" />
-                                    <span className="absolute top-2.5 right-2.5 h-2 w-2 rounded-full bg-red-500 border-2 border-background animate-pulse" />
+                                    {unreadCount > 0 && (
+                                        <span className="absolute top-2.5 right-2.5 h-2 w-2 rounded-full bg-red-500 border-2 border-background animate-pulse" />
+                                    )}
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-80">
-                                <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+                                <DropdownMenuLabel className="flex justify-between items-center">
+                                    Notifications
+                                    {unreadCount > 0 && <Badge variant="secondary" className="text-[10px]">{unreadCount} New</Badge>}
+                                </DropdownMenuLabel>
                                 <DropdownMenuSeparator />
-                                <div className="max-h-[300px] overflow-y-auto">
-                                    <DropdownMenuItem className="cursor-pointer flex flex-col items-start gap-1 p-3 bg-muted/30">
-                                        <div className="flex w-full justify-between font-medium">
-                                            <span>Welcome to Tintel!</span>
-                                            <span className="text-[10px] text-muted-foreground">Just now</span>
+                                <div className="max-h-[400px] overflow-y-auto">
+                                    {notifications.length > 0 ? (
+                                        notifications.map((n) => (
+                                            <DropdownMenuItem
+                                                key={n.id}
+                                                className={`cursor-pointer flex flex-col items-start gap-1 p-3 transition-colors ${!n.is_read ? 'bg-indigo-50/50 dark:bg-indigo-950/20' : ''}`}
+                                                onClick={() => markAsRead(n.id)}
+                                            >
+                                                <div className="flex w-full justify-between font-medium items-center">
+                                                    <span className="flex items-center gap-2 text-sm">
+                                                        {n.type === 'signal' && <TrendingUp className="h-3 w-3 text-emerald-500" />}
+                                                        {n.title}
+                                                    </span>
+                                                    <span className="text-[10px] text-muted-foreground whitespace-nowrap ml-2">
+                                                        {new Date(n.created_at).toLocaleDateString([], { month: 'short', day: 'numeric' })}
+                                                    </span>
+                                                </div>
+                                                <p className="text-xs text-muted-foreground line-clamp-3 leading-relaxed">
+                                                    {n.content}
+                                                </p>
+                                            </DropdownMenuItem>
+                                        ))
+                                    ) : (
+                                        <div className="p-8 text-center text-muted-foreground">
+                                            <Bell className="h-8 w-8 mx-auto mb-2 opacity-20" />
+                                            <p className="text-xs italic">No new signals detected yet.</p>
                                         </div>
-                                        <p className="text-xs text-muted-foreground line-clamp-2">
-                                            Start finding your next client or career move today. Complete your profile to get noticed.
-                                        </p>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem className="cursor-pointer flex flex-col items-start gap-1 p-3">
-                                        <div className="flex w-full justify-between font-medium">
-                                            <span>Profile Completed</span>
-                                            <span className="text-[10px] text-muted-foreground">2m ago</span>
-                                        </div>
-                                        <p className="text-xs text-muted-foreground line-clamp-2">
-                                            You've reached the Scout rank level!
-                                        </p>
-                                    </DropdownMenuItem>
+                                    )}
                                 </div>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem className="cursor-pointer justify-center text-xs text-muted-foreground">
-                                    View all notifications
+                                    Syncing with Market Depth...
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>

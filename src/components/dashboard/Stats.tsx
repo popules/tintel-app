@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { motion } from "framer-motion"
 import { Users, Building, TrendingUp, Zap, Loader2 } from "lucide-react"
+import Link from "next/link"
 
 const container = {
     hidden: { opacity: 0 },
@@ -79,21 +80,23 @@ export function StatsRow() {
         >
             {stats.map((stat, i) => (
                 <motion.div key={i} variants={item}>
-                    <Card className="border-0 shadow-sm bg-card/50 backdrop-blur-sm hover:bg-card/80 transition-all cursor-default overflow-hidden group border border-white/5">
-                        <div className="h-1 w-full bg-gradient-to-r from-transparent via-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium text-muted-foreground">{stat.title}</CardTitle>
-                            <div className={`p-2 rounded-lg ${stat.bg}`}>
-                                {loading ? <Loader2 className={`h-4 w-4 animate-spin ${stat.color}`} /> : <stat.icon className={`h-4 w-4 ${stat.color}`} />}
-                            </div>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold tracking-tight">{stat.value}</div>
-                            <p className="text-[10px] text-muted-foreground mt-1 uppercase tracking-wider font-semibold opacity-70">
-                                {stat.label}
-                            </p>
-                        </CardContent>
-                    </Card>
+                    <Link href={stat.title === 'Active Companies' ? '/companies' : (stat.title === 'Market Depth' ? '/analytics' : '#')}>
+                        <Card className="border-0 shadow-sm bg-card/50 backdrop-blur-sm hover:bg-card/80 transition-all cursor-pointer group overflow-hidden border border-white/5 active:scale-[0.98]">
+                            <div className="h-1 w-full bg-gradient-to-r from-transparent via-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium text-muted-foreground">{stat.title}</CardTitle>
+                                <div className={`p-2 rounded-lg ${stat.bg} group-hover:scale-110 transition-transform`}>
+                                    {loading ? <Loader2 className={`h-4 w-4 animate-spin ${stat.color}`} /> : <stat.icon className={`h-4 w-4 ${stat.color}`} />}
+                                </div>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold tracking-tight group-hover:text-indigo-500 transition-colors">{stat.value}</div>
+                                <p className="text-[10px] text-muted-foreground mt-1 uppercase tracking-wider font-semibold opacity-70">
+                                    {stat.label}
+                                </p>
+                            </CardContent>
+                        </Card>
+                    </Link>
                 </motion.div>
             ))}
         </motion.div>
