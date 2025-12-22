@@ -53,25 +53,6 @@ export async function GET(req: Request) {
 
         if (error) throw error
 
-        // --- INTELLIGENCE FALLBACK (For Demo/Empty Windows) ---
-        // If the database is young and doesn't have Q3 data yet, we provide 
-        // high-quality simulated data to demonstrate the benchmarking power.
-        if ((!jobs || jobs.length === 0) && range !== '30d') {
-            const mockPlayers = [
-                { name: "Volvo Group", volume: 412, topCategory: "Technology", topCategoryVolume: 280, growth: 12 },
-                { name: "SAAB AB", volume: 329, topCategory: "Engineering", topCategoryVolume: 103, growth: 8 },
-                { name: "Scania", volume: 289, topCategory: "Manufacturing", topCategoryVolume: 145, growth: -2 },
-                { name: "Ericsson", volume: 214, topCategory: "Data/IT", topCategoryVolume: 180, growth: 4 },
-                { name: "H&M", volume: 187, topCategory: "Retail", topCategoryVolume: 45, growth: -5 },
-            ]
-            return NextResponse.json({
-                window: { start, end, range },
-                players: mockPlayers,
-                totalAnalyzed: 1420,
-                isSimulated: true
-            })
-        }
-
         // 3. Aggregate
         const aggregation = (jobs || []).reduce((acc: any, job) => {
             const name = job.company

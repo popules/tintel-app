@@ -51,9 +51,8 @@ export default function CompaniesPage() {
             <main className="container mx-auto p-4 md:p-8 space-y-8">
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                     <div>
-                        <Badge variant="outline" className="mb-2 border-indigo-500/30 text-indigo-500">Market Intelligence 2.0</Badge>
-                        <h1 className="text-4xl font-black tracking-tighter mb-2">Swedish Market Trends</h1>
-                        <p className="text-muted-foreground">Comparative benchmarking across {companies.length} major entities.</p>
+                        <h1 className="text-4xl font-black tracking-tighter mb-2">Market Intelligence</h1>
+                        <p className="text-muted-foreground">Comparative benchmarking across Scandinavia's top hiring entities.</p>
                     </div>
                 </div>
 

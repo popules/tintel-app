@@ -1,7 +1,7 @@
 "use client";
 
 import { Input } from "@/components/ui/input"
-import { Search, Bell, User, LayoutDashboard, Database, Send, Settings, LogOut, Kanban, TrendingUp } from 'lucide-react'
+import { Search, Bell, User, LayoutDashboard, Database, Send, Settings, LogOut, Kanban, TrendingUp, Building2 } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { motion } from "framer-motion"
@@ -32,6 +32,28 @@ export function Header({ searchTerm = "", setSearchTerm = () => { } }: HeaderPro
 
     const [notifications, setNotifications] = useState<any[]>([])
     const [unreadCount, setUnreadCount] = useState(0)
+
+    const [searchQuery, setSearchQuery] = useState("")
+    const [searchResults, setSearchResults] = useState<any[]>([])
+    const [isSearching, setIsSearching] = useState(false)
+
+    useEffect(() => {
+        if (searchQuery.length < 2) {
+            setSearchResults([])
+            return
+        }
+        const timer = setTimeout(async () => {
+            setIsSearching(true)
+            try {
+                const res = await fetch(`/api/companies/search?q=${encodeURIComponent(searchQuery)}`)
+                const data = await res.json()
+                setSearchResults(data.results || [])
+            } finally {
+                setIsSearching(false)
+            }
+        }, 300)
+        return () => clearTimeout(timer)
+    }, [searchQuery])
 
     useEffect(() => {
         const getUser = async () => {
@@ -83,17 +105,48 @@ export function Header({ searchTerm = "", setSearchTerm = () => { } }: HeaderPro
                 </span>
             </Link>
 
-            <div className="flex-1 max-w-xl mx-4 md:mx-8 hidden md:block group">
+            <div className="flex-1 max-w-xl mx-4 md:mx-8 hidden md:block group relative">
                 <div className="relative transition-all duration-300 focus-within:scale-[1.02]">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-indigo-500 transition-colors" />
                     <Input
                         type="search"
-                        placeholder="Search thousands of active job opportunities..."
+                        placeholder="Jump to any company (e.g. SAAB, Volvo)..."
                         className="w-full bg-muted/50 border-transparent pl-10 h-10 rounded-xl focus:bg-background focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
                     />
                 </div>
+
+                {searchResults.length > 0 && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="absolute top-full left-0 right-0 mt-2 bg-background border rounded-xl shadow-2xl overflow-hidden z-50 p-2"
+                    >
+                        <div className="px-3 py-1.5 mb-1">
+                            <span className="text-[10px] font-black uppercase text-indigo-500 tracking-wider">Company Results</span>
+                        </div>
+                        {searchResults.map((res) => (
+                            <Link
+                                key={res.id}
+                                href={`/company/${encodeURIComponent(res.name)}`}
+                                onClick={() => {
+                                    setSearchQuery("")
+                                    setSearchResults([])
+                                }}
+                                className="flex items-center gap-3 p-3 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 rounded-lg transition-colors group"
+                            >
+                                <div className="h-8 w-8 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-600">
+                                    <Building2 className="h-4 w-4" />
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="text-sm font-bold group-hover:text-indigo-600">{res.name}</span>
+                                    <span className="text-[10px] text-muted-foreground font-medium">Market Intelligence • Profile</span>
+                                </div>
+                            </Link>
+                        ))}
+                    </motion.div>
+                )}
             </div>
 
             <div className="flex items-center gap-2 md:gap-4">
