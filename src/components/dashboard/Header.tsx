@@ -110,7 +110,7 @@ export function Header({ searchTerm = "", setSearchTerm = () => { } }: HeaderPro
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-indigo-500 transition-colors" />
                     <Input
                         type="search"
-                        placeholder="Jump to any company (e.g. SAAB, Volvo)..."
+                        placeholder="Jump to any company..."
                         className="w-full bg-muted/50 border-transparent pl-10 h-10 rounded-xl focus:bg-background focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}

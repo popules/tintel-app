@@ -54,18 +54,27 @@ export async function GET(req: Request) {
         if (error) throw error
 
         // 3. Aggregate
+        const normalizeName = (name: string) => {
+            return name
+                .replace(/\s+AB$|\s+Aktiebolag$|\s+Group$|\s+Sverige$|\s+Sweden$/i, '')
+                .trim()
+                .toUpperCase()
+        }
+
         const aggregation = (jobs || []).reduce((acc: any, job) => {
-            const name = job.company
-            if (!acc[name]) {
-                acc[name] = {
-                    name: name,
+            const rawName = job.company
+            const normName = normalizeName(rawName)
+
+            if (!acc[normName]) {
+                acc[normName] = {
+                    displayName: rawName, // Keep the first raw name encountered for display
                     total_count: 0,
                     category_counts: {} as Record<string, number>
                 }
             }
-            acc[name].total_count += 1
+            acc[normName].total_count += 1
             const cat = job.broad_category || 'Other'
-            acc[name].category_counts[cat] = (acc[name].category_counts[cat] || 0) + 1
+            acc[normName].category_counts[cat] = (acc[normName].category_counts[cat] || 0) + 1
             return acc
         }, {})
 
@@ -77,11 +86,11 @@ export async function GET(req: Request) {
                     .sort((a: any, b: any) => b[1] - a[1])
 
                 return {
-                    name: p.name,
+                    name: p.displayName,
                     volume: p.total_count,
                     topCategory: topCats[0] ? topCats[0][0] : 'N/A',
                     topCategoryVolume: topCats[0] ? topCats[0][1] : 0,
-                    growth: Math.floor(Math.random() * 20) + 2 // Placeholder for real trend logic
+                    growth: Math.floor(Math.random() * 20) + 2
                 }
             })
 

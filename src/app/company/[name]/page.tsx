@@ -21,11 +21,25 @@ export default function CompanyPage() {
     const [filterLocation, setFilterLocation] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
+    const [isMonitored, setIsMonitored] = useState(false);
+    const [isMonitoring, setIsMonitoring] = useState(false);
     const supabase = createClient();
 
-    const handleMonitor = () => {
-        // Mock functionality
-        alert(`Now monitoring ${companyName}. You will receive alerts for new roles.`);
+    const handleMonitor = async () => {
+        setIsMonitoring(true);
+        try {
+            const res = await fetch('/api/companies/monitor', {
+                method: 'POST',
+                body: JSON.stringify({ companyName })
+            });
+            if (res.ok) {
+                setIsMonitored(true);
+            }
+        } catch (err) {
+            console.error("Failed to monitor", err);
+        } finally {
+            setIsMonitoring(false);
+        }
     };
 
     useEffect(() => {
@@ -43,13 +57,30 @@ export default function CompanyPage() {
             setLoading(false);
         };
 
-        if (companyName) fetchCompanyJobs();
+        const checkMonitorStatus = async () => {
+            const res = await fetch('/api/companies/monitor');
+            const data = await res.json();
+            if (data.monitored?.includes(companyName)) {
+                setIsMonitored(true);
+            }
+        };
+
+        if (companyName) {
+            fetchCompanyJobs();
+            checkMonitorStatus();
+        }
     }, [companyName, supabase]);
 
     // Calculate Intelligence
-    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-    const activeJobs = jobs.filter(j => new Date(j.created_at) > thirtyDaysAgo);
-    const historicalJobs = jobs.filter(j => new Date(j.created_at) <= thirtyDaysAgo);
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+    const activeJobs = jobs.filter(j => {
+        const dateStr = j.publishedAt || j.created_at;
+        return dateStr && dateStr > thirtyDaysAgo;
+    });
+    const historicalJobs = jobs.filter(j => {
+        const dateStr = j.publishedAt || j.created_at;
+        return dateStr && dateStr <= thirtyDaysAgo;
+    });
 
     const locations = jobs.reduce((acc: any, job) => {
         const loc = job.location || "Unknown";
@@ -95,8 +126,14 @@ export default function CompanyPage() {
                             </div>
                         </div>
                     </div>
-                    <Button size="lg" className="bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-500/20 transition-all active:scale-95" onClick={handleMonitor}>
-                        Monitor Company
+                    <Button
+                        size="lg"
+                        variant={isMonitored ? "outline" : "default"}
+                        className={isMonitored ? "border-indigo-500/50 text-indigo-500" : "bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-500/20 transition-all active:scale-95"}
+                        onClick={handleMonitor}
+                        disabled={isMonitoring || isMonitored}
+                    >
+                        {isMonitoring ? "Syncing..." : (isMonitored ? "Monitoring" : "Monitor Company")}
                     </Button>
                 </div>
 
@@ -195,7 +232,8 @@ export default function CompanyPage() {
                             {jobs
                                 .filter(job => filterLocation ? job.location === filterLocation : true)
                                 .map((job, i) => {
-                                    const isActive = new Date(job.created_at) > thirtyDaysAgo;
+                                    const dateStr = job.publishedAt || job.created_at;
+                                    const isActive = dateStr && dateStr > thirtyDaysAgo;
                                     return (
                                         <div key={job.id} className="relative group">
                                             {!isActive && (
