@@ -25,8 +25,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                 </svg>
               </button>
               <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-all group">
-                <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform duration-300">
-                  <span className="text-white font-black text-lg -mt-0.5 leading-none tracking-tighter">t</span>
+                <div className="h-8 w-8 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform duration-300 ring-1 ring-white/10">
+                  <span className="text-white font-black text-lg leading-none tracking-tighter">T.</span>
                 </div>
                 <span className="font-bold text-lg tracking-tighter text-white">
                   tintel

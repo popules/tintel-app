@@ -51,8 +51,8 @@ export function Header({ searchTerm = "", setSearchTerm = () => { } }: HeaderPro
     return (
         <header className="sticky top-0 z-30 w-full border-b bg-background/80 backdrop-blur-xl px-4 md:px-6 h-16 flex items-center justify-between transition-all duration-300">
             <Link href="/dashboard" className="flex items-center gap-3 hover:opacity-80 transition-all group">
-                <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform duration-300">
-                    <span className="text-white font-black text-xl -mt-0.5 leading-none tracking-tighter">t</span>
+                <div className="h-9 w-9 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:scale-110 transition-transform duration-300 ring-2 ring-white/10">
+                    <span className="text-white font-black text-xl leading-none tracking-tighter">T.</span>
                 </div>
                 <span className="font-bold text-xl tracking-tighter bg-gradient-to-br from-foreground to-muted-foreground bg-clip-text text-transparent">
                     tintel

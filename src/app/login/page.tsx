@@ -49,8 +49,8 @@ export default function LoginPage() {
                 <Card className="border-0 shadow-lg shadow-indigo-500/10 backdrop-blur-sm bg-background/80">
                     <CardHeader className="space-y-1 text-center">
                         <div className="flex justify-center mb-4">
-                            <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-xl shadow-indigo-500/20">
-                                <span className="text-white font-black text-3xl -mt-1 leading-none tracking-tighter">t</span>
+                            <div className="h-14 w-14 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-xl shadow-indigo-500/20 ring-4 ring-white/10">
+                                <span className="text-white font-black text-4xl leading-none tracking-tighter">T.</span>
                             </div>
                         </div>
                         <CardTitle className="text-2xl font-bold tracking-tight">Welcome back</CardTitle>
