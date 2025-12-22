@@ -6,6 +6,7 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url)
     const range = searchParams.get('range') || '30d'
     const category = searchParams.get('category')
+    const location = searchParams.get('location')
 
     try {
         let start: string | null = null
@@ -54,6 +55,10 @@ export async function GET(req: Request) {
 
             if (category && category !== 'All') {
                 query = query.ilike('broad_category', `%${category}%`)
+            }
+
+            if (location && location !== 'All') {
+                query = query.ilike('location', `%${location}%`)
             }
 
             const { data, error } = await query

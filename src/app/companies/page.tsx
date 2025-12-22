@@ -15,12 +15,13 @@ export default function CompaniesPage() {
     const [searchTerm, setSearchTerm] = useState("");
     const [range, setRange] = useState("30d");
     const [category, setCategory] = useState("All");
+    const [location, setLocation] = useState("All");
 
     useEffect(() => {
         const fetchCompanies = async () => {
             setLoading(true);
             try {
-                const res = await fetch(`/api/analytics/market/top-players?range=${range}&category=${category}`);
+                const res = await fetch(`/api/analytics/market/top-players?range=${range}&category=${encodeURIComponent(category)}&location=${encodeURIComponent(location)}`);
                 const data = await res.json();
                 setCompanies(data.players || []);
             } catch (err) {
@@ -30,9 +31,36 @@ export default function CompaniesPage() {
             }
         };
         fetchCompanies();
-    }, [range, category]);
+    }, [range, category, location]);
 
-    const categories = ["All", "Data/IT", "Bygg och anläggning", "Chefer och verksamhetsledare", "Försäljning, inköp, marknadsföring", "Hälso- och sjukvård"];
+    const categories = [
+        "All",
+        "Data/IT",
+        "Hälso- och sjukvård",
+        "Pedagogik",
+        "Bygg och anläggning",
+        "Försäljning, inköp, marknadsföring",
+        "Administration, ekonomi, juridik",
+        "Chefer och verksamhetsledare",
+        "Installation, drift, underhåll",
+        "Industriell tillverkning",
+        "Yrken med teknisk inriktning",
+        "Social inriktning"
+    ];
+
+    const locations = [
+        "All",
+        "Stockholm",
+        "Göteborg",
+        "Malmö",
+        "Uppsala",
+        "Linköping",
+        "Västerås",
+        "Örebro",
+        "Umeå",
+        "Helsingborg"
+    ];
+
     const ranges = [
         { id: "30d", label: "Live (30d)" },
         { id: "Q4", label: "Q4 2024" },
@@ -56,30 +84,48 @@ export default function CompaniesPage() {
                     </div>
                 </div>
 
-                {/* Filter Bar */}
-                <div className="flex flex-wrap items-center gap-4 bg-muted/30 p-4 rounded-2xl border border-muted">
-                    <div className="flex bg-background p-1 rounded-xl border border-muted">
-                        {ranges.map((r) => (
-                            <button
-                                key={r.id}
-                                onClick={() => setRange(r.id)}
-                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${range === r.id ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'hover:bg-muted'}`}
-                            >
-                                {r.label}
-                            </button>
-                        ))}
+                <div className="flex flex-col gap-6 bg-muted/30 p-6 rounded-2xl border border-muted ring-1 ring-white/5">
+                    <div className="flex flex-wrap items-center gap-6">
+                        <div className="flex bg-background p-1 rounded-xl border border-muted shadow-sm">
+                            {ranges.map((r) => (
+                                <button
+                                    key={r.id}
+                                    onClick={() => setRange(r.id)}
+                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${range === r.id ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'hover:bg-muted font-bold text-muted-foreground'}`}
+                                >
+                                    {r.label}
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="h-8 w-px bg-muted hidden lg:block" />
+
+                        <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide">
+                            <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest whitespace-nowrap">Location:</span>
+                            <div className="flex gap-2">
+                                {locations.map((loc) => (
+                                    <button
+                                        key={loc}
+                                        onClick={() => setLocation(loc)}
+                                        className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all whitespace-nowrap ${location === loc ? 'bg-indigo-500 text-white border-indigo-500' : 'bg-background border-muted hover:border-indigo-500/50 text-muted-foreground'}`}
+                                    >
+                                        {loc}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
                     </div>
 
-                    <div className="h-8 w-px bg-muted hidden md:block" />
+                    <div className="h-px w-full bg-muted/50" />
 
-                    <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest mr-2">Category:</span>
-                        <div className="flex flex-wrap gap-2">
+                    <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide">
+                        <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest whitespace-nowrap">Vertical:</span>
+                        <div className="flex gap-2">
                             {categories.map((cat) => (
                                 <button
                                     key={cat}
                                     onClick={() => setCategory(cat)}
-                                    className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${category === cat ? 'bg-indigo-500/10 border-indigo-500 text-indigo-500' : 'border-muted hover:border-indigo-500/50'}`}
+                                    className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all whitespace-nowrap ${category === cat ? 'bg-indigo-500 text-white border-indigo-500' : 'bg-background border-muted hover:border-indigo-500/50 text-muted-foreground'}`}
                                 >
                                     {cat}
                                 </button>
@@ -101,10 +147,7 @@ export default function CompaniesPage() {
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: idx * 0.02 }}
                                 >
-                                    <Card className="hover:bg-indigo-500/[0.02] hover:border-indigo-500/30 transition-all cursor-pointer group h-full relative overflow-hidden">
-                                        <div className="absolute top-0 right-0 p-2 opacity-5">
-                                            <Building2 className="h-12 w-12" />
-                                        </div>
+                                    <Card className="hover:bg-indigo-500/[0.02] hover:border-indigo-500/30 transition-all cursor-pointer group h-full relative overflow-hidden bg-background/50 backdrop-blur-sm shadow-sm ring-1 ring-white/5">
                                         <CardContent className="p-5">
                                             <div className="flex justify-between items-start mb-3">
                                                 <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-indigo-500/10 to-purple-500/10 flex items-center justify-center text-indigo-500 border border-indigo-500/20">
