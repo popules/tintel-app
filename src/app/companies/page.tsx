@@ -15,29 +15,17 @@ export default function CompaniesPage() {
     const [searchTerm, setSearchTerm] = useState("");
 
     useEffect(() => {
-        fetch('/api/stats')
-            .then(res => res.json())
-            .then(data => {
-                // In a real app, we'd have a specific /api/companies endpoint
-                // but for now let's derive some "Hot Companies"
-                // This is a placeholder for the real analytics logic
-                setLoading(false);
-            })
-            .catch(err => setLoading(false));
-
-        // Fetch actual company list from a new helper or existing data
         const fetchCompanies = async () => {
-            const res = await fetch('/api/stats');
-            const data = await res.json();
-            // Mocking top companies for the discovery page
-            const mockCompanies = [
-                { name: "Volvo Group", sector: "Automotive", count: 142, city: "Gothenburg", growth: "+12%" },
-                { name: "Scania", sector: "Manufacturing", count: 89, city: "Södertälje", growth: "+8%" },
-                { name: "Ericsson", sector: "Tech/Telecom", count: 214, city: "Stockholm", growth: "+4%" },
-                { name: "H&M", sector: "Retail", count: 67, city: "Stockholm", growth: "-2%" },
-                { name: "Northvolt", sector: "Energy", count: 156, city: "Skellefteå", growth: "+45%" },
-            ];
-            setCompanies(mockCompanies);
+            setLoading(true);
+            try {
+                const res = await fetch('/api/companies');
+                const data = await res.json();
+                setCompanies(data.companies || []);
+            } catch (err) {
+                console.error("Failed to fetch companies", err);
+            } finally {
+                setLoading(false);
+            }
         };
         fetchCompanies();
     }, []);
@@ -65,32 +53,32 @@ export default function CompaniesPage() {
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">Northvolt</div>
-                            <p className="text-xs text-muted-foreground mt-1">Expanding aggressively in Norrland</p>
+                            <div className="text-2xl font-bold">{loading ? "..." : (companies[0]?.name || "Finding leads...")}</div>
+                            <p className="text-xs text-muted-foreground mt-1">{loading ? "Analyzing..." : "Highest volume of recent activity"}</p>
                         </CardContent>
                     </Card>
                     <Card className="bg-emerald-500/5 border-emerald-500/20">
                         <CardHeader className="pb-2">
                             <CardTitle className="text-sm font-medium flex items-center gap-2">
                                 <Users className="h-4 w-4 text-emerald-500" />
-                                Talent Shortage
+                                Growth Leader
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">Embedded systems</div>
-                            <p className="text-xs text-muted-foreground mt-1">Highest demand vs low supply</p>
+                            <div className="text-2xl font-bold">{loading ? "..." : (companies[1]?.name || "Scanning...")}</div>
+                            <p className="text-xs text-muted-foreground mt-1">{loading ? "Mapping..." : "Aggressive expansion detected"}</p>
                         </CardContent>
                     </Card>
                     <Card className="bg-amber-500/5 border-amber-500/20">
                         <CardHeader className="pb-2">
                             <CardTitle className="text-sm font-medium flex items-center gap-2">
                                 <Building2 className="h-4 w-4 text-amber-500" />
-                                Remote Shift
+                                Strategic Player
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">Stockholm Tech</div>
-                            <p className="text-xs text-muted-foreground mt-1">32% increase in WFH options</p>
+                            <div className="text-2xl font-bold">{loading ? "..." : (companies[2]?.name || "Filtering...")}</div>
+                            <p className="text-xs text-muted-foreground mt-1">{loading ? "Verifying..." : "Key entities in focus"}</p>
                         </CardContent>
                     </Card>
                 </div>

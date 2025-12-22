@@ -34,7 +34,7 @@ export default function CompanyPage() {
             const { data, error } = await supabase
                 .from('job_posts')
                 .select('*')
-                .ilike('company', companyName)
+                .ilike('company', `%${companyName}%`)
                 .order('created_at', { ascending: false });
 
             if (data) {
