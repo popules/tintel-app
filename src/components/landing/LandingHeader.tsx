@@ -19,10 +19,8 @@ export function LandingHeader() {
     return (
         <header className={`fixed top-0 z-50 w-full transition-all duration-300 ${scrolled ? "bg-background/80 backdrop-blur-xl border-b border-white/10 py-3" : "bg-transparent py-5"}`}>
             <div className="container px-4 md:px-6 mx-auto flex items-center justify-between">
-                <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-all group">
-                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:scale-110 transition-transform duration-300 ring-2 ring-white/10">
-                        <span className="text-white font-black text-2xl leading-none tracking-tighter">T.</span>
-                    </div>
+                <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-all group">
+                    <div className="h-3 w-3 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 shadow-lg shadow-indigo-500/20 group-hover:scale-125 transition-transform duration-300 ring-1 ring-white/10" />
                     <span className="font-bold text-2xl tracking-tighter text-white">
                         tintel
                     </span>
