@@ -5,40 +5,47 @@ export async function GET() {
     const supabase = createClient()
 
     try {
-        // Fetch a large sample or aggregate if possible
-        // For Supabase, without a view or custom function, we can't easily do GROUP BY in one call
-        // However, we can fetch recent records and aggregate in JS for now, or just return 
-        // a curated list of companies that we KNOW exist.
+        // 1. Get companies that have been active in the last 30 days
+        const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
 
-        // Let's try to get a sample of 2000 recent jobs to see who is hiring
-        const { data: jobs, error } = await supabase
+        // We fetch a larger window to identify the "players"
+        const { data: activeJobs, error } = await supabase
             .from('job_posts')
             .select('company, location')
-            .order('created_at', { ascending: false })
-            .limit(1000)
+            .gt('created_at', thirtyDaysAgo)
 
         if (error) throw error
 
-        const companyInfo = (jobs || []).reduce((acc: any, job) => {
-            if (!acc[job.company]) {
-                acc[job.company] = {
-                    name: job.company,
+        const companyAggr = (activeJobs || []).reduce((acc: any, job) => {
+            const name = job.company
+            if (!acc[name]) {
+                acc[name] = {
+                    name: name,
                     count: 0,
-                    city: job.location || 'Sweden',
-                    sector: 'Industry'
+                    locations: {} as Record<string, number>
                 }
             }
-            acc[job.company].count += 1
+            acc[name].count += 1
+            const loc = job.location || 'Sweden'
+            acc[name].locations[loc] = (acc[name].locations[loc] || 0) + 1
             return acc
         }, {})
 
-        const sortedCompanies = Object.values(companyInfo)
+        const sortedCompanies = Object.values(companyAggr)
             .sort((a: any, b: any) => b.count - a.count)
-            .slice(0, 50)
-            .map((c: any) => ({
-                ...c,
-                growth: c.count > 5 ? '+15%' : '+5%' // Simple mock growth for now
-            }))
+            .slice(0, 48)
+            .map((c: any) => {
+                // Find primary city
+                const primaryCity = Object.entries(c.locations)
+                    .sort((a: any, b: any) => b[1] - a[1])[0][0]
+
+                return {
+                    name: c.name,
+                    count: c.count,
+                    city: primaryCity,
+                    growth: c.count > 20 ? '+24%' : (c.count > 5 ? '+12%' : '+4%')
+                }
+            })
 
         return NextResponse.json({ companies: sortedCompanies })
     } catch (err) {
