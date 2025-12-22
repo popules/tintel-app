@@ -1,7 +1,7 @@
 "use client";
 
 import { Input } from "@/components/ui/input"
-import { Search, Bell, User, LayoutDashboard, Database, Send, Settings, LogOut, Kanban, TrendingUp, Building2 } from 'lucide-react'
+import { Search, Bell, User, LayoutDashboard, Database, Send, Settings, LogOut, Kanban, TrendingUp, Building2, RefreshCcw } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { motion } from "framer-motion"
@@ -36,6 +36,7 @@ export function Header({ searchTerm = "", setSearchTerm = () => { } }: HeaderPro
     const [searchQuery, setSearchQuery] = useState("")
     const [searchResults, setSearchResults] = useState<any[]>([])
     const [isSearching, setIsSearching] = useState(false)
+    const [isSyncing, setIsSyncing] = useState(false)
 
     useEffect(() => {
         if (searchQuery.length < 2) {
@@ -93,6 +94,25 @@ export function Header({ searchTerm = "", setSearchTerm = () => { } }: HeaderPro
             setUnreadCount(prev => Math.max(0, prev - 1))
         } catch (err) {
             console.error("Failed to mark as read", err)
+        }
+    }
+
+    const refreshSignals = async () => {
+        setIsSyncing(true)
+        try {
+            const res = await fetch('/api/analytics/signals')
+            const data = await res.json()
+            if (data.success) {
+                // Fetch notifications again
+                const nRes = await fetch('/api/notifications')
+                const nData = await nRes.json()
+                setNotifications(nData.notifications || [])
+                setUnreadCount(nData.notifications?.filter((n: any) => !n.is_read).length || 0)
+            }
+        } catch (err) {
+            console.error("Failed to sync signals", err)
+        } finally {
+            setIsSyncing(false)
         }
     }
 
@@ -203,8 +223,20 @@ export function Header({ searchTerm = "", setSearchTerm = () => { } }: HeaderPro
                                     )}
                                 </div>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem className="cursor-pointer justify-center text-xs text-muted-foreground">
-                                    Syncing with Market Depth...
+                                <DropdownMenuItem
+                                    className="cursor-pointer justify-center text-xs text-indigo-500 font-bold hover:bg-indigo-50 p-3"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        refreshSignals();
+                                    }}
+                                    disabled={isSyncing}
+                                >
+                                    {isSyncing ? (
+                                        <RefreshCcw className="h-3 w-3 mr-2 animate-spin" />
+                                    ) : (
+                                        <RefreshCcw className="h-3 w-3 mr-2" />
+                                    )}
+                                    {isSyncing ? "Scanning Market..." : "Scan for Signals"}
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>

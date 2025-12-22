@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Header } from "@/components/dashboard/Header";
+import { createClient } from "@/lib/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Building2, TrendingUp, Users, ArrowUpRight, Search, MapPin } from "lucide-react";
 import { motion } from "framer-motion";
@@ -16,6 +17,25 @@ export default function CompaniesPage() {
     const [range, setRange] = useState("30d");
     const [category, setCategory] = useState("All");
     const [location, setLocation] = useState("All");
+    const supabase = createClient();
+
+    // 1. Fetch user preference for default location
+    useEffect(() => {
+        const fetchUserPref = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                const { data } = await supabase
+                    .from('profiles')
+                    .select('home_city')
+                    .eq('id', user.id)
+                    .single();
+                if (data?.home_city) {
+                    setLocation(data.home_city);
+                }
+            }
+        };
+        fetchUserPref();
+    }, []);
 
     useEffect(() => {
         const fetchCompanies = async () => {

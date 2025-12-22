@@ -7,7 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
-import { User, Mail, Trophy, Target, TrendingUp, Shield } from "lucide-react";
+import { User, Mail, Trophy, Target, TrendingUp, Shield, MapPin, Globe, Loader2 } from "lucide-react";
 
 // Simple Progress component since shadcn might not be installed
 const Progress = ({ value = 0, className = "" }: { value?: number, className?: string }) => (
@@ -20,7 +20,15 @@ export default function ProfilePage() {
     const [loading, setLoading] = useState(true);
     const [profile, setProfile] = useState<any>(null);
     const [user, setUser] = useState<any>(null);
+    const [homeCity, setHomeCity] = useState("");
+    const [selectedTerritories, setSelectedTerritories] = useState<string[]>([]);
+    const [updating, setUpdating] = useState(false);
     const supabase = createClient();
+
+    const availableCities = [
+        "Stockholm", "Göteborg", "Malmö", "Uppsala", "Linköping",
+        "Västerås", "Örebro", "Umeå", "Helsingborg"
+    ];
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -35,18 +43,46 @@ export default function ProfilePage() {
                     .eq("id", user.id)
                     .single();
                 setProfile(data);
+                if (data) {
+                    setHomeCity(data.home_city || "");
+                    setSelectedTerritories(data.territories || []);
+                }
             }
             setLoading(false);
         };
         fetchProfile();
     }, [supabase]);
 
+    const savePreferences = async () => {
+        if (!user) return;
+        setUpdating(true);
+        try {
+            const { error } = await supabase
+                .from("profiles")
+                .update({
+                    home_city: homeCity,
+                    territories: selectedTerritories,
+                    updated_at: new Date().toISOString()
+                })
+                .eq("id", user.id);
+
+            if (error) throw error;
+
+            // Refresh local profile
+            setProfile({ ...profile, home_city: homeCity, territories: selectedTerritories });
+        } catch (err) {
+            console.error("Failed to save preferences", err);
+        } finally {
+            setUpdating(false);
+        }
+    };
+
     // Real-time stats
     const [stats, setStats] = useState({
         leadsContacted: 0,
         leadsGoal: 50,
         savedJobs: 0,
-        responseRate: "15%", // Still hardcoded for now as we don't track emails
+        responseRate: "15%",
         currentLevel: "Scout",
         nextLevel: "Hunter"
     });
@@ -55,20 +91,17 @@ export default function ProfilePage() {
         const fetchStats = async () => {
             if (!user) return;
 
-            // Count total saved jobs
             const { count: savedCount } = await supabase
                 .from('saved_jobs')
                 .select('*', { count: 'exact', head: true })
                 .eq('user_id', user.id);
 
-            // Count leads in pipeline (status != 'new')
             const { count: contactedCount } = await supabase
                 .from('saved_jobs')
                 .select('*', { count: 'exact', head: true })
                 .eq('user_id', user.id)
                 .neq('status', 'new');
 
-            // Determine level
             const totalLeads = contactedCount || 0;
             let currentLevel = "Scout";
             let nextLevel = "Hunter";
@@ -181,9 +214,90 @@ export default function ProfilePage() {
                                 </CardContent>
                             </Card>
                         </div>
+
+                        {/* Territory Settings */}
+                        <Card>
+                            <CardHeader>
+                                <div className="flex items-center gap-2">
+                                    <MapPin className="h-5 w-5 text-indigo-500" />
+                                    <div>
+                                        <CardTitle className="text-lg">Operational Territory</CardTitle>
+                                        <CardDescription>Define your geographic focus to scope Market Intelligence and Signals.</CardDescription>
+                                    </div>
+                                </div>
+                            </CardHeader>
+                            <CardContent className="space-y-6">
+                                <div className="grid gap-4">
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Home City (Dashboard Default)</label>
+                                        <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+                                            {availableCities.map(city => (
+                                                <button
+                                                    key={city}
+                                                    onClick={() => setHomeCity(city)}
+                                                    className={`px-3 py-2 rounded-lg text-xs font-bold border transition-all ${homeCity === city ? 'bg-indigo-500 text-white border-indigo-500 shadow-lg shadow-indigo-500/20' : 'bg-background hover:border-indigo-500/50 text-muted-foreground'}`}
+                                                >
+                                                    {city}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Monitored Regions (Signal Frequency)</label>
+                                        <p className="text-[10px] text-muted-foreground mb-2 italic">You will only receive "Signal Flashes" for these selected cities.</p>
+                                        <div className="flex flex-wrap gap-2">
+                                            {availableCities.map(city => {
+                                                const isSelected = selectedTerritories.includes(city);
+                                                return (
+                                                    <button
+                                                        key={city}
+                                                        onClick={() => {
+                                                            if (isSelected) {
+                                                                setSelectedTerritories(selectedTerritories.filter(t => t !== city));
+                                                            } else {
+                                                                setSelectedTerritories([...selectedTerritories, city]);
+                                                            }
+                                                        }}
+                                                        className={`px-4 py-2 rounded-full text-xs font-bold border flex items-center gap-2 transition-all ${isSelected ? 'bg-indigo-50 border-indigo-200 text-indigo-600' : 'bg-background hover:bg-muted'}`}
+                                                    >
+                                                        {isSelected && <div className="h-1.5 w-1.5 rounded-full bg-indigo-500 animate-pulse" />}
+                                                        {city}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="pt-4 border-t">
+                                    <Button
+                                        onClick={savePreferences}
+                                        disabled={updating}
+                                        className="bg-indigo-600 hover:bg-indigo-700 text-white w-full md:w-auto min-w-[160px]"
+                                    >
+                                        {updating ? (
+                                            <>
+                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                Saving...
+                                            </>
+                                        ) : (
+                                            "Save Preferences"
+                                        )}
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
                     </div>
                 ) : (
-                    <div>Not logged in</div>
+                    <div className="flex flex-col items-center justify-center p-12 text-center">
+                        <User className="h-12 w-12 text-muted-foreground mb-4 opacity-20" />
+                        <h2 className="text-xl font-bold mb-2">Not Logged In</h2>
+                        <p className="text-muted-foreground mb-6 text-sm">Please sign in to view your agent profile.</p>
+                        <Button asChild className="bg-indigo-600 hover:bg-indigo-700">
+                            <Link href="/login">Sign In</Link>
+                        </Button>
+                    </div>
                 )}
             </main>
         </div>
