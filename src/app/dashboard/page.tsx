@@ -71,16 +71,28 @@ export default function Home() {
 
   useEffect(() => {
     const fetchFilterData = async () => {
-      // 1. Fetch User & Saved Jobs
+      // 1. Fetch User & Preferences
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
+        // Fetch saved job IDs
         const { data: savedData } = await supabase.from("saved_jobs").select("job_id").eq("user_id", user.id);
         if (savedData) {
           setSavedJobIds(new Set(savedData.map(d => String(d.job_id))));
         }
+
+        // Fetch primary territory (home_city)
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("home_city")
+          .eq("id", user.id)
+          .single();
+
+        if (profile?.home_city) {
+          setSelectedCounty(profile.home_city);
+        }
       }
 
-      // 2. Fetch Filter Data
+      // 2. Fetch Filter Metadata
       const { data: catData } = await supabase.from("job_categories").select("broader_name");
       if (catData) setCategories([...new Set(catData.map((c) => c.broader_name))].sort());
 
@@ -89,6 +101,9 @@ export default function Home() {
         const uniqueLocations = Array.from(new Map(locData.map(item => [`${item.county}-${item.location}`, item])).values());
         setLocations(uniqueLocations.filter(l => l.county && l.location));
       }
+
+      // If no default was set, manually trigger initial fetch
+      // Otherwise the useEffect on selectedCounty will handle it
       fetchJobs();
     };
     fetchFilterData();
