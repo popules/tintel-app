@@ -32,7 +32,7 @@ export async function GET(req: Request) {
         while (hasMore && page < 20) {
             const { data, error } = await supabase
                 .from('job_posts')
-                .select('company, location, broad_category, created_at')
+                .select('company, location, county, broad_category, created_at')
                 .gte('created_at', thirtyDaysAgo)
                 .range(page * pageSize, (page + 1) * pageSize - 1)
 
@@ -43,19 +43,19 @@ export async function GET(req: Request) {
         }
 
         // 3. Detect Signals
-        const companyStats: Record<string, { total30d: number, total7d: number, locations: Set<string> }> = {}
+        const companyStats: Record<string, { total30d: number, total7d: number, counties: Set<string> }> = {}
 
         allJobs.forEach(job => {
             const name = job.company
             if (!companyStats[name]) {
-                companyStats[name] = { total30d: 0, total7d: 0, locations: new Set() }
+                companyStats[name] = { total30d: 0, total7d: 0, counties: new Set() }
             }
             companyStats[name].total30d++
             if (job.created_at >= sevenDaysAgo) {
                 companyStats[name].total7d++
             }
-            if (job.location) {
-                companyStats[name].locations.add(job.location)
+            if (job.county) {
+                companyStats[name].counties.add(job.county)
             }
         })
 
@@ -66,9 +66,8 @@ export async function GET(req: Request) {
             // (Total30d / 4) * 2.5
             const weeklyAvg = stats.total30d / 4
             if (stats.total7d > weeklyAvg * 2.5 && stats.total7d > 3) {
-                // Check if this surge is in the user's territories
-                // For now, if the company has ANY location in territories, we show it
-                const isRelevant = myTerritories.length === 0 || Array.from(stats.locations).some(loc => myTerritories.includes(loc))
+                // Check if this surge is in the user's territories (Counties)
+                const isRelevant = myTerritories.length === 0 || Array.from(stats.counties).some(c => myTerritories.includes(c))
 
                 if (isRelevant) {
                     newNotifications.push({
