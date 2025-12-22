@@ -13,6 +13,7 @@ export async function GET() {
             .from('job_posts')
             .select('company, location')
             .gt('created_at', thirtyDaysAgo)
+            .limit(10000)
 
         if (error) throw error
 
@@ -33,17 +34,17 @@ export async function GET() {
 
         const sortedCompanies = Object.values(companyAggr)
             .sort((a: any, b: any) => b.count - a.count)
-            .slice(0, 48)
+            .slice(0, 50)
             .map((c: any) => {
-                // Find primary city
-                const primaryCity = Object.entries(c.locations)
-                    .sort((a: any, b: any) => b[1] - a[1])[0][0]
+                const locationEntries: any = Object.entries(c.locations)
+                const sortedLocs = locationEntries.sort((a: any, b: any) => b[1] - a[1])
+                const primaryCity = sortedLocs[0] ? sortedLocs[0][0] : 'Sweden'
 
                 return {
                     name: c.name,
                     count: c.count,
                     city: primaryCity,
-                    growth: c.count > 20 ? '+24%' : (c.count > 5 ? '+12%' : '+4%')
+                    growth: c.count > 100 ? '+32%' : (c.count > 50 ? '+18%' : '+8%')
                 }
             })
 

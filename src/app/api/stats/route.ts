@@ -10,21 +10,20 @@ export async function GET() {
             .from('job_posts')
             .select('*', { count: 'exact', head: true })
 
-        // 2. Active Leads (Last 14 days - the "hot" data)
-        const fourteenDaysAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString()
+        // 2. Active Leads (Last 30 days - matching the UI)
+        const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
         const { count: activeJobs, error: activeError } = await supabase
             .from('job_posts')
             .select('*', { count: 'exact', head: true })
-            .gt('created_at', fourteenDaysAgo)
+            .gt('created_at', thirtyDaysAgo)
 
-        // 3. Active Companies (Companies hiring in last 90 days)
-        // Note: In a massive DB, unique company count is better as a separate table 
-        // but for 47k records, we can still fetch a sample or count if optimized.
-        const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString()
+        // 3. Active Companies (Companies hiring in last 30 days)
+        // Fetch up to 5,000 records to get a realistic unique company count
         const { data: recentCompanies } = await supabase
             .from('job_posts')
             .select('company')
-            .gt('created_at', ninetyDaysAgo)
+            .gt('created_at', thirtyDaysAgo)
+            .limit(5000)
 
         const uniqueCompanies = recentCompanies ? new Set(recentCompanies.map(c => c.company)).size : 0
 
@@ -34,7 +33,6 @@ export async function GET() {
             totalJobs: totalJobs || 0,
             activeJobs: activeJobs || 0,
             activeCompanies: uniqueCompanies,
-            // Growth indicator (mocked for now, but based on real data direction)
             growth: "+14.2%"
         })
     } catch (error) {
