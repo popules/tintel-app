@@ -7,6 +7,7 @@ import { FilterSidebar } from "@/components/dashboard/FilterSidebar";
 import { JobCard } from "@/components/dashboard/JobCard";
 import { StatsRow } from "@/components/dashboard/Stats";
 import { Loader2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 // --- TYPE DEFINITIONS ---
 interface JobPost {
@@ -33,9 +34,10 @@ export default function Home() {
   const [locations, setLocations] = useState<LocationData[]>([]);
   const [availableCities, setAvailableCities] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [prefLoaded, setPrefLoaded] = useState(false);
 
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedCounty, setSelectedCounty] = useState<string | null>(null);
+  const [selectedCounties, setSelectedCounties] = useState<string[]>([]);
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [savedJobIds, setSavedJobIds] = useState<Set<string>>(new Set());
@@ -53,7 +55,7 @@ export default function Home() {
       .limit(100);
 
     if (selectedCategories.length > 0) query = query.in("broad_category", selectedCategories);
-    if (selectedCounty) query = query.eq("county", selectedCounty);
+    if (selectedCounties.length > 0) query = query.in("county", selectedCounties);
     if (selectedCity) query = query.eq("location", selectedCity);
     if (searchTerm) {
       query = query.or(`title.ilike.%${searchTerm}%,company.ilike.%${searchTerm}%`);
@@ -80,15 +82,18 @@ export default function Home() {
           setSavedJobIds(new Set(savedData.map(d => String(d.job_id))));
         }
 
-        // Fetch primary territory (home_city)
+        // Fetch territories (Intelligence Scope)
         const { data: profile } = await supabase
           .from("profiles")
-          .select("home_city")
+          .select("territories, home_city")
           .eq("id", user.id)
           .single();
 
-        if (profile?.home_city) {
-          setSelectedCounty(profile.home_city);
+        if (profile?.territories && profile.territories.length > 0) {
+          setSelectedCounties(profile.territories);
+        } else if (profile?.home_city) {
+          // Fallback if territories not set but home_city is
+          setSelectedCounties([profile.home_city]);
         }
       }
 
@@ -102,18 +107,16 @@ export default function Home() {
         setLocations(uniqueLocations.filter(l => l.county && l.location));
       }
 
-      // If no default was set, manually trigger initial fetch
-      // Otherwise the useEffect on selectedCounty will handle it
-      fetchJobs();
+      setPrefLoaded(true);
     };
     fetchFilterData();
   }, []);
 
   useEffect(() => {
-    if (selectedCounty) {
-      const citiesInCounty = [...new Set(locations.filter(l => l.county === selectedCounty).map(l => l.location))];
+    if (selectedCounties.length > 0) {
+      const citiesInCounties = [...new Set(locations.filter(l => selectedCounties.includes(l.county)).map(l => l.location))];
       const specialCity = "Okänd plats";
-      const sortedCities = citiesInCounty.sort((a, b) => {
+      const sortedCities = citiesInCounties.sort((a, b) => {
         const aIsSpecial = a === specialCity;
         const bIsSpecial = b === specialCity;
         if (aIsSpecial && !bIsSpecial) return 1;
@@ -125,14 +128,16 @@ export default function Home() {
       setAvailableCities([]);
     }
     setSelectedCity(null);
-  }, [selectedCounty, locations]);
+  }, [selectedCounties, locations]);
 
   useEffect(() => {
+    if (!prefLoaded) return;
+
     const handler = setTimeout(() => {
       fetchJobs();
     }, 300);
     return () => clearTimeout(handler);
-  }, [selectedCategories, selectedCounty, selectedCity, searchTerm]);
+  }, [selectedCategories, selectedCounties, selectedCity, searchTerm, prefLoaded]);
 
   const handleCategoryToggle = (category: string) => {
     setSelectedCategories((prev) =>
@@ -159,8 +164,8 @@ export default function Home() {
           categories={categories}
           selectedCategories={selectedCategories}
           handleCategoryToggle={handleCategoryToggle}
-          selectedCounty={selectedCounty}
-          setSelectedCounty={setSelectedCounty}
+          selectedCounties={selectedCounties}
+          setSelectedCounties={setSelectedCounties}
           counties={finalSortedCounties}
           selectedCity={selectedCity}
           setSelectedCity={setSelectedCity}
@@ -171,16 +176,73 @@ export default function Home() {
           <div className="max-w-7xl mx-auto space-y-8">
             <StatsRow />
 
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-2xl font-bold tracking-tight">Active Jobs</h2>
-                <p className="text-muted-foreground text-sm">Find your next client or career move.</p>
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-2xl font-bold tracking-tight">Active Jobs</h2>
+                  <p className="text-muted-foreground text-sm">Find your next client or career move.</p>
+                </div>
+                <div className="flex items-center gap-2 bg-background p-1 rounded-lg border shadow-sm">
+                  <span className="text-xs font-medium px-2 py-1 bg-muted rounded">
+                    {isLoading ? "..." : jobPosts.length} matches
+                  </span>
+                </div>
               </div>
-              <div className="flex items-center gap-2 bg-background p-1 rounded-lg border shadow-sm">
-                <span className="text-xs font-medium px-2 py-1 bg-muted rounded">
-                  {isLoading ? "..." : jobPosts.length} matches
-                </span>
-              </div>
+
+              {/* Active Filter Badges */}
+              {(selectedCounties.length > 0 || selectedCategories.length > 0 || selectedCity || searchTerm) && (
+                <div className="flex flex-wrap gap-2 items-center">
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mr-1">Active Filters:</span>
+
+                  {selectedCounties.map(county => (
+                    <Badge key={county} variant="secondary" className="pl-2 pr-1 py-1 gap-1 bg-indigo-500/10 text-indigo-700 border-indigo-500/20 hover:bg-indigo-500/20 transition-all">
+                      {county}
+                      <button onClick={() => setSelectedCounties(selectedCounties.filter(c => c !== county))} className="hover:bg-indigo-500/20 rounded-full p-0.5 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                      </button>
+                    </Badge>
+                  ))}
+
+                  {selectedCity && (
+                    <Badge variant="secondary" className="pl-2 pr-1 py-1 gap-1 bg-indigo-500/10 text-indigo-700 border-indigo-500/20">
+                      City: {selectedCity}
+                      <button onClick={() => setSelectedCity(null)} className="hover:bg-indigo-500/20 rounded-full p-0.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                      </button>
+                    </Badge>
+                  )}
+
+                  {selectedCategories.map(cat => (
+                    <Badge key={cat} variant="secondary" className="pl-2 pr-1 py-1 gap-1 bg-muted/50 text-muted-foreground border-muted-foreground/20">
+                      {cat}
+                      <button onClick={() => handleCategoryToggle(cat)} className="hover:bg-muted rounded-full p-0.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                      </button>
+                    </Badge>
+                  ))}
+
+                  {searchTerm && (
+                    <Badge variant="secondary" className="pl-2 pr-1 py-1 gap-1 bg-emerald-500/10 text-emerald-700 border-emerald-500/20">
+                      Search: {searchTerm}
+                      <button onClick={() => setSearchTerm("")} className="hover:bg-emerald-500/20 rounded-full p-0.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                      </button>
+                    </Badge>
+                  )}
+
+                  <button
+                    onClick={() => {
+                      setSelectedCounties([]);
+                      setSelectedCategories([]);
+                      setSelectedCity(null);
+                      setSearchTerm("");
+                    }}
+                    className="text-[10px] font-black uppercase tracking-wider text-muted-foreground hover:text-indigo-500 transition-colors ml-2"
+                  >
+                    Clear All
+                  </button>
+                </div>
+              )}
             </div>
 
             {isLoading && jobPosts.length === 0 ? (

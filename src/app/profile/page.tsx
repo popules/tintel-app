@@ -8,8 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { User, Mail, Trophy, Target, TrendingUp, Shield, MapPin, Globe, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
+import { User, Mail, Trophy, Target, TrendingUp, Shield, MapPin, Globe, Loader2, CheckCircle2, AlertCircle, Radar } from "lucide-react";
 import { motion } from "framer-motion";
+import { SwedenMap } from "@/components/dashboard/SwedenMap";
 
 // Simple Progress component
 const Progress = ({ value = 0, className = "" }: { value?: number, className?: string }) => (
@@ -50,8 +51,8 @@ export default function ProfilePage() {
                     .eq("id", authUser.id)
                     .single();
 
-                setProfile(data);
                 if (data) {
+                    setProfile(data);
                     setSelectedTerritories(data.territories || []);
                 }
             }
@@ -59,6 +60,14 @@ export default function ProfilePage() {
         };
         fetchProfile();
     }, [supabase]);
+
+    const toggleTerritory = (county: string) => {
+        if (selectedTerritories.includes(county)) {
+            setSelectedTerritories(selectedTerritories.filter(t => t !== county));
+        } else {
+            setSelectedTerritories([...selectedTerritories, county]);
+        }
+    };
 
     const savePreferences = async () => {
         if (!user) return;
@@ -246,25 +255,21 @@ export default function ProfilePage() {
                             </CardHeader>
                             <CardContent className="space-y-8 p-6">
                                 <div className="grid gap-4">
-                                    <div className="space-y-4">
-                                        <div>
-                                            <label className="text-[11px] font-black uppercase tracking-[0.2em] text-indigo-500/80 block mb-1">Target Territories</label>
-                                            <p className="text-[10px] text-muted-foreground mb-4 italic leading-relaxed">Selecting a territory enables "Signal Flashes" and sets your localized intelligence feed.</p>
-                                        </div>
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                                    <div>
+                                        <label className="text-[11px] font-black uppercase tracking-[0.2em] text-indigo-500/80 block mb-1">Target Territories</label>
+                                        <p className="text-[10px] text-muted-foreground mb-4 italic leading-relaxed">Selecting a territory enables "Signal Flashes" and sets your localized intelligence feed.</p>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                        {/* List View */}
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                             {allCounties.map(county => {
                                                 const isSelected = selectedTerritories.includes(county);
                                                 const isPrimary = selectedTerritories[0] === county;
                                                 return (
                                                     <button
                                                         key={county}
-                                                        onClick={() => {
-                                                            if (isSelected) {
-                                                                setSelectedTerritories(selectedTerritories.filter(t => t !== county));
-                                                            } else {
-                                                                setSelectedTerritories([...selectedTerritories, county]);
-                                                            }
-                                                        }}
+                                                        onClick={() => toggleTerritory(county)}
                                                         className={`px-3 py-2.5 rounded-xl text-[10px] font-bold border flex items-center justify-between transition-all duration-300 ${isSelected ? 'bg-indigo-50 border-indigo-200 text-indigo-600 shadow-sm' : 'bg-background hover:bg-muted/30 text-muted-foreground border-muted'}`}
                                                     >
                                                         <span className="truncate pr-2">{county}</span>
@@ -281,6 +286,19 @@ export default function ProfilePage() {
                                                     </button>
                                                 );
                                             })}
+                                        </div>
+
+                                        {/* Map View */}
+                                        <div className="flex flex-col items-center justify-center bg-muted/20 rounded-2xl p-6 border border-muted/50 relative group">
+                                            <div className="absolute top-4 left-4 flex items-center gap-2 text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">
+                                                <Radar className="h-3 w-3" />
+                                                Intelligence Radar
+                                            </div>
+                                            <SwedenMap
+                                                selectedCounties={selectedTerritories}
+                                                onToggleCounty={toggleTerritory}
+                                                className="w-full max-w-[300px] h-auto"
+                                            />
                                         </div>
                                     </div>
                                 </div>

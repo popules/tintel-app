@@ -17,6 +17,7 @@ export default function CompaniesPage() {
     const [range, setRange] = useState("30d");
     const [category, setCategory] = useState("All");
     const [location, setLocation] = useState("All");
+    const [prefLoaded, setPrefLoaded] = useState(false);
     const supabase = createClient();
 
     // 1. Fetch user preference for default location
@@ -33,11 +34,14 @@ export default function CompaniesPage() {
                     setLocation(data.home_city);
                 }
             }
+            setPrefLoaded(true);
         };
         fetchUserPref();
     }, []);
 
     useEffect(() => {
+        if (!prefLoaded) return; // Wait for preferences before first fetch
+
         const fetchCompanies = async () => {
             setLoading(true);
             try {
@@ -51,7 +55,7 @@ export default function CompaniesPage() {
             }
         };
         fetchCompanies();
-    }, [range, category, location]);
+    }, [range, category, location, prefLoaded]);
 
     const categories = [
         "All",
