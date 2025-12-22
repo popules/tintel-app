@@ -123,11 +123,11 @@ export default function CompaniesPage() {
                         <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide">
                             <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest whitespace-nowrap">Location:</span>
                             <div className="flex gap-2">
-                                {locations.map((loc) => (
+                                {Array.from(new Set([...locations, location])).map((loc) => (
                                     <button
                                         key={loc}
                                         onClick={() => setLocation(loc)}
-                                        className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all whitespace-nowrap ${location === loc ? 'bg-indigo-500 text-white border-indigo-500' : 'bg-background border-muted hover:border-indigo-500/50 text-muted-foreground'}`}
+                                        className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all whitespace-nowrap ${location === loc ? 'bg-indigo-500 text-white border-indigo-500 shadow-sm' : 'bg-background border-muted hover:border-indigo-500/50 text-muted-foreground'}`}
                                     >
                                         {loc}
                                     </button>

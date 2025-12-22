@@ -7,7 +7,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
-import { User, Mail, Trophy, Target, TrendingUp, Shield, MapPin, Globe, Loader2, CheckCircle2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { User, Mail, Trophy, Target, TrendingUp, Shield, MapPin, Globe, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 // Simple Progress component
@@ -21,16 +22,11 @@ export default function ProfilePage() {
     const [loading, setLoading] = useState(true);
     const [profile, setProfile] = useState<any>(null);
     const [user, setUser] = useState<any>(null);
-    const [homeCity, setHomeCity] = useState("");
     const [selectedTerritories, setSelectedTerritories] = useState<string[]>([]);
     const [updating, setUpdating] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
+    const [errorMsg, setErrorMsg] = useState<string | null>(null);
     const supabase = createClient();
-
-    const availableCities = [
-        "Stockholm", "Göteborg", "Malmö", "Uppsala", "Linköping",
-        "Västerås", "Örebro", "Umeå", "Helsingborg", "Norrköping", "Lund", "Jönköping"
-    ];
 
     const allCounties = [
         "Blekinge län", "Dalarnas län", "Gotlands län", "Gävleborgs län",
@@ -56,7 +52,6 @@ export default function ProfilePage() {
 
                 setProfile(data);
                 if (data) {
-                    setHomeCity(data.home_city || "");
                     setSelectedTerritories(data.territories || []);
                 }
             }
@@ -69,7 +64,12 @@ export default function ProfilePage() {
         if (!user) return;
         setUpdating(true);
         setShowSuccess(false);
+        setErrorMsg(null);
+
         try {
+            // Unify Home City with the first selected territory
+            const homeCity = selectedTerritories.length > 0 ? selectedTerritories[0] : "";
+
             const { error } = await supabase
                 .from("profiles")
                 .update({
@@ -85,9 +85,9 @@ export default function ProfilePage() {
             setProfile({ ...profile, home_city: homeCity, territories: selectedTerritories });
             setShowSuccess(true);
             setTimeout(() => setShowSuccess(false), 3000);
-        } catch (err) {
+        } catch (err: any) {
             console.error("Failed to save preferences", err);
-            alert("Error saving preferences. Please ensure the database migration was run.");
+            setErrorMsg("Error saving preferences. Please ensure you have run the 'add_territories.sql' migration in Supabase.");
         } finally {
             setUpdating(false);
         }
@@ -239,36 +239,22 @@ export default function ProfilePage() {
                                         <MapPin className="h-5 w-5" />
                                     </div>
                                     <div>
-                                        <CardTitle className="text-lg">Operational Territory</CardTitle>
-                                        <CardDescription className="text-xs">Define your focus to scope Market Intelligence and Signal flows.</CardDescription>
+                                        <CardTitle className="text-lg">Unified Territory Scoping</CardTitle>
+                                        <CardDescription className="text-xs">Select Counties (Län) to monitor. Your primary selection defines your dashboard default.</CardDescription>
                                     </div>
                                 </div>
                             </CardHeader>
                             <CardContent className="space-y-8 p-6">
-                                <div className="grid gap-8">
-                                    <div className="space-y-3">
-                                        <label className="text-[11px] font-black uppercase tracking-[0.2em] text-indigo-500/80">Home City (Dashboard Default)</label>
-                                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
-                                            {availableCities.map(city => (
-                                                <button
-                                                    key={city}
-                                                    onClick={() => setHomeCity(city)}
-                                                    className={`px-3 py-2 rounded-lg text-xs font-bold border transition-all duration-300 ${homeCity === city ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-600/20 scale-[1.02]' : 'bg-background hover:bg-muted/50 text-muted-foreground border-muted'}`}
-                                                >
-                                                    {city}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-
+                                <div className="grid gap-4">
                                     <div className="space-y-4">
                                         <div>
-                                            <label className="text-[11px] font-black uppercase tracking-[0.2em] text-indigo-500/80 block mb-1">Monitored Territories (Signal Scoping)</label>
-                                            <p className="text-[10px] text-muted-foreground mb-4 italic leading-relaxed">Signals are scoped to these **Counties (Län)** for broader market coverage.</p>
+                                            <label className="text-[11px] font-black uppercase tracking-[0.2em] text-indigo-500/80 block mb-1">Target Territories</label>
+                                            <p className="text-[10px] text-muted-foreground mb-4 italic leading-relaxed">Selecting a territory enables "Signal Flashes" and sets your localized intelligence feed.</p>
                                         </div>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                                             {allCounties.map(county => {
                                                 const isSelected = selectedTerritories.includes(county);
+                                                const isPrimary = selectedTerritories[0] === county;
                                                 return (
                                                     <button
                                                         key={county}
@@ -282,11 +268,16 @@ export default function ProfilePage() {
                                                         className={`px-3 py-2.5 rounded-xl text-[10px] font-bold border flex items-center justify-between transition-all duration-300 ${isSelected ? 'bg-indigo-50 border-indigo-200 text-indigo-600 shadow-sm' : 'bg-background hover:bg-muted/30 text-muted-foreground border-muted'}`}
                                                     >
                                                         <span className="truncate pr-2">{county}</span>
-                                                        {isSelected ? (
-                                                            <div className="h-2 w-2 rounded-full bg-indigo-500 shadow-sm shadow-indigo-500/50 flex-shrink-0" />
-                                                        ) : (
-                                                            <div className="h-1.5 w-1.5 rounded-full bg-muted flex-shrink-0" />
-                                                        )}
+                                                        <div className="flex items-center gap-2">
+                                                            {isPrimary && (
+                                                                <Badge variant="outline" className="text-[8px] h-4 px-1 border-indigo-200 text-indigo-500 bg-white">Primary</Badge>
+                                                            )}
+                                                            {isSelected ? (
+                                                                <div className="h-2 w-2 rounded-full bg-indigo-500 shadow-sm shadow-indigo-500/50 flex-shrink-0" />
+                                                            ) : (
+                                                                <div className="h-1.5 w-1.5 rounded-full bg-muted flex-shrink-0" />
+                                                            )}
+                                                        </div>
                                                     </button>
                                                 );
                                             })}
@@ -294,19 +285,30 @@ export default function ProfilePage() {
                                     </div>
                                 </div>
 
+                                {errorMsg && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="p-4 rounded-xl bg-red-500/5 border border-red-500/20 text-red-600 text-xs flex gap-3 items-start"
+                                    >
+                                        <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
+                                        <p className="leading-relaxed font-medium">{errorMsg}</p>
+                                    </motion.div>
+                                )}
+
                                 <div className="pt-6 border-t border-muted/50 flex flex-col sm:flex-row items-center gap-4">
                                     <Button
                                         onClick={savePreferences}
                                         disabled={updating}
-                                        className="bg-indigo-600 hover:bg-indigo-700 text-white w-full sm:w-auto min-w-[180px] h-11 rounded-xl font-bold shadow-lg shadow-indigo-500/20 active:scale-95 transition-all"
+                                        className="bg-indigo-600 hover:bg-indigo-700 text-white w-full sm:w-auto min-w-[200px] h-11 rounded-xl font-bold shadow-lg shadow-indigo-500/20 active:scale-95 transition-all"
                                     >
                                         {updating ? (
                                             <>
                                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                Persisting...
+                                                Syncing Territories...
                                             </>
                                         ) : (
-                                            "Save Preferences"
+                                            "Update Intelligence Scope"
                                         )}
                                     </Button>
 
