@@ -1,0 +1,23 @@
+export const SWEDISH_COUNTIES = [
+    "Blekinge",
+    "Dalarna",
+    "Gotland",
+    "Gävleborg",
+    "Halland",
+    "Jämtland",
+    "Jönköping",
+    "Kalmar",
+    "Kronoberg",
+    "Norrbotten",
+    "Skåne",
+    "Stockholm",
+    "Södermanland",
+    "Uppsala",
+    "Värmland",
+    "Västerbotten",
+    "Västernorrland",
+    "Västmanland",
+    "Västra Götaland",
+    "Örebro",
+    "Östergötland"
+];
