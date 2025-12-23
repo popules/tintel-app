@@ -10,9 +10,9 @@ const TIERS = [
         price: "0",
         description: "Perfect for independent recruiters.",
         features: [
-            "Access to all job listings",
+            "Access to Job Feed",
             "Basic filtering",
-            "5 Lead Enriches / month",
+            "5 Lead Credits / month",
             "Personal Kanban Board"
         ],
         cta: "Start Free",
@@ -25,10 +25,10 @@ const TIERS = [
         period: "/mo",
         description: "For agencies scaling up.",
         features: [
-            "Unlimited Lead Enrichment",
-            "Advanced AI Pitch Generator",
-            "Company Market Intelligence",
-            "Priority Support",
+            "Unlimited Job Feed",
+            "500 Lead Credits / month",
+            "AI Pitch Generator",
+            "Market Intelligence",
             "Export to CSV"
         ],
         cta: "Get Pro",
@@ -40,11 +40,11 @@ const TIERS = [
         price: "Custom",
         description: "For large teams and firms.",
         features: [
+            "Unlimited Everything",
             "API Access",
             "White-labeling",
             "Dedicated Account Manager",
-            "Custom Integrations",
-            "SLA"
+            "Custom Integrations"
         ],
         cta: "Contact Sales",
         href: "mailto:sales@tintel.se",

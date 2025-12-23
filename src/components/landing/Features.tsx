@@ -5,13 +5,13 @@ import { Zap, Search, Mail, Users, BarChart3, Lock } from "lucide-react";
 const FEATURES = [
     {
         icon: Search,
-        title: "Smart Aggregation",
-        description: "We scrape thousands of sources daily to find every relevant job opportunity in real-time."
+        title: "Lead Intelligence",
+        description: "Identify hiring companies before they post. We monitor thousands of sources to find hidden opportunities."
     },
     {
         icon: Users,
-        title: "Lead Enrichment",
-        description: "Instantly find hiring managers' names and direct email addresses. No more 'To whom it may concern'."
+        title: "Contact Finder",
+        description: "Enrich leads with decision-maker emails instantly. Stop guessing and start connecting."
     },
     {
         icon: Mail,
@@ -20,18 +20,18 @@ const FEATURES = [
     },
     {
         icon: Zap,
-        title: "Kanban Pipeline",
-        description: "Manage your leads with a drag-and-drop CRM built specifically for high-velocity recruitment."
+        title: "Talent Marketplace",
+        description: "Need speed? Access our curated database of verified, open-to-work candidates ready to interview."
     },
     {
         icon: BarChart3,
-        title: "Market Intelligence",
-        description: "Track company growth, hiring velocity, and competitor movements with deep data analytics."
+        title: "Pipeline CRM",
+        description: "Manage your entire workflow from 'New Lead' to 'Hired' in one intuitive Kanban view."
     },
     {
         icon: Lock,
         title: "Enterprise Grade",
-        description: "Built with security first. SSO, Role-Based Access Control, and compliant data handling."
+        description: "Built for scale with SSO, Role-Based Access Control, and compliant data handling."
     }
 ];
 
@@ -41,11 +41,11 @@ export function Features() {
             <div className="container px-4 md:px-6 mx-auto">
                 <div className="text-center max-w-2xl mx-auto mb-16">
                     <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-4 text-white">
-                        Everything you need to <br />
-                        <span className="text-indigo-400">dominate the market</span>
+                        The Recruitment <br />
+                        <span className="text-indigo-400">Operating System</span>
                     </h2>
                     <p className="text-muted-foreground text-lg">
-                        Tintel isn't just a job board. It's a complete operating system for modern recruitment agencies.
+                        Tintel replaces your fragmented toolstack. One platform to find, contact, and close the best talent.
                     </p>
                 </div>
 

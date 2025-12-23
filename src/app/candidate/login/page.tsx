@@ -62,9 +62,9 @@ export default function CandidateLoginPage() {
                             <div className="h-4 w-4 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 shadow-xl shadow-indigo-500/20 ring-2 ring-white/10" />
                             <span className="font-black text-3xl tracking-tighter">tintel</span>
                         </div>
-                        <CardTitle className="text-2xl font-bold tracking-tight">Candidate Login</CardTitle>
+                        <CardTitle className="text-2xl font-bold tracking-tight">Welcome back</CardTitle>
                         <CardDescription>
-                            Access your profile and find your dream job
+                            Sign in to your Candidate account
                         </CardDescription>
                     </CardHeader>
                     <form onSubmit={handleLogin}>
