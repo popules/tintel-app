@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Loader2, Sparkles, Briefcase, MapPin, Clock, Wand2 } from 'lucide-react'
+import { Loader2, Sparkles, Briefcase, MapPin, Clock, Wand2, Phone } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { Badge } from '@/components/ui/badge'
 import { SWEDISH_COUNTIES } from '@/lib/data/counties'
@@ -29,6 +29,7 @@ export default function CandidateOnboardingPage() {
     const [experience, setExperience] = useState('')
     const [bio, setBio] = useState('')
     const [skills, setSkills] = useState('')
+    const [phone, setPhone] = useState('')
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -49,6 +50,7 @@ export default function CandidateOnboardingPage() {
                 setExperience(data.experience_years ? String(data.experience_years) : '');
                 setSkills(data.skills?.join(', ') || '');
                 setBio(data.bio || '');
+                setPhone(data.phone || '');
             }
         };
         fetchProfile();
@@ -59,14 +61,13 @@ export default function CandidateOnboardingPage() {
         setAiLoading(true);
 
         // Simulating AI generation based on heuristic keywords
-        // In production this would call an API route
         setTimeout(() => {
             const lowerHeadline = headline.toLowerCase();
             let generatedBio = `Experienced ${headline} with a strong background in the field. Dedicated to delivering high-quality results and working efficiently within teams.`;
             let generatedSkills = "Teamwork, Problem Solving, Safety Protocols";
 
             if (lowerHeadline.includes("snickare") || lowerHeadline.includes("carpenter")) {
-                generatedBio = "Skilled Carpenter with expertise in framing, finish carpentry, and reading blueprints. precision-oriented and committed to safety and quality craftsmanship.";
+                generatedBio = "Skilled Carpenter with expertise in framing, finish carpentry, and reading blueprints. Precision-oriented and committed to safety and quality craftsmanship.";
                 generatedSkills = "Framing, Finish Carpentry, Blueprint Reading, Woodworking, Safety Compliance";
             } else if (lowerHeadline.includes("truck") || lowerHeadline.includes("forklift")) {
                 generatedBio = "Certified Forklift Operator with valid license and reliable track record in active warehouse environments. Focused on efficiency and safety regulations.";
@@ -107,6 +108,7 @@ export default function CandidateOnboardingPage() {
                 experience_years: parseInt(experience) || 0,
                 skills: skillsArray,
                 bio,
+                phone, // Added phone
                 is_open: true,
             }
 
@@ -118,9 +120,6 @@ export default function CandidateOnboardingPage() {
                 setError(upsertError.message)
             } else {
                 setSuccess(true)
-                setTimeout(() => {
-                    router.push('/candidate/dashboard')
-                }, 1500)
             }
         } catch (err) {
             console.error('Error saving profile:', err)
@@ -142,7 +141,14 @@ export default function CandidateOnboardingPage() {
                         <Sparkles className="h-12 w-12 text-white" />
                     </div>
                     <h2 className="text-3xl font-bold text-white tracking-tight">Profile Created!</h2>
-                    <p className="text-indigo-200">Redirecting to your dashboard...</p>
+                    <div className="flex gap-4">
+                        <Button onClick={() => router.push('/candidate/dashboard')} variant="outline" className="border-white/20 text-white hover:bg-white/10">
+                            Go to Dashboard
+                        </Button>
+                        <Button onClick={() => window.print()} className="bg-white text-black hover:bg-white/90">
+                            Download CV
+                        </Button>
+                    </div>
                 </motion.div>
             </div>
         )
@@ -181,6 +187,13 @@ export default function CandidateOnboardingPage() {
                         </CardHeader>
 
                         <CardContent className="grid gap-8">
+                            {error && (
+                                <div className="bg-red-500/10 border border-red-500/20 text-red-200 p-4 rounded-lg flex items-center gap-2 animate-in fade-in slide-in-from-top-2">
+                                    <div className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
+                                    <span className="text-sm font-medium">{error}</span>
+                                </div>
+                            )}
+
                             {/* Headline */}
                             <div className="grid gap-3">
                                 <Label htmlFor="headline" className="text-white">Headline / Role</Label>
@@ -244,6 +257,22 @@ export default function CandidateOnboardingPage() {
                                             required
                                         />
                                     </div>
+                                </div>
+                            </div>
+
+                            {/* Phone */}
+                            <div className="grid gap-3">
+                                <Label htmlFor="phone" className="text-white">Phone Number</Label>
+                                <div className="relative group">
+                                    <Phone className="absolute left-3 top-3 h-4 w-4 text-indigo-300 group-focus-within:text-indigo-400 transition-colors" />
+                                    <Input
+                                        id="phone"
+                                        type="tel"
+                                        placeholder="+46 70 123 45 67"
+                                        className="pl-10 h-12 bg-black/20 border-white/10 text-white placeholder:text-white/20 focus-visible:ring-indigo-500/50"
+                                        value={phone}
+                                        onChange={(e) => setPhone(e.target.value)}
+                                    />
                                 </div>
                             </div>
 
