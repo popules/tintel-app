@@ -6,7 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { SwedenMap } from "./SwedenMap"
-import { Map as MapIcon, List, Radar } from "lucide-react"
+import { Map as MapIcon, List, Radar, Briefcase, Users } from "lucide-react"
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 
@@ -20,6 +20,8 @@ interface FilterSidebarProps {
     selectedCity: string | null
     setSelectedCity: (val: string | null) => void
     cities: string[]
+    searchMode: 'jobs' | 'people'
+    setSearchMode: (mode: 'jobs' | 'people') => void
 }
 
 export function FilterSidebar({
@@ -31,7 +33,9 @@ export function FilterSidebar({
     counties,
     selectedCity,
     setSelectedCity,
-    cities
+    cities,
+    searchMode,
+    setSearchMode
 }: FilterSidebarProps) {
     const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
 
@@ -53,6 +57,24 @@ export function FilterSidebar({
                     Filters
                 </h3>
                 <p className="text-xs text-muted-foreground pl-1">Refine your job search</p>
+            </div>
+
+            {/* Search Mode Toggle (Jobs vs People) */}
+            <div className="bg-muted/40 p-1 rounded-lg border border-muted-foreground/10 shrink-0 grid grid-cols-2 gap-1">
+                <button
+                    onClick={() => setSearchMode('jobs')}
+                    className={`flex items-center justify-center gap-2 py-2 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all ${searchMode === 'jobs' ? 'bg-background text-indigo-600 shadow-sm ring-1 ring-black/5' : 'text-muted-foreground hover:text-foreground'}`}
+                >
+                    <Briefcase className="h-3 w-3" />
+                    Find Jobs
+                </button>
+                <button
+                    onClick={() => setSearchMode('people')}
+                    className={`flex items-center justify-center gap-2 py-2 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all ${searchMode === 'people' ? 'bg-background text-indigo-600 shadow-sm ring-1 ring-black/5' : 'text-muted-foreground hover:text-foreground'}`}
+                >
+                    <Users className="h-3 w-3" />
+                    Find People
+                </button>
             </div>
 
             <div className="flex bg-muted/40 p-1 rounded-lg border border-muted-foreground/10 shrink-0">

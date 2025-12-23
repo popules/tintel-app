@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Header } from "@/components/dashboard/Header";
 import { FilterSidebar } from "@/components/dashboard/FilterSidebar";
 import { JobCard } from "@/components/dashboard/JobCard";
+import { CandidateCard } from "@/components/dashboard/CandidateCard";
 import { StatsRow } from "@/components/dashboard/Stats";
 import { Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -42,6 +43,10 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState("");
   const [savedJobIds, setSavedJobIds] = useState<Set<string>>(new Set());
 
+  // New State for Marketplace Pivot
+  const [searchMode, setSearchMode] = useState<'jobs' | 'people'>('jobs');
+  const [candidates, setCandidates] = useState<any[]>([]); // Will verify type later
+
   // --- DATA FETCHING ---
   const fetchJobs = async () => {
     setIsLoading(true);
@@ -70,6 +75,36 @@ export default function Home() {
     }
     setIsLoading(false);
   };
+
+  const fetchCandidates = async () => {
+    setIsLoading(true);
+    let query = supabase
+      .from('candidates')
+      .select('*')
+      .eq('is_open', true)
+      .order('created_at', { ascending: false });
+
+    // Apply Filters (Location is key)
+    if (selectedCounties.length > 0) {
+      // This is a simplification. Ideally candidates have a structured county.
+      // For V1 we text search location or add a county column to candidates later.
+      // query = query.in('county', selectedCounties) 
+    }
+
+    // Skill Search
+    if (searchTerm) {
+      query = query.or(`headline.ilike.%${searchTerm}%,bio.ilike.%${searchTerm}%`);
+    }
+
+    const { data, error } = await query;
+    if (error) {
+      console.error("Error fetching candidates:", error);
+      setCandidates([]);
+    } else {
+      setCandidates(data || []);
+    }
+    setIsLoading(false);
+  }
 
   useEffect(() => {
     const fetchFilterData = async () => {
@@ -134,10 +169,14 @@ export default function Home() {
     if (!prefLoaded) return;
 
     const handler = setTimeout(() => {
-      fetchJobs();
+      if (searchMode === 'jobs') {
+        fetchJobs();
+      } else {
+        fetchCandidates();
+      }
     }, 300);
     return () => clearTimeout(handler);
-  }, [selectedCategories, selectedCounties, selectedCity, searchTerm, prefLoaded]);
+  }, [selectedCategories, selectedCounties, selectedCity, searchTerm, prefLoaded, searchMode]);
 
   const handleCategoryToggle = (category: string) => {
     setSelectedCategories((prev) =>
@@ -170,6 +209,8 @@ export default function Home() {
           selectedCity={selectedCity}
           setSelectedCity={setSelectedCity}
           cities={availableCities}
+          searchMode={searchMode}
+          setSearchMode={setSearchMode}
         />
 
         <section className="flex-1 p-4 md:p-8 overflow-y-auto h-[calc(100vh-4rem)] bg-muted/5">
@@ -179,12 +220,18 @@ export default function Home() {
             <div className="flex flex-col gap-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-2xl font-bold tracking-tight">Active Jobs</h2>
-                  <p className="text-muted-foreground text-sm">Find your next client or career move.</p>
+                  <h2 className="text-2xl font-bold tracking-tight">
+                    {searchMode === 'jobs' ? 'Active Jobs' : 'Active Candidates'}
+                  </h2>
+                  <p className="text-muted-foreground text-sm">
+                    {searchMode === 'jobs'
+                      ? 'Find your next client or career move.'
+                      : 'Discover talent ready for your projects.'}
+                  </p>
                 </div>
                 <div className="flex items-center gap-2 bg-background p-1 rounded-lg border shadow-sm">
                   <span className="text-xs font-medium px-2 py-1 bg-muted rounded">
-                    {isLoading ? "..." : jobPosts.length} matches
+                    {isLoading ? "..." : (searchMode === 'jobs' ? jobPosts.length : candidates.length)} matches
                   </span>
                 </div>
               </div>
@@ -203,7 +250,7 @@ export default function Home() {
                     </Badge>
                   ))}
 
-                  {selectedCity && (
+                  {searchMode === 'jobs' && selectedCity && (
                     <Badge variant="secondary" className="pl-2 pr-1 py-1 gap-1 bg-indigo-500/10 text-indigo-700 border-indigo-500/20">
                       City: {selectedCity}
                       <button onClick={() => setSelectedCity(null)} className="hover:bg-indigo-500/20 rounded-full p-0.5">
@@ -212,7 +259,7 @@ export default function Home() {
                     </Badge>
                   )}
 
-                  {selectedCategories.map(cat => (
+                  {searchMode === 'jobs' && selectedCategories.map(cat => (
                     <Badge key={cat} variant="secondary" className="pl-2 pr-1 py-1 gap-1 bg-muted/50 text-muted-foreground border-muted-foreground/20">
                       {cat}
                       <button onClick={() => handleCategoryToggle(cat)} className="hover:bg-muted rounded-full p-0.5">
@@ -245,7 +292,7 @@ export default function Home() {
               )}
             </div>
 
-            {isLoading && jobPosts.length === 0 ? (
+            {isLoading && (searchMode === 'jobs' ? jobPosts.length === 0 : candidates.length === 0) ? (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {[...Array(6)].map((_, i) => (
                   <div key={i} className="h-[220px] rounded-xl border bg-card/50 p-6 space-y-4">
@@ -265,15 +312,21 @@ export default function Home() {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 pb-20">
-                {jobPosts.map((job, index) => (
-                  <JobCard key={job.id} job={job as any} index={index} initialSaved={savedJobIds.has(job.id)} />
-                ))}
+                {searchMode === 'jobs' ? (
+                  jobPosts.map((job, index) => (
+                    <JobCard key={job.id} job={job as any} index={index} initialSaved={savedJobIds.has(job.id)} />
+                  ))
+                ) : (
+                  candidates.map((candidate, index) => (
+                    <CandidateCard key={candidate.id} candidate={candidate} index={index} />
+                  ))
+                )}
               </div>
             )}
 
-            {!isLoading && jobPosts.length === 0 && (
+            {!isLoading && (searchMode === 'jobs' ? jobPosts.length === 0 : candidates.length === 0) && (
               <div className="flex h-64 flex-col items-center justify-center text-muted-foreground bg-muted/20 rounded-2xl border-2 border-dashed border-muted">
-                <p className="text-lg font-medium">No jobs found matching your criteria.</p>
+                <p className="text-lg font-medium">No results found.</p>
                 <p className="text-sm">Try adjusting your filters or search term.</p>
               </div>
             )}
