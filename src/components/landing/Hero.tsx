@@ -44,8 +44,7 @@ export function Hero() {
                     transition={{ duration: 0.5, delay: 0.2 }}
                     className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed"
                 >
-                    Automated Lead Gen. Intelligent Outreach. Verified Candidates. <br className="hidden sm:block" />
-                    The all-in-one operating system to find your next hire—or your next job.
+                    Automate your lead gen. Personalize your outreach. Find your future.
                 </motion.p>
 
                 <motion.div
