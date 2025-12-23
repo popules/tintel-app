@@ -35,7 +35,7 @@ export function Hero() {
                     className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tighter mb-6 bg-gradient-to-br from-white via-white to-white/40 bg-clip-text text-transparent"
                 >
                     The Talent Intelligence <br className="hidden md:block" />
-                    <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">Marketplace</span>
+                    <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">Platform</span>
                 </motion.h1>
 
                 <motion.p
@@ -44,8 +44,8 @@ export function Hero() {
                     transition={{ duration: 0.5, delay: 0.2 }}
                     className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed"
                 >
-                    Connecting top active candidates with the best employers. <br className="hidden sm:block" />
-                    Stop hunting. Start hiring. Or get found instantly.
+                    Automated Lead Gen. Intelligent Outreach. Verified Candidates. <br className="hidden sm:block" />
+                    The all-in-one operating system to find your next hire—or your next job.
                 </motion.p>
 
                 <motion.div
