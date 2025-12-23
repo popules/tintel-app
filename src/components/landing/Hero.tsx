@@ -35,7 +35,7 @@ export function Hero() {
                     className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tighter mb-6 bg-gradient-to-br from-white via-white to-white/40 bg-clip-text text-transparent"
                 >
                     The Talent Intelligence <br className="hidden md:block" />
-                    <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">Platform for Modern Recruitment</span>
+                    <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">Marketplace</span>
                 </motion.h1>
 
                 <motion.p
@@ -44,7 +44,8 @@ export function Hero() {
                     transition={{ duration: 0.5, delay: 0.2 }}
                     className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed"
                 >
-                    Stop hunting. Start hiring. Tintel aggregates the entire market, enriches every lead, and drafts your outreach with advanced AI.
+                    Connecting top active candidates with the best employers. <br className="hidden sm:block" />
+                    Stop hunting. Start hiring. Or get found instantly.
                 </motion.p>
 
                 <motion.div
@@ -53,17 +54,27 @@ export function Hero() {
                     transition={{ duration: 0.5, delay: 0.3 }}
                     className="flex flex-col sm:flex-row gap-4 justify-center items-center"
                 >
-                    <Button size="lg" className="h-12 px-8 text-base bg-white text-black hover:bg-white/90 shadow-xl shadow-white/10" asChild>
-                        <Link href="/dashboard">
-                            Launch Dashboard
-                            <ArrowRight className="ml-2 h-4 w-4" />
-                        </Link>
-                    </Button>
-                    <Button size="lg" variant="outline" className="h-12 px-8 text-base border-white/10 text-white hover:bg-white/5" asChild>
-                        <Link href="#pricing">
-                            View Pricing
-                        </Link>
-                    </Button>
+                    <div className="flex flex-col items-center gap-2 group">
+                        <Button size="lg" className="h-12 px-8 text-base bg-white text-black hover:bg-white/90 shadow-xl shadow-white/10 w-full sm:w-auto" asChild>
+                            <Link href="/signup">
+                                I'm Hiring
+                                <ArrowRight className="ml-2 h-4 w-4" />
+                            </Link>
+                        </Button>
+                        <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">For Recruiters</span>
+                    </div>
+
+                    <span className="text-muted-foreground text-sm font-medium italic px-2">or</span>
+
+                    <div className="flex flex-col items-center gap-2 group">
+                        <Button size="lg" variant="outline" className="h-12 px-8 text-base border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300 w-full sm:w-auto" asChild>
+                            <Link href="/candidate/signup">
+                                <CheckCircle2 className="mr-2 h-4 w-4" />
+                                I'm Looking for Work
+                            </Link>
+                        </Button>
+                        <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">For Candidates</span>
+                    </div>
                 </motion.div>
 
                 {/* Dashboard Preview Mockup */}
