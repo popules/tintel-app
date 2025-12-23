@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Wand2, Loader2, CheckCircle2, AlertCircle, Phone, MapPin, Globe, Linkedin, User } from "lucide-react";
+import { Wand2, Loader2, CheckCircle2, AlertCircle, Phone, MapPin, Globe, Linkedin, User, UploadCloud } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { SWEDISH_COUNTIES } from "@/lib/data/counties";
@@ -24,6 +24,7 @@ export default function CandidateOnboarding() {
     const [user, setUser] = useState<any>(null);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
+    const [uploading, setUploading] = useState(false);
 
     // Form State
     const [headline, setHeadline] = useState("");
@@ -82,6 +83,35 @@ export default function CandidateOnboarding() {
         };
         fetchUser();
     }, [router, supabase]);
+
+    const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        try {
+            setUploading(true);
+            if (!event.target.files || event.target.files.length === 0) {
+                throw new Error('You must select an image to upload.');
+            }
+
+            const file = event.target.files[0];
+            const fileExt = file.name.split('.').pop();
+            const filePath = `${user.id}/${Math.random()}.${fileExt}`;
+
+            const { error: uploadError } = await supabase.storage
+                .from('avatars')
+                .upload(filePath, file);
+
+            if (uploadError) {
+                throw uploadError;
+            }
+
+            const { data } = supabase.storage.from('avatars').getPublicUrl(filePath);
+            setAvatarUrl(data.publicUrl);
+            toast.success("Image uploaded successfully!");
+        } catch (error: any) {
+            toast.error("Error uploading avatar: " + error.message);
+        } finally {
+            setUploading(false);
+        }
+    };
 
     const handleMagicFill = async () => {
         if (!headline) {
@@ -304,18 +334,32 @@ export default function CandidateOnboarding() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="avatar">Profile Picture URL</Label>
-                                    <div className="relative">
-                                        <User className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                                        <Input
-                                            id="avatar"
-                                            placeholder="https://... (Image URL)"
-                                            className="pl-9 bg-black/20 border-white/5 focus:border-indigo-500/50 transition-colors"
-                                            value={avatarUrl}
-                                            onChange={(e) => setAvatarUrl(e.target.value)}
-                                        />
+                                    <Label htmlFor="avatar">Profile Picture</Label>
+                                    <div className="flex items-center gap-4">
+                                        {avatarUrl ? (
+                                            // eslint-disable-next-line @next/next/no-img-element
+                                            <img src={avatarUrl} alt="Avatar" className="w-16 h-16 rounded-full object-cover border border-white/10" />
+                                        ) : (
+                                            <div className="w-16 h-16 rounded-full bg-indigo-500/20 flex items-center justify-center border border-indigo-500/30 text-indigo-400">
+                                                <User className="h-8 w-8" />
+                                            </div>
+                                        )}
+                                        <div className="flex-1">
+                                            <label htmlFor="avatar-upload" className="cursor-pointer inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 px-4 py-2 w-full border-white/5 bg-black/20 hover:bg-white/5">
+                                                {uploading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UploadCloud className="mr-2 h-4 w-4" />}
+                                                {uploading ? "Uploading..." : "Upload Photo"}
+                                            </label>
+                                            <Input
+                                                id="avatar-upload"
+                                                type="file"
+                                                accept="image/*"
+                                                className="hidden"
+                                                onChange={handleImageUpload}
+                                                disabled={uploading}
+                                            />
+                                            <p className="text-[10px] text-muted-foreground mt-2">Only images allowed. Max 2MB.</p>
+                                        </div>
                                     </div>
-                                    <p className="text-[10px] text-muted-foreground">Paste a link to your photo (e.g. from LinkedIn). Upload coming soon.</p>
                                 </div>
                             </div>
 
