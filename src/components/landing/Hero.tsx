@@ -56,7 +56,7 @@ export function Hero() {
                 >
                     <div className="flex flex-col items-center gap-2 group">
                         <Button size="lg" className="h-12 px-8 text-base bg-white text-black hover:bg-white/90 shadow-xl shadow-white/10 w-full sm:w-auto" asChild>
-                            <Link href="/about">
+                            <Link href="/about/recruiters">
                                 I'm Hiring
                                 <ArrowRight className="ml-2 h-4 w-4" />
                             </Link>
@@ -68,7 +68,7 @@ export function Hero() {
 
                     <div className="flex flex-col items-center gap-2 group">
                         <Button size="lg" variant="outline" className="h-12 px-8 text-base border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300 w-full sm:w-auto" asChild>
-                            <Link href="/about">
+                            <Link href="/about/candidates">
                                 <CheckCircle2 className="mr-2 h-4 w-4" />
                                 I'm Looking for Work
                             </Link>

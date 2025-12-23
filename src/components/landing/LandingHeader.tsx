@@ -33,10 +33,10 @@ export function LandingHeader() {
                 </nav>
 
                 <div className="flex items-center gap-3">
-                    <Button asChild size="sm" variant="ghost" className="text-white hover:text-white hover:bg-white/10 font-medium">
+                    <Button asChild size="sm" variant="ghost" className="text-white hover:text-white hover:bg-white/10 font-medium h-9 px-4">
                         <Link href="/candidate/login">For Candidates</Link>
                     </Button>
-                    <Button asChild size="sm" className="bg-white text-black hover:bg-white/90 font-semibold">
+                    <Button asChild size="sm" className="bg-white text-black hover:bg-white/90 font-bold h-9 px-4 shadow-lg shadow-white/5 transition-all hover:scale-105 active:scale-95">
                         <Link href="/login">For Companies</Link>
                     </Button>
                 </div>
