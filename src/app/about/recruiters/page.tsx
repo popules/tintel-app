@@ -31,8 +31,8 @@ export default function RecruiterAboutPage() {
                             transition={{ delay: 0.1 }}
                             className="text-5xl md:text-7xl font-black tracking-tighter mb-8 bg-gradient-to-b from-white to-white/60 bg-clip-text text-transparent"
                         >
-                            Stop searching. <br />
-                            <span className="text-indigo-400">Start closing.</span>
+                            The Operating System <br />
+                            <span className="text-indigo-400">for Modern Recruitment.</span>
                         </motion.h1>
 
                         <motion.p
@@ -41,7 +41,7 @@ export default function RecruiterAboutPage() {
                             transition={{ delay: 0.2 }}
                             className="text-xl md:text-2xl text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-10"
                         >
-                            Access a curated marketplace of top active candidates who are actually looking for work right now.
+                            Find active needs. Identify the right contact. Send the perfect pitch. All in seconds.
                         </motion.p>
 
                         <motion.div
@@ -51,7 +51,7 @@ export default function RecruiterAboutPage() {
                         >
                             <Button size="lg" className="h-14 px-8 text-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-full shadow-lg shadow-indigo-500/20" asChild>
                                 <Link href="/signup">
-                                    Start Finding Talent
+                                    Start Finding Leads
                                     <ArrowRight className="ml-2 h-5 w-5" />
                                 </Link>
                             </Button>
@@ -59,7 +59,7 @@ export default function RecruiterAboutPage() {
                     </div>
 
                     {/* Features Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-32">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-32">
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
@@ -70,9 +70,9 @@ export default function RecruiterAboutPage() {
                             <div className="h-12 w-12 rounded-2xl bg-indigo-500/20 flex items-center justify-center text-indigo-400 mb-6">
                                 <Search className="h-6 w-6" />
                             </div>
-                            <h3 className="text-xl font-bold mb-3">Direct Access</h3>
+                            <h3 className="text-xl font-bold mb-3">Smart Lead Gen</h3>
                             <p className="text-muted-foreground leading-relaxed">
-                                Bypass the noise of LinkedIn. Search our database of candidates who have explicitly raised their hand for new opportunities.
+                                We monitor thousands of job boards to identify companies hiring <i>right now</i>. Know who has budget before your competitors do.
                             </p>
                         </motion.div>
 
@@ -84,11 +84,11 @@ export default function RecruiterAboutPage() {
                             className="p-8 rounded-3xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
                         >
                             <div className="h-12 w-12 rounded-2xl bg-pink-500/20 flex items-center justify-center text-pink-400 mb-6">
-                                <BarChart3 className="h-6 w-6" />
+                                <LockKeyhole className="h-6 w-6" />
                             </div>
-                            <h3 className="text-xl font-bold mb-3">Market Intelligence</h3>
+                            <h3 className="text-xl font-bold mb-3">Contact Intelligence</h3>
                             <p className="text-muted-foreground leading-relaxed">
-                                Understand the talent landscape with real-time data on supply, demand, and salary trends in your specific region.
+                                Stop guessing. We identify the actual Hiring Manager and enrich their profile with verified contact details (email & phone).
                             </p>
                         </motion.div>
 
@@ -99,12 +99,28 @@ export default function RecruiterAboutPage() {
                             transition={{ delay: 0.3 }}
                             className="p-8 rounded-3xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
                         >
-                            <div className="h-12 w-12 rounded-2xl bg-yellow-500/20 flex items-center justify-center text-yellow-400 mb-6">
-                                <LockKeyhole className="h-6 w-6" />
+                            <div className="h-12 w-12 rounded-2xl bg-purple-500/20 flex items-center justify-center text-purple-400 mb-6">
+                                <BarChart3 className="h-6 w-6" />
                             </div>
-                            <h3 className="text-xl font-bold mb-3">Verify & Unlock</h3>
+                            <h3 className="text-xl font-bold mb-3">AI Personalization</h3>
                             <p className="text-muted-foreground leading-relaxed">
-                                Preview profiles anonymously. Only pay when you find a perfect match and want to unlock contact details.
+                                Our AI analyzes the job ad and company news to draft hyper-personalized outreach emails that get replies.
+                            </p>
+                        </motion.div>
+
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.4 }}
+                            className="p-8 rounded-3xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors border-l-4 border-l-emerald-500"
+                        >
+                            <div className="h-12 w-12 rounded-2xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 mb-6">
+                                <Search className="h-6 w-6" />
+                            </div>
+                            <h3 className="text-xl font-bold mb-3 text-emerald-400">Active Talent Marketplace</h3>
+                            <p className="text-muted-foreground leading-relaxed">
+                                Need to fill a role instantly? Access our curated database of pre-vetted candidates who are ready to move.
                             </p>
                         </motion.div>
                     </div>
