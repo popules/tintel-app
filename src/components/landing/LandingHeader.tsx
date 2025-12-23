@@ -34,11 +34,11 @@ export function LandingHeader() {
 
                 <div className="flex items-center gap-4">
                     <Link href="/candidate/login" className="text-sm font-medium text-muted-foreground hover:text-emerald-400 transition-colors hidden sm:block">
-                        For Candidates
+                        Candidate Login
                     </Link>
                     <div className="h-4 w-px bg-white/10 hidden sm:block" />
                     <Link href="/login" className="text-sm font-medium text-white hover:text-indigo-400 transition-colors hidden sm:block">
-                        Log in
+                        Recruiter Login
                     </Link>
                     <Button asChild size="sm" className="bg-white text-black hover:bg-white/90 font-semibold">
                         <Link href="/signup">Get Started</Link>

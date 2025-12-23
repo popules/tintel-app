@@ -49,18 +49,22 @@ export default function CandidateLoginPage() {
     }
 
     return (
-        <div className="flex min-h-[80vh] items-center justify-center p-4">
+        <div className="flex min-h-screen items-center justify-center bg-muted/20 p-4">
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.3 }}
                 className="w-full max-w-sm"
             >
-                <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+                <Card className="border-0 shadow-lg shadow-indigo-500/10 backdrop-blur-sm bg-background/80">
                     <CardHeader className="space-y-1 text-center">
+                        <div className="flex justify-center items-center gap-2 mb-4">
+                            <div className="h-4 w-4 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 shadow-xl shadow-indigo-500/20 ring-2 ring-white/10" />
+                            <span className="font-black text-3xl tracking-tighter">tintel</span>
+                        </div>
                         <CardTitle className="text-2xl font-bold tracking-tight">Candidate Login</CardTitle>
                         <CardDescription>
-                            Access your profile and leads
+                            Access your profile and find your dream job
                         </CardDescription>
                     </CardHeader>
                     <form onSubmit={handleLogin}>
@@ -79,6 +83,7 @@ export default function CandidateLoginPage() {
                                     required
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
+                                    className="bg-muted/50"
                                 />
                             </div>
                             <div className="grid gap-2">
@@ -89,17 +94,18 @@ export default function CandidateLoginPage() {
                                     required
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
+                                    className="bg-muted/50"
                                 />
                             </div>
                         </CardContent>
                         <CardFooter className="flex flex-col gap-4">
-                            <Button className="w-full" disabled={loading}>
+                            <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-200" disabled={loading}>
                                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 Sign In
                             </Button>
                             <p className="text-xs text-center text-muted-foreground">
                                 Don&apos;t have an account?{' '}
-                                <Link href="/candidate/signup" className="underline underline-offset-4 hover:text-primary transition-colors">
+                                <Link href="/candidate/signup" className="underline underline-offset-4 hover:text-indigo-600 text-foreground transition-colors">
                                     Sign up
                                 </Link>
                             </p>
