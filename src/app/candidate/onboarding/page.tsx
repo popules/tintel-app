@@ -1,5 +1,4 @@
-// No replacement yet, need to view file first.
-// Instead I will just view the file to debug.
+"use client";
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
