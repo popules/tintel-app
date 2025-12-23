@@ -32,16 +32,12 @@ export function LandingHeader() {
                     <Link href="/about" className="text-sm font-medium text-muted-foreground hover:text-white transition-colors">About</Link>
                 </nav>
 
-                <div className="flex items-center gap-4">
-                    <Link href="/candidate/login" className="text-sm font-medium text-muted-foreground hover:text-emerald-400 transition-colors hidden sm:block">
-                        Candidate Login
-                    </Link>
-                    <div className="h-4 w-px bg-white/10 hidden sm:block" />
-                    <Link href="/login" className="text-sm font-medium text-white hover:text-indigo-400 transition-colors hidden sm:block">
-                        Recruiter Login
-                    </Link>
+                <div className="flex items-center gap-3">
+                    <Button asChild size="sm" variant="ghost" className="text-white hover:text-white hover:bg-white/10 font-medium">
+                        <Link href="/candidate/login">For Candidates</Link>
+                    </Button>
                     <Button asChild size="sm" className="bg-white text-black hover:bg-white/90 font-semibold">
-                        <Link href="/signup">Get Started</Link>
+                        <Link href="/login">For Companies</Link>
                     </Button>
                 </div>
             </div>
