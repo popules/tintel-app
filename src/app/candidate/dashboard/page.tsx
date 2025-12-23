@@ -27,6 +27,13 @@ export default function CandidateDashboardPage() {
                 return;
             }
 
+            // Security Check: Ensure user is a candidate
+            if (user.user_metadata?.role !== 'candidate') {
+                // Redirect recruiters to their own dashboard if they stumble here
+                router.push("/dashboard");
+                return;
+            }
+
             const { data, error } = await supabase
                 .from("candidates")
                 .select("*")

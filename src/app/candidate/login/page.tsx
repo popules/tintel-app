@@ -33,8 +33,18 @@ export default function CandidateLoginPage() {
             setError(error.message)
             setLoading(false)
         } else {
-            router.push('/candidate/dashboard')
-            router.refresh()
+            // Check Role
+            const { data: { user } } = await supabase.auth.getUser();
+            const role = user?.user_metadata?.role;
+
+            if (role !== 'candidate') {
+                setError("This account is not a candidate account.");
+                await supabase.auth.signOut(); // Force logout
+                setLoading(false);
+            } else {
+                router.push('/candidate/dashboard');
+                router.refresh();
+            }
         }
     }
 
