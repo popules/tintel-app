@@ -1,6 +1,7 @@
-"use client";
+// No replacement yet, need to view file first.
+// Instead I will just view the file to debug.
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
@@ -15,6 +16,8 @@ import { Badge } from '@/components/ui/badge'
 export default function CandidateOnboardingPage() {
     const [loading, setLoading] = useState(false)
     const [success, setSuccess] = useState(false)
+    const [isEditing, setIsEditing] = useState(false)
+    const [error, setError] = useState<string | null>(null)
     const router = useRouter()
     const supabase = createClient()
 
@@ -23,44 +26,77 @@ export default function CandidateOnboardingPage() {
     const [location, setLocation] = useState('')
     const [experience, setExperience] = useState('')
     const [bio, setBio] = useState('')
-    const [skillsInput, setSkillsInput] = useState('')
+    const [skills, setSkills] = useState('')
+
+    useEffect(() => {
+        const fetchProfile = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
+                // Not logged in? Redirect to signup/login
+                // router.push("/candidate/login");
+                return;
+            }
+
+            const { data, error } = await supabase
+                .from("candidates")
+                .select("*")
+                .eq("id", user.id)
+                .single();
+
+            if (data) {
+                // Populate form for editing
+                setIsEditing(true);
+                setHeadline(data.headline || '');
+                setLocation(data.location || '');
+                setExperience(data.experience_years ? String(data.experience_years) : '');
+                setSkills(data.skills?.join(', ') || '');
+                setBio(data.bio || '');
+            }
+        };
+        fetchProfile();
+    }, [supabase]); // Added supabase to dependency array for completeness
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setLoading(true)
+        setError(null)
 
         try {
             const { data: { user } } = await supabase.auth.getUser()
-
             if (!user) {
-                console.error("No user found")
+                setError("You must be logged in.")
+                setLoading(false)
                 return
             }
 
-            const skillsArray = skillsInput.split(',').map(s => s.trim()).filter(s => s.length > 0)
+            const skillsArray = skills.split(',').map(s => s.trim()).filter(s => s.length > 0)
 
-            const { error } = await supabase
+            const payload = {
+                id: user.id,
+                headline,
+                location,
+                experience_years: parseInt(experience) || 0,
+                skills: skillsArray,
+                bio,
+                is_open: true, // Default to open on creation/update? or keep existing state? Logic below handles "upsert" effectively.
+            }
+
+            const { error: upsertError } = await supabase
                 .from('candidates')
-                .insert({
-                    id: user.id,
-                    headline,
-                    location,
-                    experience_years: parseInt(experience) || 0,
-                    bio,
-                    skills: skillsArray,
-                    is_open: true
-                })
+                .upsert(payload)
 
-            if (error) throw error
-
-            setSuccess(true)
-            setTimeout(() => {
-                router.push('/candidate/dashboard')
-            }, 2000)
-
-        } catch (error) {
-            console.error('Error saving profile:', error)
-            // Ideally show toast
+            if (upsertError) {
+                setError(upsertError.message)
+            } else {
+                setSuccess(true)
+                // Short delay then redirect
+                setTimeout(() => {
+                    router.push('/candidate/dashboard')
+                }, 1500)
+            }
+        } catch (err) {
+            console.error('Error saving profile:', err)
+            setError('An unexpected error occurred.')
         } finally {
             setLoading(false)
         }
@@ -160,11 +196,11 @@ export default function CandidateOnboardingPage() {
                                 <Label htmlFor="skills">Skills & Certificates</Label>
                                 <Textarea
                                     id="skills"
-                                    placeholder="e.g. B-License, C-License, Framing, Roofing, Safety Card"
-                                    value={skillsInput}
-                                    onChange={(e) => setSkillsInput(e.target.value)}
+                                    placeholder="React, TypeScript, Node.js"
+                                    value={skills}
+                                    onChange={(e) => setSkills(e.target.value)}
                                 />
-                                <p className="text-xs text-muted-foreground">Separate with commas.</p>
+                                <p className="text-[10px] text-muted-foreground">Comma separated</p>
                             </div>
 
                             <div className="grid gap-2">
@@ -184,9 +220,9 @@ export default function CandidateOnboardingPage() {
                                 <Sparkles className="mr-1 h-3 w-3 text-indigo-400" />
                                 AI Optimized (Coming Soon)
                             </Badge>
-                            <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700 text-white" disabled={loading}>
+                            <Button className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:opacity-90 transition-opacity text-white" disabled={loading}>
                                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                Launch Profile
+                                {isEditing ? "Update Profile" : "Create Profile"}
                             </Button>
                         </CardFooter>
                     </form>
