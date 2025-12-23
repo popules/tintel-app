@@ -1,3 +1,9 @@
+"use client";
+
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Menu, X } from "lucide-react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
 export function LandingHeader() {
