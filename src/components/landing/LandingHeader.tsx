@@ -19,9 +19,9 @@ export function LandingHeader() {
     }, []);
 
     return (
-        <header className={`fixed top-0 z-50 w-full transition-all duration-300 ${scrolled || mobileMenuOpen ? "bg-black/80 backdrop-blur-xl border-b border-white/10 py-3" : "bg-transparent py-5"}`}>
+        <header className={`fixed top-0 z-50 w-full transition-all duration-300 ${scrolled || mobileMenuOpen ? "bg-[#0f111a] border-b border-white/10 py-3" : "bg-transparent py-5"}`}>
             <div className="container px-4 md:px-6 mx-auto flex items-center justify-between">
-                <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-all group z-50">
+                <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-all group z-50 relative">
                     <div className="h-3 w-3 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 shadow-lg shadow-indigo-500/20 group-hover:scale-125 transition-transform duration-300 ring-1 ring-white/10" />
                     <span className="font-bold text-2xl tracking-tighter text-white">
                         tintel
@@ -47,7 +47,7 @@ export function LandingHeader() {
 
                 {/* Mobile Menu Toggle */}
                 <button
-                    className="md:hidden z-50 p-2 text-white"
+                    className="md:hidden z-50 p-2 text-white relative"
                     onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 >
                     {mobileMenuOpen ? <X /> : <Menu />}
@@ -62,7 +62,7 @@ export function LandingHeader() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
                         transition={{ duration: 0.2 }}
-                        className="fixed inset-0 top-[60px] z-40 bg-black/95 backdrop-blur-3xl md:hidden flex flex-col p-6 gap-6 border-t border-white/10"
+                        className="fixed inset-0 pt-24 pb-10 px-6 z-40 bg-[#0f111a] md:hidden flex flex-col gap-6"
                     >
                         <nav className="flex flex-col gap-6">
                             <Link href="#features" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium text-muted-foreground hover:text-white transition-colors">Features</Link>

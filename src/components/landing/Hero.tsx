@@ -81,7 +81,7 @@ export function Hero() {
                     initial={{ opacity: 0, y: 40 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.5 }}
-                    className="mt-20 relative mx-auto max-w-6xl rounded-xl border border-white/10 bg-[#0f111a] shadow-2xl overflow-hidden aspect-[16/10] group text-left font-sans"
+                    className="mt-12 md:mt-20 relative mx-auto max-w-6xl rounded-xl border border-white/10 bg-[#0f111a] shadow-2xl overflow-hidden min-h-[400px] md:aspect-[16/10] group text-left font-sans"
                 >
                     {/* Browser Toolbar Mock */}
                     <div className="absolute top-0 left-0 right-0 h-10 bg-[#1a1d2d] border-b border-white/5 flex items-center px-4 gap-4 z-20">
