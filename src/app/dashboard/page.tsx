@@ -78,6 +78,30 @@ export default function Home() {
 
   const fetchCandidates = async () => {
     setIsLoading(true);
+
+    // Mode 1: Smart AI Search (Vector)
+    // If user typed a search term, we use vector search
+    if (searchTerm && searchTerm.length > 2) {
+      try {
+        const { searchCandidates } = await import("@/app/actions/search");
+        const result = await searchCandidates(searchTerm);
+
+        if (result.success && result.data) {
+          setCandidates(result.data);
+        } else {
+          console.error("Vector search failed:", result.error);
+          // Fallback to basic list? Or just empty?
+          setCandidates([]);
+        }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setIsLoading(false);
+      }
+      return;
+    }
+
+    // Mode 2: Browse All (Basic Supabase Query)
     let query = supabase
       .from('candidates')
       .select('*')
@@ -86,14 +110,7 @@ export default function Home() {
 
     // Apply Filters (Location is key)
     if (selectedCounties.length > 0) {
-      // This is a simplification. Ideally candidates have a structured county.
-      // For V1 we text search location or add a county column to candidates later.
-      // query = query.in('county', selectedCounties) 
-    }
-
-    // Skill Search
-    if (searchTerm) {
-      query = query.or(`headline.ilike.%${searchTerm}%,bio.ilike.%${searchTerm}%`);
+      // Logic for location filtering if columns exist
     }
 
     const { data, error } = await query;

@@ -84,6 +84,12 @@ export function CandidateCard({ candidate, index }: CandidateCardProps) {
                                 {isUnlocked && <p className="text-xs font-medium text-indigo-600 mb-0.5">{candidate.headline}</p>}
 
                                 <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
+                                    {(candidate as any).match_score && (
+                                        <div className="flex items-center gap-1 text-emerald-600 font-bold bg-emerald-500/10 px-1.5 py-0.5 rounded">
+                                            <Sparkles className="h-3 w-3" />
+                                            {Math.round((candidate as any).match_score * 100)}% Match
+                                        </div>
+                                    )}
                                     <span className="flex items-center gap-1">
                                         <MapPin className="h-3 w-3" />
                                         {candidate.location || "Remote"}

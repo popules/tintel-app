@@ -108,3 +108,31 @@ export async function generateRecruiterPitch(jobTitle: string, company: string, 
         return { success: false, error: error.message };
     }
 }
+
+/**
+ * GENERATE VECTOR EMBEDDING
+ * Context: Smart Search & Matchmaking
+ */
+export async function generateEmbedding(text: string) {
+    if (!openai) {
+        return { success: false, error: "OpenAI API Key not configured." };
+    }
+
+    try {
+        // Sanitize text (remove newlines etc)
+        const cleanText = text.replace(/\n/g, ' ');
+
+        const response = await openai.embeddings.create({
+            model: "text-embedding-3-small",
+            input: cleanText,
+            encoding_format: "float",
+        });
+
+        const embedding = response.data[0].embedding;
+        return { success: true, data: embedding };
+
+    } catch (error: any) {
+        console.error("Embedding Error:", error);
+        return { success: false, error: error.message };
+    }
+}

@@ -188,6 +188,40 @@ export default function CandidateOnboarding() {
 
             if (candidateError) throw candidateError;
 
+            // 1.5. Generate & Store Vector Embedding (The Matchmaker)
+            try {
+                // Combine text for a rich semantic representation
+                const embeddingText = `
+                    Headline: ${headline}
+                    Skills: ${skills}
+                    Bio: ${bio}
+                    Experience: ${experience} years
+                    Location: ${location}
+                `.trim();
+
+                // Dynamic import to call server action
+                const { generateEmbedding } = await import("@/app/actions/ai");
+                const embedResult = await generateEmbedding(embeddingText);
+
+                if (embedResult.success && embedResult.data) {
+                    // Store in candidate_embeddings table
+                    // NOTE: upsert based on candidate_id (unique constraint)
+                    const { error: embedError } = await supabase
+                        .from('candidate_embeddings')
+                        .upsert({
+                            candidate_id: user.id,
+                            embedding: embedResult.data,
+                            updated_at: new Date().toISOString() // Assuming schema has updated_at, if not it inserts new or updates
+                        }, { onConflict: 'candidate_id' });
+
+                    if (embedError) console.error("Embedding Store Error:", embedError);
+                }
+            } catch (aiError) {
+                console.error("Background Embedding Failed (Non-fatal):", aiError);
+            }
+
+            if (candidateError) throw candidateError;
+
             // 2. Update Profile Table (Avatar)
             if (avatarUrl) {
                 const { error: profileError } = await supabase
