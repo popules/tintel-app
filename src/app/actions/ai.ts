@@ -136,3 +136,41 @@ export async function generateEmbedding(text: string) {
         return { success: false, error: error.message };
     }
 }
+
+/**
+ * ANALYZE JOB TEXT (Hybrid Approach)
+ * The client fetches the text (to avoid IP blocks) and sends it here for AI analysis.
+ */
+export async function analyzeJobText(text: string) {
+    if (!openai) return { success: false, error: "OpenAI API Key not configured." };
+
+    try {
+        const prompt = `
+        Analyze this job ad text and extract the hiring manager or recruiter's details.
+        Text Context: "${text.slice(0, 3000)}"
+
+        If no direct email is found but a name is present, try to INFER email (First.Last@Company.com) ONLY if confident.
+
+        Return JSON:
+        {
+            "name": "Name or 'Hiring Manager'",
+            "email": "Email or null",
+            "role": "Title or 'Recruiter'",
+            "confidence": "High/Medium/Low"
+        }
+        `;
+
+        const completion = await openai.chat.completions.create({
+            messages: [{ role: "user", content: prompt }],
+            model: "gpt-4o",
+            response_format: { type: "json_object" },
+        });
+
+        const content = completion.choices[0].message.content;
+        return { success: true, data: JSON.parse(content || "{}") };
+
+    } catch (error: any) {
+        console.error("Analysis Error:", error);
+        return { success: false, error: error.message };
+    }
+}

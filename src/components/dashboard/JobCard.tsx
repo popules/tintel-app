@@ -96,28 +96,65 @@ export function JobCard({ job, index, initialSaved = false }: JobCardProps) {
         e.preventDefault()
         e.stopPropagation()
         setEnriching(true);
-        // Call our new API
-        try {
-            const res = await fetch(`/api/scrape-job?url=${encodeURIComponent(job.webbplatsurl)}`); // Corrected to job.webbplatsurl
-            const data = await res.json();
 
-            // Should now get real data or nulls
+        try {
+            let enrichedData = null;
+            let description = null;
+
+            // --- STRATEGY 1: CLIENT-SIDE FETCH (Bypass Vercel/Server IP Block) ---
+            // If it is a Platsbanken URL, we can fetch directly from JobTech API in the browser!
+            const pbIdMatch = job.webbplatsurl.match(/platsbanken\/annonser\/(\d+)/) || job.webbplatsurl.match(/platsbanken\/annons\/(\d+)/);
+
+            if (pbIdMatch) {
+                const adId = pbIdMatch[1];
+                try {
+                    // Fetch from JobTech Public API (CORS enabled usually)
+                    const res = await fetch(`https://jobsearch.api.jobtechdev.se/ad/${adId}`, {
+                        headers: { "Accept": "application/json" }
+                    });
+                    if (res.ok) {
+                        const adData = await res.json();
+                        description = adData.description?.text;
+
+                        if (description) {
+                            // We have the text! Now send it to the server for AI analysis
+                            const { analyzeJobText } = await import("@/app/actions/ai");
+                            const aiRes = await analyzeJobText(description); // Send text to OpenAI 
+
+                            if (aiRes.success && aiRes.data) {
+                                enrichedData = aiRes.data;
+                            }
+                        }
+                    }
+                } catch (clientErr) {
+                    console.warn("Client-side fetch failed, falling back to server proxy", clientErr);
+                }
+            }
+
+            // --- STRATEGY 2: SERVER PROXY FALLBACK (Old Way) ---
+            if (!enrichedData) {
+                const res = await fetch(`/api/scrape-job?url=${encodeURIComponent(job.webbplatsurl)}`);
+                enrichedData = await res.json();
+                description = enrichedData.description || description;
+            }
+
+            // Apply Data
             setLead({
-                name: data.name || "Hiring Manager",
-                role: data.role || "Recruiter",
-                email: data.email || null, // Allow null to show specific UI
-                avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${data.email || job.company}`,
+                name: enrichedData.name || "Hiring Manager",
+                role: enrichedData.role || "Recruiter",
+                email: enrichedData.email || null,
+                avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${enrichedData.email || job.company}`,
                 company: job.company
             });
-            // Also save the explanation/description for the "View Ad" feature if available
-            if (data.description) {
-                setAdConfig({ description: data.description });
+
+            if (description) {
+                setAdConfig({ description: description });
             }
 
         } catch (e) {
             console.error(e);
             alert("Could not find contact details.");
-            setLead({ // Set a generic lead to indicate no direct contact found
+            setLead({
                 name: "No direct contact found",
                 role: "N/A",
                 email: null,
