@@ -29,12 +29,18 @@ export async function fetchCompanyNews(companyName: string): Promise<{ success: 
 
         // Query Google News
         // hl=sv (Language: Swedish), gl=SE (Location: Sweden), ceid=SE:sv
-        const query = encodeURIComponent(`${cleanName}`);
-        const rssUrl = `https://news.google.com/rss/search?q=${query}&hl=sv&gl=SE&ceid=SE:sv`;
+        // Improve query: Search for the company name + "Sverige" to ensure relevance if it's a global term
+        // But for big companies "SAAB", just "SAAB" is fine.
+        // Let's try to be specific: "Company Sverige"
+        const query = `${cleanName} Sverige`;
 
-        console.log(`Fetching news for: ${cleanName} (${rssUrl})`);
+        console.log("Fetching news for: " + query);
 
-        const feed = await parser.parseURL(rssUrl);
+        const feedUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=sv&gl=SE&ceid=SE:sv`;
+
+        console.log(`Fetching news from URL: ${feedUrl}`);
+
+        const feed = await parser.parseURL(feedUrl);
 
         const news = feed.items.slice(0, 5).map(item => ({
             title: item.title || "No Title",

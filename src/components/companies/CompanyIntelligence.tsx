@@ -157,29 +157,6 @@ export function CompanyIntelligence({ companyName, jobs }: CompanyIntelligencePr
             {/* Right Column: Tech Stack & News */}
             <div className="space-y-6">
 
-                {/* Tech Stack */}
-                <Card className="bg-[#0f111a] border-white/5">
-                    <CardHeader className="pb-3">
-                        <CardTitle className="text-sm font-medium text-muted-foreground flex items-center justify-between">
-                            <span className="flex items-center gap-2">
-                                <Code2 className="h-4 w-4 text-indigo-500" />
-                                Inferred Tech Stack
-                            </span>
-                            <HelpCircle
-                                className="h-3 w-3 text-muted-foreground cursor-help"
-                                title="Detected keywords from company job titles."
-                            />
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex flex-wrap gap-2">
-                        {techStack.map(tech => (
-                            <Badge key={tech} variant="outline" className="border-white/10 bg-white/5 hover:bg-white/10">
-                                {tech}
-                            </Badge>
-                        ))}
-                    </CardContent>
-                </Card>
-
                 {/* News Feed */}
                 <Card className="bg-[#0f111a] border-white/5 flex-1">
                     <CardHeader className="pb-3">
