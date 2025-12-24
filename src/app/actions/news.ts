@@ -20,48 +20,41 @@ export async function fetchCompanyNews(companyName: string): Promise<{ success: 
     if (!companyName) return { success: false, error: "Company name required" };
 
     try {
-        // Clean company name for better search results
-        // Remove "AB", "Sweden", "Group", etc.
         const cleanName = companyName
             .replace(/\s(AB|Sweden|Group|Nordic|Global|Sverige)\b/gi, '')
-            .replace(/[^\w\s\å\ä\ö]/gi, '') // Remove special chars
+            .replace(/[^\w\s\å\ä\ö]/gi, '')
             .trim();
 
-        // Query: "Company Sverige"
         const query = `${cleanName} Sverige`;
-
         console.log("Fetching news for: " + query);
 
-        // Google News RSS URL
-        // hl=sv (Language: Swedish), gl=SE (Location: Sweden), ceid=SE:sv
-        const feedUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=sv&gl=SE&ceid=SE:sv`;
+        // Use Google News RSS URL
+        const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=sv&gl=SE&ceid=SE:sv`;
 
-        console.log(`Fetching news from URL: ${feedUrl}`);
+        // Use rss2json to proxy the converting of RSS to JSON (Bypasses local IP blocks mostly)
+        // Note: Free tier has limits, but good for demo.
+        const proxyUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
 
-        try {
-            const feed = await parser.parseURL(feedUrl);
-            const news = feed.items.slice(0, 5).map(item => ({
-                title: item.title || "No Title",
-                link: item.link || "#",
-                pubDate: item.pubDate ? new Date(item.pubDate).toLocaleDateString() : "Recent",
-                source: item.source || "Google News"
-            }));
-            return { success: true, data: news };
-        } catch (parseError: any) {
-            console.error("RSS Parse Failed:", parseError);
-            // Fallback: Fetch text to see if we are blocked
-            try {
-                const res = await fetch(feedUrl);
-                console.log("Raw Feed Status:", res.status);
-                const text = await res.text();
-                console.log("Raw Feed Text (Excerpt):", text.slice(0, 200));
-            } catch (fetchErr) {
-                console.error("Raw Fetch Failed:", fetchErr);
-            }
-            return { success: false, error: "Failed to parse news feed" };
+        console.log(`Fetching via Proxy: ${proxyUrl}`);
+
+        const res = await fetch(proxyUrl);
+        const data = await res.json();
+
+        if (data.status !== 'ok') {
+            throw new Error(`Proxy Error: ${data.message}`);
         }
+
+        const news = data.items.slice(0, 5).map((item: any) => ({
+            title: item.title || "No Title",
+            link: item.link || "#",
+            pubDate: item.pubDate ? new Date(item.pubDate).toLocaleDateString() : "Recent",
+            source: "Google News" // rss2json simplifies source sometimes
+        }));
+
+        return { success: true, data: news };
+
     } catch (error: any) {
-        console.error("News Fetch Error:", error); // General error catch
+        console.error("News Fetch Error:", error);
         return { success: false, error: "Failed to fetch news" };
     }
 }
