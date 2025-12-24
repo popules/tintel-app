@@ -6,7 +6,19 @@ import { generateEmbedding } from "@/app/actions/ai";
 export async function searchCandidates(query: string) {
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
+
     if (!user) return { success: false, error: "Unauthorized" };
+
+    // Defense in Depth: Check if user is a recruiter
+    const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+
+    if (profile?.role !== 'recruiter') {
+        return { success: false, error: "Only recruiters can search candidates." };
+    }
 
     try {
         // 1. Generate Embedding for the Search Query
