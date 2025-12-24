@@ -128,7 +128,8 @@ export async function GET(req: NextRequest) {
                     name: aiData.name || "Hiring Manager",
                     role: aiData.role || "Recruiter",
                     source: `AI_Extracted (${source})`,
-                    confidence: aiData.confidence
+                    confidence: aiData.confidence,
+                    description: rawText // Return full text for the UI
                 });
 
             } catch (aiError) {
@@ -142,7 +143,7 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({
             email: emailMatch ? emailMatch[1] : null,
             name: "Hiring Manager",
-            description: rawText.slice(0, 200),
+            description: rawText.slice(0, 5000), // Return meaningful amount of text
             role: "Recruiter",
             source: "Legacy_Regex"
         });
