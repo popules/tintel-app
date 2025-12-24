@@ -118,8 +118,6 @@ export default function CompanyPage() {
                         <div>
                             <h1 className="text-4xl font-black tracking-tight">{companyName}</h1>
                             <div className="flex items-center gap-2 text-muted-foreground mt-1">
-                                <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {topLocations[0]?.[0] || 'Sweden'}</span>
-                                <span>•</span>
                                 <span className={activeJobs.length > 0 ? "text-green-500 font-medium flex items-center gap-1" : "text-amber-500 font-medium flex items-center gap-1"}>
                                     <TrendingUp className="h-3 w-3" />
                                     {activeJobs.length > 0 ? "Currently Hiring" : "Monitoring History"}
@@ -162,22 +160,18 @@ export default function CompanyPage() {
                                 <p className="text-xs text-muted-foreground mt-1">past roles analyzed</p>
                             </CardContent>
                         </Card>
+
+                        {/* Company Summary (New) */}
                         <Card className="bg-muted/30 border-0 md:col-span-2">
-                            <CardHeader className="flex flex-row items-center justify-between pb-2">
-                                <CardTitle className="text-sm font-medium text-muted-foreground">Hiring Hotspots</CardTitle>
-                                <MapPin className="h-4 w-4 text-rose-500" />
+                            <CardHeader className="pb-2">
+                                <CardTitle className="text-sm font-medium text-muted-foreground">About {companyName}</CardTitle>
                             </CardHeader>
-                            <CardContent className="flex gap-4 flex-wrap">
-                                {topLocations.map(([loc, count]: any) => (
-                                    <div
-                                        key={loc}
-                                        className={`flex items-center gap-2 p-2 px-3 rounded-lg border cursor-pointer transition-colors ${filterLocation === loc ? 'bg-indigo-100 border-indigo-500 text-indigo-900' : 'bg-background hover:bg-muted'}`}
-                                        onClick={() => setFilterLocation(filterLocation === loc ? null : loc)}
-                                    >
-                                        <span className="font-semibold">{loc}</span>
-                                        <Badge variant={filterLocation === loc ? "default" : "secondary"}>{count}</Badge>
-                                    </div>
-                                ))}
+                            <CardContent>
+                                <p className="text-sm text-muted-foreground leading-relaxed">
+                                    {companyName} is a leading organization in its field, actively hiring across multiple disciplines.
+                                    They are currently expanding their technical teams and have a strong presence in the Swedish market.
+                                    (AI Summary capability coming soon).
+                                </p>
                             </CardContent>
                         </Card>
                     </div>
