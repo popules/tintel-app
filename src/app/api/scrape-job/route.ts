@@ -25,7 +25,10 @@ export async function GET(req: NextRequest) {
             const adId = pbIdMatch[1];
             try {
                 const publicRes = await fetch(`https://jobsearch.api.jobtechdev.se/ad/${adId}`, {
-                    headers: { "Accept": "application/json" }
+                    headers: {
+                        "Accept": "application/json",
+                        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko)"
+                    }
                 });
 
                 if (publicRes.ok) {
