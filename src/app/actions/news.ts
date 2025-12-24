@@ -32,9 +32,8 @@ export async function fetchCompanyNews(companyName: string): Promise<{ success: 
 
         console.log("Fetching news for: " + query);
 
-        // Switch to Bing News (Often more permissive for server-side defaults)
-        // Format: https://www.bing.com/news/search?q=SAAB+Sverige&format=rss
-        const feedUrl = `https://www.bing.com/news/search?q=${encodeURIComponent(query)}&format=rss`;
+        // Switch to DuckDuckGo RSS (Most robust for avoiding blocks)
+        const feedUrl = `https://duckduckgo.com/?q=${encodeURIComponent(query)}&format=rss&kl=se-sv`;
 
         console.log(`Fetching news from URL: ${feedUrl}`);
 
@@ -43,9 +42,9 @@ export async function fetchCompanyNews(companyName: string): Promise<{ success: 
         const news = feed.items.slice(0, 5).map(item => ({
             title: item.title || "No Title",
             link: item.link || "#",
-            // Bing dates are usually good
+            // DDG RSS dates can be weird, fallback carefully
             pubDate: item.pubDate ? new Date(item.pubDate).toLocaleDateString() : "Recent",
-            source: item.source || "Bing News" // Bing doesn't always give source name clearly in standard RSS fields
+            source: "News Source" // DDG doesn't always provide source
         }));
 
         return { success: true, data: news };

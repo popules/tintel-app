@@ -113,8 +113,6 @@ export default function CompanyPage() {
         let mounted = true;
         const fetchSummary = async () => {
             try {
-                // Dynamically import to ensure we hit the server action correctly
-                const { generateCompanySummary } = await import("@/app/actions/ai");
                 const res = await generateCompanySummary(companyName);
 
                 if (mounted) {
@@ -125,9 +123,9 @@ export default function CompanyPage() {
                         setSummaryError(res.error || "Unknown error");
                     }
                 }
-            } catch (err) {
-                console.error(err);
-                if (mounted) setSummaryError("Fetch failed");
+            } catch (err: any) {
+                console.error("Verification Error:", err);
+                if (mounted) setSummaryError(err.message || "Fetch failed completely");
             } finally {
                 if (mounted) setLoadingSummary(false);
             }
