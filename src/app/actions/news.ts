@@ -32,8 +32,14 @@ export async function fetchCompanyNews(companyName: string): Promise<{ success: 
 
         console.log("Fetching news for: " + query);
 
-        // Switch to DuckDuckGo RSS (Most robust for avoiding blocks)
-        const feedUrl = `https://duckduckgo.com/?q=${encodeURIComponent(query)}&format=rss&kl=se-sv`;
+        // Improve query: "Company Sverige"
+        const query = `${cleanName} Sverige`;
+
+        console.log("Fetching news for: " + query);
+
+        // Revert to Google News (User request)
+        // hl=sv (Language: Swedish), gl=SE (Location: Sweden), ceid=SE:sv
+        const feedUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=sv&gl=SE&ceid=SE:sv`;
 
         console.log(`Fetching news from URL: ${feedUrl}`);
 
@@ -42,9 +48,8 @@ export async function fetchCompanyNews(companyName: string): Promise<{ success: 
         const news = feed.items.slice(0, 5).map(item => ({
             title: item.title || "No Title",
             link: item.link || "#",
-            // DDG RSS dates can be weird, fallback carefully
             pubDate: item.pubDate ? new Date(item.pubDate).toLocaleDateString() : "Recent",
-            source: "News Source" // DDG doesn't always provide source
+            source: item.source || "Google News"
         }));
 
         return { success: true, data: news };
