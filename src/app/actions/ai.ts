@@ -194,3 +194,59 @@ export async function analyzeJobText(text: string) {
         return { success: false, error: error.message };
     }
 }
+
+/**
+ * PARSE RESUME (PDF)
+ * Context: Candidate Onboarding
+ */
+import pdf from 'pdf-parse';
+
+export async function parseResume(formData: FormData) {
+    if (!await isAuthenticated()) return { success: false, error: "Unauthorized" };
+    if (!openai) return { success: false, error: "OpenAI API Key not configured." };
+
+    try {
+        const file = formData.get("resume") as File;
+        if (!file) return { success: false, error: "No file uploaded" };
+
+        // Convert File to Buffer for pdf-parse
+        const arrayBuffer = await file.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+
+        // Extract Text
+        const data = await pdf(buffer);
+        const rawText = data.text;
+
+        // AI Analysis
+        const prompt = `
+        You are an expert Resume Parser. Extract the following information from this resume text.
+        
+        Resume Text:
+        "${rawText.slice(0, 15000)}"
+
+        Return strict JSON:
+        {
+            "headline": "Professional Headline (e.g. Senior Frontend Engineer)",
+            "experience_years": "Number (integer) or 0 if unknown",
+            "bio": "Professional summary/bio (max 400 chars)",
+            "skills": "Comma separated string of top 10 technical/soft skills",
+            "linkedin_url": "URL or null",
+            "website": "URL or null",
+            "location": "City, Country or null"
+        }
+        `;
+
+        const completion = await openai.chat.completions.create({
+            messages: [{ role: "user", content: prompt }],
+            model: "gpt-4o",
+            response_format: { type: "json_object" },
+        });
+
+        const content = completion.choices[0].message.content;
+        return { success: true, data: JSON.parse(content || "{}") };
+
+    } catch (error: any) {
+        console.error("Resume Parsing Error:", error);
+        return { success: false, error: error.message };
+    }
+}

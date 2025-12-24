@@ -14,6 +14,7 @@ import { Wand2, Loader2, CheckCircle2, AlertCircle, Phone, MapPin, Globe, Linked
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { SWEDISH_COUNTIES } from "@/lib/data/counties";
+import { ResumeUpload } from "@/components/candidate/ResumeUpload";
 
 export default function CandidateOnboarding() {
     const supabase = createClient();
@@ -323,6 +324,22 @@ export default function CandidateOnboarding() {
                         )}
 
                         <form onSubmit={handleSubmit} className="space-y-8">
+
+                            {/* NEW: Resume Parser */}
+                            <div className="space-y-4">
+                                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Fast Track</h3>
+                                <ResumeUpload onparsed={(data) => {
+                                    if (data.headline) setHeadline(data.headline);
+                                    if (data.bio) setBio(data.bio);
+                                    if (data.skills) setSkills(data.skills);
+                                    if (data.experience_years) setExperience(data.experience_years.toString());
+                                    if (data.location) setLocation(data.location);
+                                    if (data.linkedin_url) setLinkedin(data.linkedin_url);
+                                    if (data.website) setWebsite(data.website);
+                                }} />
+                            </div>
+
+                            <div className="h-px bg-white/5" />
 
                             {/* Personal Info Section */}
                             <div className="space-y-4">
