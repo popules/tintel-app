@@ -81,40 +81,140 @@ export function Hero() {
                     initial={{ opacity: 0, y: 40 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.5 }}
-                    className="mt-20 relative mx-auto max-w-5xl rounded-xl border border-white/10 bg-gray-900/50 backdrop-blur-sm shadow-2xl overflow-hidden aspect-video group"
+                    className="mt-20 relative mx-auto max-w-6xl rounded-xl border border-white/10 bg-[#0f111a] shadow-2xl overflow-hidden aspect-[16/10] group text-left font-sans"
                 >
-                    <div className="absolute inset-0 bg-gradient-to-tr from-indigo-500/10 to-purple-500/10 group-hover:opacity-100 transition-opacity" />
-
-                    {/* Mock UI Elements */}
-                    <div className="absolute top-4 left-4 right-4 h-8 bg-white/5 rounded-lg flex items-center justify-between px-3">
+                    {/* Browser Toolbar Mock */}
+                    <div className="absolute top-0 left-0 right-0 h-10 bg-[#1a1d2d] border-b border-white/5 flex items-center px-4 gap-4 z-20">
                         <div className="flex gap-1.5">
-                            <div className="w-2.5 h-2.5 rounded-full bg-red-500/20" />
-                            <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/20" />
-                            <div className="w-2.5 h-2.5 rounded-full bg-green-500/20" />
+                            <div className="w-3 h-3 rounded-full bg-red-500/20" />
+                            <div className="w-3 h-3 rounded-full bg-yellow-500/20" />
+                            <div className="w-3 h-3 rounded-full bg-green-500/20" />
                         </div>
-                        <div className="flex items-center gap-1.5 opacity-20">
-                            <div className="h-4 w-4 rounded bg-white" />
-                            <div className="h-2 w-8 bg-white rounded" />
+                        <div className="flex-1 max-w-xl mx-auto h-6 bg-[#0f111a]/50 rounded-md border border-white/5 flex items-center justify-center text-[10px] text-muted-foreground font-mono">
+                            tintel.se/dashboard
                         </div>
                     </div>
 
-                    <div className="absolute top-16 left-4 right-4 bottom-4 flex gap-4">
-                        {/* Sidebar */}
-                        <div className="w-48 bg-white/5 rounded-lg border border-white/5 hidden md:block" />
-                        {/* Main Content */}
-                        <div className="flex-1 bg-white/5 rounded-lg border border-white/5 flex flex-col gap-4 p-4">
-                            <div className="h-32 bg-indigo-500/10 rounded-lg border border-indigo-500/20 w-full animate-pulse" />
-                            <div className="grid grid-cols-3 gap-4">
-                                <div className="h-40 bg-white/5 rounded-lg" />
-                                <div className="h-40 bg-white/5 rounded-lg" />
-                                <div className="h-40 bg-white/5 rounded-lg" />
+                    {/* Main Interface */}
+                    <div className="absolute top-10 inset-0 p-6 flex gap-6 overflow-hidden">
+
+                        {/* Sidebar Mock */}
+                        <div className="w-60 flex-shrink-0 flex flex-col gap-6 hidden md:flex">
+                            <div className="h-8 w-24 bg-indigo-500/10 rounded mb-4" />
+
+                            <div className="space-y-3">
+                                <div className="p-3 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-sm font-medium flex items-center gap-3">
+                                    <div className="w-4 h-4 rounded bg-indigo-400/20" /> Find Jobs
+                                </div>
+                                <div className="p-3 rounded-lg hover:bg-white/5 text-muted-foreground text-sm font-medium flex items-center gap-3">
+                                    <div className="w-4 h-4 rounded bg-white/10" /> Find People
+                                </div>
+                            </div>
+
+                            <div className="mt-4 space-y-2">
+                                <div className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-2">Filters</div>
+                                <div className="h-4 w-3/4 bg-white/5 rounded" />
+                                <div className="h-4 w-1/2 bg-white/5 rounded" />
+                                <div className="h-4 w-2/3 bg-white/5 rounded" />
+                            </div>
+                        </div>
+
+                        {/* Content Area */}
+                        <div className="flex-1 flex flex-col gap-6">
+
+                            {/* KPI Cards */}
+                            <div className="grid grid-cols-4 gap-4">
+                                <div className="bg-[#1a1d2d] border border-white/5 rounded-lg p-4 relative overflow-hidden">
+                                    <div className="text-xs text-muted-foreground mb-1">Market Depth</div>
+                                    <div className="text-2xl font-bold text-white">49 242</div>
+                                    <div className="absolute top-4 right-4 text-yellow-500 mb-1">⚡</div>
+                                </div>
+                                <div className="bg-[#1a1d2d] border border-white/5 rounded-lg p-4 relative overflow-hidden">
+                                    <div className="text-xs text-muted-foreground mb-1">Active Openings</div>
+                                    <div className="text-2xl font-bold text-emerald-400">13 962</div>
+                                    <div className="absolute top-4 right-4 text-emerald-500/20 p-1 rounded">📈</div>
+                                </div>
+                                <div className="bg-[#1a1d2d] border border-white/5 rounded-lg p-4 hidden lg:block">
+                                    <div className="text-xs text-muted-foreground mb-1">Active Companies</div>
+                                    <div className="text-2xl font-bold text-white">514</div>
+                                </div>
+                                <div className="bg-[#1a1d2d] border border-white/5 rounded-lg p-4 hidden lg:block">
+                                    <div className="text-xs text-muted-foreground mb-1">New Leads</div>
+                                    <div className="text-2xl font-bold text-white">12</div>
+                                </div>
+                            </div>
+
+                            {/* Job Grid */}
+                            <div className="flex-1">
+                                <div className="flex justify-between items-end mb-4">
+                                    <div>
+                                        <h3 className="text-xl font-bold text-white">Active Jobs</h3>
+                                        <p className="text-sm text-muted-foreground">Find your next client or carrier move.</p>
+                                    </div>
+                                    <div className="text-xs bg-white/10 px-2 py-1 rounded text-white">100 matches</div>
+                                </div>
+
+                                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                                    {/* Card 1 - Focused */}
+                                    <div className="bg-[#1e2235] border border-indigo-500/30 rounded-xl p-5 shadow-2xl shadow-indigo-500/10 relative group-hover:-translate-y-1 transition-transform duration-500">
+                                        <div className="flex justify-between items-start mb-4">
+                                            <div>
+                                                <div className="text-[10px] text-indigo-400 font-bold uppercase tracking-wider mb-1">New</div>
+                                                <div className="font-bold text-white text-lg leading-tight">Senior Frontend Developer</div>
+                                                <div className="text-sm text-muted-foreground mt-1">Tech Giant AB</div>
+                                            </div>
+                                        </div>
+
+                                        {/* The "Found Lead" Magic Moment */}
+                                        <div className="mt-4 p-3 bg-indigo-500/10 border border-indigo-500/20 rounded-lg flex items-center justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-xs font-bold text-white">MJ</div>
+                                                <div>
+                                                    <div className="text-xs font-bold text-white">Marie Johansson</div>
+                                                    <div className="text-[10px] text-indigo-300">Engineering Manager</div>
+                                                </div>
+                                            </div>
+                                            <div className="bg-green-500/20 text-green-400 text-[10px] px-2 py-0.5 rounded-full font-bold">Direct Contact</div>
+                                        </div>
+
+                                        <div className="mt-4 grid grid-cols-2 gap-2">
+                                            <div className="h-9 rounded-md bg-white/5 border border-white/5 flex items-center justify-center text-xs font-medium text-white/50">Save</div>
+                                            <div className="h-9 rounded-md bg-indigo-600 flex items-center justify-center text-xs font-bold text-white shadow-lg shadow-indigo-500/20">Draft Pitch ✨</div>
+                                        </div>
+                                    </div>
+
+                                    {/* Card 2 */}
+                                    <div className="bg-[#1a1d2d] border border-white/5 rounded-xl p-5 opacity-60 blur-[1px]">
+                                        <div className="mb-4">
+                                            <div className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-1">Full-time</div>
+                                            <div className="font-bold text-white text-lg">Product Designer</div>
+                                            <div className="text-sm text-muted-foreground mt-1">Creative Agency</div>
+                                        </div>
+                                        <div className="mt-8 grid grid-cols-2 gap-2">
+                                            <div className="h-9 rounded-md bg-white/5" />
+                                            <div className="h-9 rounded-md bg-indigo-500/20" />
+                                        </div>
+                                    </div>
+
+                                    {/* Card 3 */}
+                                    <div className="bg-[#1a1d2d] border border-white/5 rounded-xl p-5 opacity-40 blur-[2px]">
+                                        <div className="mb-4">
+                                            <div className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-1">Remote</div>
+                                            <div className="font-bold text-white text-lg">Backend Engineer</div>
+                                            <div className="text-sm text-muted-foreground mt-1">Fintech Corp</div>
+                                        </div>
+                                        <div className="mt-8 grid grid-cols-2 gap-2">
+                                            <div className="h-9 rounded-md bg-white/5" />
+                                            <div className="h-9 rounded-md bg-indigo-500/20" />
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div className="absolute inset-0 flex items-center justify-center">
-                        <p className="text-white/20 font-mono text-sm">Interactive Dashboard Preview</p>
-                    </div>
+                    {/* Overlay Gradient for "Fold" feeling */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0f111a] via-transparent to-transparent pointer-events-none" />
                 </motion.div>
             </div>
         </section>
