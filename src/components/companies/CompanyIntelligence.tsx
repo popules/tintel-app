@@ -165,19 +165,10 @@ export function CompanyIntelligence({ companyName, jobs }: CompanyIntelligencePr
                                 <Code2 className="h-4 w-4 text-indigo-500" />
                                 Inferred Tech Stack
                             </span>
-                            <TooltipProvider>
-                                <ShadTooltip>
-                                    <TooltipTrigger asChild>
-                                        <HelpCircle className="h-3 w-3 text-muted-foreground cursor-help" />
-                                    </TooltipTrigger>
-                                    <TooltipContent
-                                        side="top"
-                                        className="bg-[#1a1d2d] border border-white/10 text-white text-xs rounded-lg px-3 py-2"
-                                    >
-                                        <p>Detected keywords from company job titles.</p>
-                                    </TooltipContent>
-                                </ShadTooltip>
-                            </TooltipProvider>
+                            <HelpCircle
+                                className="h-3 w-3 text-muted-foreground cursor-help"
+                                title="Detected keywords from company job titles."
+                            />
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="flex flex-wrap gap-2">
