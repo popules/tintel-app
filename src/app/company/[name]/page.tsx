@@ -159,6 +159,9 @@ export default function CompanyPage() {
                     </Button>
                 </div>
 
+                {/* Intelligence Dashboard (News & Hiring Velocity) */}
+                <CompanyIntelligence companyName={companyName} jobs={jobs} />
+
                 {/* Intelligence Grid */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Key Stats */}
