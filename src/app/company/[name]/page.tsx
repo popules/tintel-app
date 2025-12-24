@@ -104,6 +104,29 @@ export default function CompanyPage() {
             percentage: Math.round((count / jobs.length) * 100)
         }));
 
+    // 4. AI Company Summary
+    const [summary, setSummary] = useState<string>("");
+    const [loadingSummary, setLoadingSummary] = useState(true);
+
+    useEffect(() => {
+        let mounted = true;
+        const loadSummary = async () => {
+            try {
+                const { generateCompanySummary } = await import("@/app/actions/ai");
+                const res = await generateCompanySummary(companyName);
+                if (mounted && res.success && res.data) {
+                    setSummary(res.data);
+                }
+            } catch (err) {
+                console.error(err);
+            } finally {
+                if (mounted) setLoadingSummary(false);
+            }
+        };
+        loadSummary();
+        return () => { mounted = false; };
+    }, [companyName]);
+
     return (
         <div className="flex flex-col min-h-screen bg-background text-foreground font-sans">
             <Header searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
@@ -164,14 +187,23 @@ export default function CompanyPage() {
                         {/* Company Summary (New) */}
                         <Card className="bg-muted/30 border-0 md:col-span-2">
                             <CardHeader className="pb-2">
-                                <CardTitle className="text-sm font-medium text-muted-foreground">About {companyName}</CardTitle>
+                                <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                                    About {companyName}
+                                    <Badge variant="secondary" className="text-[10px] h-5 bg-indigo-500/10 text-indigo-400 border-0">AI Generated</Badge>
+                                </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <p className="text-sm text-muted-foreground leading-relaxed">
-                                    {companyName} is a leading organization in its field, actively hiring across multiple disciplines.
-                                    They are currently expanding their technical teams and have a strong presence in the Swedish market.
-                                    (AI Summary capability coming soon).
-                                </p>
+                                {loadingSummary ? (
+                                    <div className="space-y-2">
+                                        <Skeleton className="h-4 w-full" />
+                                        <Skeleton className="h-4 w-[90%]" />
+                                        <Skeleton className="h-4 w-[80%]" />
+                                    </div>
+                                ) : (
+                                    <p className="text-sm text-muted-foreground leading-relaxed">
+                                        {summary || `${companyName} is a leading organization in its field. (AI Summary unavailable)`}
+                                    </p>
+                                )}
                             </CardContent>
                         </Card>
                     </div>
