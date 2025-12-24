@@ -25,6 +25,34 @@ interface CandidateCardProps {
 
 export function CandidateCard({ candidate, index }: CandidateCardProps) {
     const [isUnlocked, setIsUnlocked] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    const handleUnlock = async () => {
+        setLoading(true);
+        try {
+            // Dynamically import to keep client bundle clean if needed, or just use direct import if 'use server' is handled correctly.
+            // Since we are in a client component, we import the action.
+            const { unlockCandidateProfile } = await import('@/app/actions/unlock-candidate');
+            const result = await unlockCandidateProfile();
+
+            if (result.success) {
+                setIsUnlocked(true);
+                // toast.success(`Profile Unlocked! ${result.remainingCredits} credits remaining.`); 
+            } else {
+                if (result.error === 'insufficient_credits') {
+                    alert("You have run out of credits! Please upgrade to continue unlocking profiles.");
+                    // Ideally open a "Pricing/Upgrade" modal here
+                } else {
+                    alert("Something went wrong. Please try again.");
+                }
+            }
+        } catch (e) {
+            console.error(e);
+            alert("Connection error.");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <motion.div
@@ -112,11 +140,12 @@ export function CandidateCard({ candidate, index }: CandidateCardProps) {
                         </div>
                     ) : (
                         <Button
-                            onClick={() => setIsUnlocked(true)}
+                            onClick={handleUnlock}
+                            disabled={loading}
                             className="w-full bg-indigo-600/90 hover:bg-indigo-600 text-white shadow-indigo-500/20 h-9 text-xs font-semibold uppercase tracking-wider group-hover:scale-[1.02] transition-transform"
                         >
-                            <Sparkles className="mr-2 h-3 w-3" />
-                            Unlock Profile
+                            {loading ? <span className="animate-spin mr-2">⏳</span> : <Sparkles className="mr-2 h-3 w-3" />}
+                            {loading ? "Unlocking..." : "Unlock Profile (1 Credit)"}
                         </Button>
                     )}
                 </CardFooter>
