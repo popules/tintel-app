@@ -12,6 +12,7 @@ import { Building2, MapPin, Users, TrendingUp, Briefcase } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { CompanyIntelligence } from "@/components/companies/CompanyIntelligence";
+import { generateCompanySummary } from "@/app/actions/ai";
 
 export default function CompanyPage() {
     const params = useParams();

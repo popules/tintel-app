@@ -38,18 +38,30 @@ export async function fetchCompanyNews(companyName: string): Promise<{ success: 
 
         console.log(`Fetching news from URL: ${feedUrl}`);
 
-        const feed = await parser.parseURL(feedUrl);
-
-        const news = feed.items.slice(0, 5).map(item => ({
-            title: item.title || "No Title",
-            link: item.link || "#",
-            pubDate: item.pubDate ? new Date(item.pubDate).toLocaleDateString() : "Recent",
-            source: item.source || "Google News"
-        }));
-
-        return { success: true, data: news };
+        try {
+            const feed = await parser.parseURL(feedUrl);
+            const news = feed.items.slice(0, 5).map(item => ({
+                title: item.title || "No Title",
+                link: item.link || "#",
+                pubDate: item.pubDate ? new Date(item.pubDate).toLocaleDateString() : "Recent",
+                source: item.source || "Google News"
+            }));
+            return { success: true, data: news };
+        } catch (parseError: any) {
+            console.error("RSS Parse Failed:", parseError);
+            // Fallback: Fetch text to see if we are blocked
+            try {
+                const res = await fetch(feedUrl);
+                console.log("Raw Feed Status:", res.status);
+                const text = await res.text();
+                console.log("Raw Feed Text (Excerpt):", text.slice(0, 200));
+            } catch (fetchErr) {
+                console.error("Raw Fetch Failed:", fetchErr);
+            }
+            return { success: false, error: "Failed to parse news feed" };
+        }
     } catch (error: any) {
-        console.error("News Fetch Error:", error);
+        console.error("News Fetch Error:", error); // General error catch
         return { success: false, error: "Failed to fetch news" };
     }
 }
