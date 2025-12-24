@@ -16,16 +16,43 @@ interface CompanyIntelligenceProps {
 
 export function CompanyIntelligence({ companyName, jobs }: CompanyIntelligenceProps) {
 
-    // 1. Simulate Hiring Velocity (Mock Data based on job count volume)
-    // In a real app, we'd aggregate `created_at` over time.
-    const velocityData = [
-        { month: 'Jan', jobs: Math.floor(jobs.length * 0.2) + 2 },
-        { month: 'Feb', jobs: Math.floor(jobs.length * 0.3) + 1 },
-        { month: 'Mar', jobs: Math.floor(jobs.length * 0.4) + 3 },
-        { month: 'Apr', jobs: Math.floor(jobs.length * 0.6) + 4 },
-        { month: 'May', jobs: Math.floor(jobs.length * 0.8) + 2 },
-        { month: 'Jun', jobs: jobs.length } // Current
-    ];
+    // 1. Calculate Real Hiring Velocity
+    // Group jobs by Month-Year
+    const jobDates = jobs.map(j => new Date(j.publishedAt || j.created_at));
+    // Sort oldest to newest
+    jobDates.sort((a, b) => a.getTime() - b.getTime());
+
+    // If no jobs, empty array
+    const velocityData: any[] = [];
+
+    if (jobDates.length > 0) {
+        const monthCounts = new Map<string, number>();
+
+        // Get range from first job to now
+        const start = jobDates[0];
+        const end = new Date();
+        const current = new Date(start);
+        current.setDate(1); // Start of that month
+
+        while (current <= end) {
+            const key = current.toLocaleDateString('en-US', { month: 'short' }); // e.g., "Oct"
+            monthCounts.set(key, 0);
+            current.setMonth(current.getMonth() + 1);
+        }
+
+        // Fill counts
+        jobDates.forEach(date => {
+            const key = date.toLocaleDateString('en-US', { month: 'short' });
+            if (monthCounts.has(key)) {
+                monthCounts.set(key, (monthCounts.get(key) || 0) + 1);
+            }
+        });
+
+        // Convert to array
+        monthCounts.forEach((count, month) => {
+            velocityData.push({ month, jobs: count });
+        });
+    }
 
     // 2. Infer Tech Stack from Job Titles (Simple Heuristics)
     const stack = new Set<string>();
@@ -83,11 +110,9 @@ export function CompanyIntelligence({ companyName, jobs }: CompanyIntelligencePr
                             <TrendingUp className="h-5 w-5 text-emerald-500" />
                             Hiring Velocity
                         </CardTitle>
-                        <p className="text-xs text-muted-foreground">Job posting volume over last 6 months</p>
+                        <p className="text-xs text-muted-foreground">Job posting volume over time</p>
                     </div>
-                    <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-400">
-                        +24% Growth
-                    </Badge>
+                    {/* Badge removed for now as growth calculation needs to be real */}
                 </CardHeader>
                 <CardContent className="h-[250px] w-full pt-4">
                     <ResponsiveContainer width="100%" height="100%">
@@ -114,7 +139,7 @@ export function CompanyIntelligence({ companyName, jobs }: CompanyIntelligencePr
                             />
                             <Tooltip
                                 contentStyle={{ backgroundColor: '#1a1d2d', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }}
-                                itemStyle={{ color: '#fff' }}
+                                itemStyle={{ color: '#10b981' }}
                             />
                             <Area
                                 type="monotone"

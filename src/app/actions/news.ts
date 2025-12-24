@@ -16,10 +16,19 @@ export async function fetchCompanyNews(companyName: string): Promise<{ success: 
     if (!companyName) return { success: false, error: "Company name required" };
 
     try {
-        // Query Google News for "[Company] Sverige" to get local relevant news
+        // Clean company name for better search results
+        // Remove "AB", "Sweden", "Group", etc.
+        const cleanName = companyName
+            .replace(/\s(AB|Sweden|Group|Nordic|Global|Sverige)\b/gi, '')
+            .replace(/[^\w\s\å\ä\ö]/gi, '') // Remove special chars
+            .trim();
+
+        // Query Google News
         // hl=sv (Language: Swedish), gl=SE (Location: Sweden), ceid=SE:sv
-        const query = encodeURIComponent(`${companyName} Sverige`);
+        const query = encodeURIComponent(`${cleanName}`);
         const rssUrl = `https://news.google.com/rss/search?q=${query}&hl=sv&gl=SE&ceid=SE:sv`;
+
+        console.log(`Fetching news for: ${cleanName} (${rssUrl})`);
 
         const feed = await parser.parseURL(rssUrl);
 
