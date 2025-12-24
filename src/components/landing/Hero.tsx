@@ -8,10 +8,10 @@ import { motion } from "framer-motion";
 export function Hero() {
     return (
         <section className="relative overflow-hidden pt-32 pb-20 lg:pt-48 lg:pb-32">
-            {/* Background Gradients */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full -z-10">
-                <div className="absolute top-[20%] left-[20%] w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-[100px]" />
-                <div className="absolute bottom-[20%] right-[20%] w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-[100px]" />
+            {/* Background Gradients - Optimized for Mobile */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full -z-10 overflow-hidden pointer-events-none">
+                <div className="absolute top-[20%] left-[20%] w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-[80px] md:blur-[100px] opacity-50 md:opacity-100" />
+                <div className="absolute bottom-[20%] right-[20%] w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-[80px] md:blur-[100px] opacity-50 md:opacity-100" />
             </div>
 
             <div className="container px-4 md:px-6 mx-auto text-center">
@@ -19,7 +19,7 @@ export function Hero() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
-                    className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold mb-6"
+                    className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold mb-6 backdrop-blur-sm"
                 >
                     <span className="relative flex h-2 w-2">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
@@ -53,7 +53,7 @@ export function Hero() {
                     transition={{ duration: 0.5, delay: 0.3 }}
                     className="flex flex-col sm:flex-row gap-4 justify-center items-center"
                 >
-                    <div className="flex flex-col items-center gap-2 group">
+                    <div className="flex flex-col items-center gap-2 group w-full sm:w-auto">
                         <Button size="lg" className="h-12 px-8 text-base bg-white text-black hover:bg-white/90 shadow-xl shadow-white/10 w-full sm:w-auto" asChild>
                             <Link href="/about/recruiters">
                                 I'm Hiring
@@ -63,9 +63,9 @@ export function Hero() {
                         <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">Read More</span>
                     </div>
 
-                    <span className="text-muted-foreground text-sm font-medium italic px-2">or</span>
+                    <span className="text-muted-foreground text-sm font-medium italic px-2 hidden sm:inline">or</span>
 
-                    <div className="flex flex-col items-center gap-2 group">
+                    <div className="flex flex-col items-center gap-2 group w-full sm:w-auto">
                         <Button size="lg" variant="outline" className="h-12 px-8 text-base border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300 w-full sm:w-auto" asChild>
                             <Link href="/about/candidates">
                                 <CheckCircle2 className="mr-2 h-4 w-4" />
@@ -82,6 +82,7 @@ export function Hero() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.5 }}
                     className="mt-12 md:mt-20 relative mx-auto max-w-6xl rounded-xl border border-white/10 bg-[#0f111a] shadow-2xl overflow-hidden min-h-[400px] md:aspect-[16/10] group text-left font-sans"
+                    style={{ transform: 'translate3d(0,0,0)', backfaceVisibility: 'hidden' }} // Hardware accel hack
                 >
                     {/* Browser Toolbar Mock */}
                     <div className="absolute top-0 left-0 right-0 h-10 bg-[#1a1d2d] border-b border-white/5 flex items-center px-4 gap-4 z-20">
@@ -90,16 +91,16 @@ export function Hero() {
                             <div className="w-3 h-3 rounded-full bg-yellow-500/20" />
                             <div className="w-3 h-3 rounded-full bg-green-500/20" />
                         </div>
-                        <div className="flex-1 max-w-xl mx-auto h-6 bg-[#0f111a]/50 rounded-md border border-white/5 flex items-center justify-center text-[10px] text-muted-foreground font-mono">
+                        <div className="flex-1 max-w-xl mx-auto h-6 bg-[#0f111a]/50 rounded-md border border-white/5 flex items-center justify-center text-[10px] text-muted-foreground font-mono truncate px-2">
                             tintel.se/dashboard
                         </div>
                     </div>
 
                     {/* Main Interface */}
-                    <div className="absolute top-10 inset-0 p-6 flex gap-6 overflow-hidden">
+                    <div className="absolute top-10 inset-0 p-4 md:p-6 flex gap-6 overflow-hidden">
 
                         {/* Sidebar Mock */}
-                        <div className="w-60 flex-shrink-0 flex flex-col gap-6 hidden md:flex">
+                        <div className="w-48 lg:w-60 flex-shrink-0 flex flex-col gap-6 hidden md:flex">
                             <div className="h-8 w-24 bg-indigo-500/10 rounded mb-4" />
 
                             <div className="space-y-3">
@@ -120,25 +121,29 @@ export function Hero() {
                         </div>
 
                         {/* Content Area */}
-                        <div className="flex-1 flex flex-col gap-6">
+                        <div className="flex-1 flex flex-col gap-4 md:gap-6">
 
-                            {/* KPI Cards */}
-                            <div className="grid grid-cols-4 gap-4">
-                                <div className="bg-[#1a1d2d] border border-white/5 rounded-lg p-4 relative overflow-hidden">
-                                    <div className="text-xs text-muted-foreground mb-1">Market Depth</div>
-                                    <div className="text-2xl font-bold text-white">49 242</div>
-                                    <div className="absolute top-4 right-4 text-yellow-500 mb-1">⚡</div>
+                            {/* KPI Cards - Fixed overlapping emoji issue */}
+                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                                <div className="bg-[#1a1d2d] border border-white/5 rounded-lg p-3 md:p-4 flex flex-col justify-between h-full">
+                                    <div className="flex justify-between items-start mb-2">
+                                        <div className="text-[10px] md:text-xs text-muted-foreground">Market Depth</div>
+                                        <div className="text-yellow-500">⚡</div>
+                                    </div>
+                                    <div className="text-xl md:text-2xl font-bold text-white">49 242</div>
                                 </div>
-                                <div className="bg-[#1a1d2d] border border-white/5 rounded-lg p-4 relative overflow-hidden">
-                                    <div className="text-xs text-muted-foreground mb-1">Active Openings</div>
-                                    <div className="text-2xl font-bold text-emerald-400">13 962</div>
-                                    <div className="absolute top-4 right-4 text-emerald-500/20 p-1 rounded">📈</div>
+                                <div className="bg-[#1a1d2d] border border-white/5 rounded-lg p-3 md:p-4 flex flex-col justify-between h-full">
+                                    <div className="flex justify-between items-start mb-2">
+                                        <div className="text-[10px] md:text-xs text-muted-foreground">Openings</div>
+                                        <div className="text-emerald-500/40">📈</div>
+                                    </div>
+                                    <div className="text-xl md:text-2xl font-bold text-emerald-400">13 962</div>
                                 </div>
-                                <div className="bg-[#1a1d2d] border border-white/5 rounded-lg p-4 hidden lg:block">
+                                <div className="bg-[#1a1d2d] border border-white/5 rounded-lg p-4 hidden lg:flex flex-col justify-between h-full">
                                     <div className="text-xs text-muted-foreground mb-1">Active Companies</div>
                                     <div className="text-2xl font-bold text-white">514</div>
                                 </div>
-                                <div className="bg-[#1a1d2d] border border-white/5 rounded-lg p-4 hidden lg:block">
+                                <div className="bg-[#1a1d2d] border border-white/5 rounded-lg p-4 hidden lg:flex flex-col justify-between h-full">
                                     <div className="text-xs text-muted-foreground mb-1">New Leads</div>
                                     <div className="text-2xl font-bold text-white">12</div>
                                 </div>
