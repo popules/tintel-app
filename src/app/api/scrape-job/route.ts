@@ -53,19 +53,24 @@ export async function GET(req: NextRequest) {
         if (!rawText && pbIdMatch) {
             const adId = pbIdMatch[1];
             try {
-                const publicRes = await fetch(`https://jobsearch.api.jobtechdev.se/search?q=${adId}`, {
+                // Use the DIRECT ID endpoint, not search (Search is fuzzy/unreliable for IDs)
+                const publicRes = await fetch(`https://jobsearch.api.jobtechdev.se/ad/${adId}`, {
                     headers: { "Accept": "application/json" }
                 });
+
                 if (publicRes.ok) {
-                    const publicData = await publicRes.json();
-                    if (publicData.hits && publicData.hits.length > 0) {
-                        const hit = publicData.hits[0];
-                        // JobTech text is often reliable even if they hide structured contacts
-                        rawText = hit.description?.text || "";
-                        source = "Public_API_Text";
+                    const adData = await publicRes.json();
+
+                    // The /ad/ endpoint returns the object directly (no 'hits' array)
+                    // Check if it has description
+                    if (adData.description?.text) {
+                        rawText = adData.description.text;
+                        source = "Public_API_DirectID";
                     }
                 }
-            } catch (e) { console.log("Public API failed", e); }
+            } catch (e) {
+                console.log("Public API failed", e);
+            }
         }
 
         // --- FALLBACK: Generic HTML Scrape ---
