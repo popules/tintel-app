@@ -160,8 +160,8 @@ export function CompanyIntelligence({ companyName, jobs }: CompanyIntelligencePr
                 {/* News Feed */}
                 <Card className="bg-[#0f111a] border-white/5 flex-1">
                     <CardHeader className="pb-3">
-                        <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                            <Newspaper className="h-4 w-4 text-blue-500" />
+                        <CardTitle className="text-lg font-bold flex items-center gap-2">
+                            <Newspaper className="h-5 w-5 text-blue-500" />
                             Latest News (Sweden)
                         </CardTitle>
                     </CardHeader>

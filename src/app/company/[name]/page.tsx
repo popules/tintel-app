@@ -176,8 +176,10 @@ export default function CompanyPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:col-span-1">
                         <Card className="bg-muted/30 border-0">
                             <CardHeader className="flex flex-row items-center justify-between pb-2">
-                                <CardTitle className="text-sm font-medium text-muted-foreground">Active Leads</CardTitle>
-                                <Briefcase className="h-4 w-4 text-indigo-500" />
+                                <CardTitle className="text-lg font-bold flex items-center gap-2">
+                                    <Briefcase className="h-5 w-5 text-indigo-500" />
+                                    Active Leads
+                                </CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <div className="text-3xl font-bold">{activeJobs.length}</div>
@@ -186,8 +188,10 @@ export default function CompanyPage() {
                         </Card>
                         <Card className="bg-muted/30 border-0">
                             <CardHeader className="flex flex-row items-center justify-between pb-2">
-                                <CardTitle className="text-sm font-medium text-muted-foreground">Market History</CardTitle>
-                                <TrendingUp className="h-4 w-4 text-amber-500" />
+                                <CardTitle className="text-lg font-bold flex items-center gap-2">
+                                    <TrendingUp className="h-5 w-5 text-amber-500" />
+                                    Market History
+                                </CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <div className="text-3xl font-bold">{historicalJobs.length}</div>
@@ -198,7 +202,7 @@ export default function CompanyPage() {
                         {/* Company Summary (New) */}
                         <Card className="bg-muted/30 border-0 md:col-span-2">
                             <CardHeader className="pb-2">
-                                <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                                <CardTitle className="text-lg font-bold flex items-center gap-2">
                                     About {companyName}
                                 </CardTitle>
                             </CardHeader>
