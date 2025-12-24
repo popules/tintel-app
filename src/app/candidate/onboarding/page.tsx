@@ -95,9 +95,21 @@ export default function CandidateOnboarding() {
             const fileExt = file.name.split('.').pop();
             const filePath = `${user.id}/${Math.random()}.${fileExt}`;
 
+            // Smart Compression Config
+            const options = {
+                maxSizeMB: 1, // Safe limit (Storage is 500MB, so 1MB is fine)
+                maxWidthOrHeight: 800, // 800px is plenty for a profile circle
+                useWebWorker: true,
+                fileType: "image/jpeg"
+            };
+
+            // Dynamic import to avoid SSR issues
+            const imageCompression = (await import("browser-image-compression")).default;
+            const compressedFile = await imageCompression(file, options);
+
             const { error: uploadError } = await supabase.storage
                 .from('avatars')
-                .upload(filePath, file);
+                .upload(filePath, compressedFile);
 
             if (uploadError) {
                 throw uploadError;
@@ -107,6 +119,7 @@ export default function CandidateOnboarding() {
             setAvatarUrl(data.publicUrl);
             toast.success("Image uploaded successfully!");
         } catch (error: any) {
+            console.error(error);
             toast.error("Error uploading avatar: " + error.message);
         } finally {
             setUploading(false);
