@@ -263,7 +263,7 @@ export default function CandidateOnboarding() {
 
                                 <div className="grid gap-4 md:grid-cols-2">
                                     <div className="space-y-2">
-                                        <Label htmlFor="phone">Phone Number</Label>
+                                        <Label htmlFor="phone">Phone Number (Optional)</Label>
                                         <div className="relative">
                                             <Phone className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                                             <Input
@@ -306,7 +306,7 @@ export default function CandidateOnboarding() {
 
                                 <div className="grid gap-4 md:grid-cols-2">
                                     <div className="space-y-2">
-                                        <Label htmlFor="website">Portfolio / Personal Website</Label>
+                                        <Label htmlFor="website">Portfolio / Personal Website (Optional)</Label>
                                         <div className="relative">
                                             <Globe className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                                             <Input
@@ -319,7 +319,7 @@ export default function CandidateOnboarding() {
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label htmlFor="linkedin">LinkedIn URL</Label>
+                                        <Label htmlFor="linkedin">LinkedIn URL (Optional)</Label>
                                         <div className="relative">
                                             <Linkedin className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                                             <Input
@@ -334,7 +334,7 @@ export default function CandidateOnboarding() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="avatar">Profile Picture</Label>
+                                    <Label htmlFor="avatar">Profile Picture (Optional)</Label>
                                     <div className="flex items-center gap-4">
                                         {avatarUrl ? (
                                             // eslint-disable-next-line @next/next/no-img-element
