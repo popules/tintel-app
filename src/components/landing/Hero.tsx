@@ -154,7 +154,7 @@ export function Hero() {
                                 <div className="flex justify-between items-end mb-4">
                                     <div>
                                         <h3 className="text-xl font-bold text-white">Active Jobs</h3>
-                                        <p className="text-sm text-muted-foreground">Find your next client or carrier move.</p>
+                                        <p className="text-sm text-muted-foreground">Find your next client or career move.</p>
                                     </div>
                                     <div className="text-xs bg-white/10 px-2 py-1 rounded text-white">100 matches</div>
                                 </div>
