@@ -200,7 +200,6 @@ export default function CompanyPage() {
                             <CardHeader className="pb-2">
                                 <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                                     About {companyName}
-                                    <Badge variant="secondary" className="text-[10px] h-5 bg-indigo-500/10 text-indigo-400 border-0">AI Generated</Badge>
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
