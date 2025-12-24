@@ -5,6 +5,8 @@ import { generateEmbedding } from "@/app/actions/ai";
 
 export async function searchCandidates(query: string) {
     const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { success: false, error: "Unauthorized" };
 
     try {
         // 1. Generate Embedding for the Search Query

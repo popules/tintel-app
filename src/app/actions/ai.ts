@@ -2,16 +2,29 @@
 
 import OpenAI from 'openai';
 
+import { createClient } from "@/lib/supabase/server";
+
 // Initialize OpenAI only if key exists to avoid crash on startup
 const openai = process.env.OPENAI_API_KEY
     ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
     : null;
 
 /**
+ * HELPER: Verify Auth
+ */
+async function isAuthenticated() {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    return !!user;
+}
+
+/**
  * GENERATE CANDIDATE BIO & SKILLS
  * Context: Candidate Onboarding
  */
 export async function generateCandidateProfile(headline: string, experience: string) {
+    if (!await isAuthenticated()) return { success: false, error: "Unauthorized" };
+
     if (!openai) {
         // Fallback or Error if no key
         return {
@@ -60,6 +73,8 @@ export async function generateCandidateProfile(headline: string, experience: str
  * Context: Job Card -> Pitch
  */
 export async function generateRecruiterPitch(jobTitle: string, company: string, leadName: string, leadRole: string | null) {
+    if (!await isAuthenticated()) return { success: false, error: "Unauthorized" };
+
     if (!openai) {
         return { success: false, error: "OpenAI API Key not configured." };
     }
@@ -77,8 +92,8 @@ export async function generateRecruiterPitch(jobTitle: string, company: string, 
         - Be direct and high-value.
         - Don't be "salsey", be helpful.
         - Provide TWO variants:
-          1. "Standard Professional" (Swedish)
-          2. "Direct/Casual" (Swedish)
+        1. "Standard Professional" (Swedish)
+        2. "Direct/Casual" (Swedish)
 
         Return valid JSON:
         {
@@ -114,6 +129,8 @@ export async function generateRecruiterPitch(jobTitle: string, company: string, 
  * Context: Smart Search & Matchmaking
  */
 export async function generateEmbedding(text: string) {
+    if (!await isAuthenticated()) return { success: false, error: "Unauthorized" };
+
     if (!openai) {
         return { success: false, error: "OpenAI API Key not configured." };
     }
@@ -142,6 +159,9 @@ export async function generateEmbedding(text: string) {
  * The client fetches the text (to avoid IP blocks) and sends it here for AI analysis.
  */
 export async function analyzeJobText(text: string) {
+    // Note: We might want allow public access for a "demo", but for now lock it down.
+    if (!await isAuthenticated()) return { success: false, error: "Unauthorized" };
+
     if (!openai) return { success: false, error: "OpenAI API Key not configured." };
 
     try {
