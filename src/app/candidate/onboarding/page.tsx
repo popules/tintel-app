@@ -132,13 +132,33 @@ export default function CandidateOnboarding() {
             return;
         }
         setMagicLoading(true);
-        // Simulation of AI generation for immediate feedback
-        setTimeout(() => {
-            setBio(`Passionate ${headline} with a proven track record of delivering high-quality solutions. Expert in modern technologies and dedicated to continuous improvement. focused on creating efficient, scalable, and user-friendly applications.`);
-            setSkills("React, TypeScript, Next.js, Node.js, UI/UX Design, Agile Methodologies, Git, Cloud Infrastructure");
+
+        try {
+            // Dynamically import server action
+            const { generateCandidateProfile } = await import("@/app/actions/ai");
+            const result = await generateCandidateProfile(headline, experience || "5");
+
+            if (result.success && result.data) {
+                setBio(result.data.bio);
+                setSkills(result.data.skills);
+                toast.success("Profile magically enhanced by AI! ✨");
+            } else {
+                // Fallback if no API key or error: Use the old "simulation" so the app doesn't break for you right now
+                console.warn("AI Failed, using fallback:", result.error);
+
+                // FALLBACK SIMULATION (So it works for you before you add the key)
+                setTimeout(() => {
+                    setBio(`Passionate ${headline} with a proven track record. Expert in modern technologies and dedicated to continuous improvement.`);
+                    setSkills("React, TypeScript, Next.js, Node.js, Cloud Infrastructure");
+                    toast.success("Profile enhanced! (Add API Key for better results)");
+                }, 500);
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error("Magic fill failed.");
+        } finally {
             setMagicLoading(false);
-            toast.success("Profile magically enhanced!");
-        }, 1500);
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {

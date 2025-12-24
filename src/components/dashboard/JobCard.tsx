@@ -137,88 +137,63 @@ export function JobCard({ job, index, initialSaved = false }: JobCardProps) {
         e.stopPropagation()
         setGeneratingPitch(true)
 
-        // Mock AI delay
-        await new Promise(resolve => setTimeout(resolve, 600))
-
-        // Smart Name Extraction
-        let name = "Hiring Team";
-        // 1. Try name from lead
-        if (lead?.name && lead.name !== "Hiring Manager" && lead.name !== "No direct contact found") {
-            name = lead.name.split(' ')[0];
-        }
-        // 2. Try extraction from email (lina.melltoft@domain.se -> Lina)
-        else if (lead?.email) {
-            try {
-                const parts = lead.email.split('@')[0].split('.');
-                if (parts[0]) {
-                    name = parts[0].charAt(0).toUpperCase() + parts[0].slice(1);
-                }
-            } catch (err) { /* fallback */ }
-        }
-
-        const company = job.company;
-        const role = job.title;
-
-        // Expanded Professional Templates (10 variants)
-        const templates = [
-            {
-                type: 'Direct',
-                se: `Hej ${name},\n\nJag såg er annons för ${role} på ${company}. Vi har precis en seniorkonsult ledig som matchar kraven (5+ år) och kan börja omgående. Är ni intresserade av att se profilen?`,
-                en: `Hi ${name},\n\nI saw your ad for the ${role} position at ${company}. We have a senior consultant available immediately who matches the requirements perfectly (5+ years exp). Would you be interested in seeing their profile?`
-            },
-            {
-                type: 'Consultant Focus',
-                se: `Hej ${name},\n\nAngående rollen som ${role}. Jag har en kandidat som precis avslutat ett liknande uppdrag och fick högsta betyg. Tänkte att personen kunde passa in bra på ${company}.\n\nSka jag skicka över CV?`,
-                en: `Hi ${name},\n\nRegarding the ${role} position. I have a candidate who just finished a similar assignment with top ratings. I thought they would be a great fit for ${company}.\n\nShould I send over the CV?`
-            },
-            {
-                type: 'Value Add',
-                se: `Hej ${name},\n\nVet att rekrytering tar tid. Om ni behöver stöttning med ${role} så har jag två starka kandidater tillgängliga för intervju denna vecka.\n\nHörs gärna kort om det är aktuellt.`,
-                en: `Hi ${name},\n\nI know recruitment takes time. If you need support with the ${role} role, I have two strong candidates available for interviews this week.\n\nHappy to have a quick chat if relevant.`
-            },
-            {
-                type: 'Question',
-                se: `Hej ${name},\n\nHar ni hittat rätt person för ${role} än? Om inte, så har jag en specialist som är mycket intresserad av ${company}.\n\nBästa hälsningar,`,
-                en: `Hi ${name},\n\nHave you found the right person for the ${role} role yet? If not, I have a specialist who is remarkably interested in ${company}.\n\nBest regards,`
-            },
-            {
-                type: 'Network',
-                se: `Hej ${name},\n\nEn kort check i mitt nätverk visade att jag har den perfekta matchen för er roll som ${role}. Personen har erfarenhet från liknande bransch.\n\nVill du ta ett förutsättningslöst samtal?`,
-                en: `Hi ${name},\n\nA quick check in my network showed that I have the perfect match for your ${role} position. The person has experience from a similar industry.\n\nWould you like a preliminary call?`
-            },
-            {
-                type: 'Short & Professional',
-                se: `Hej ${name},\n\nKort fråga: Tar ni in konsulter för rollen som ${role}? Jag har en person tillgänglig som kan starta nästa vecka.\n\nMed vänlig hälsning,`,
-                en: `Hi ${name},\n\nQuick question: Are you open to consultants for the ${role} role? I have someone available who can start next week.\n\nKind regards,`
-            },
-            {
-                type: 'Solution Oriented',
-                se: `Hej ${name},\n\nSåg att ni växer och söker en ${role}. För att hjälpa er hålla tempot uppe kan jag erbjuda en erfaren konsult som är självgående från dag 1.\n\nLåter det intressant?`,
-                en: `Hi ${name},\n\nSaw that you are growing and looking for a ${role}. To help you keep the pace up, I can offer an experienced consultant who is self-going from day 1.\n\nDoes that sound interesting?`
-            },
-            {
-                type: 'Specific',
-                se: `Hej ${name},\n\nJag ser att ${company} letar efter kompetens inom detta område. Jag representerar en konsult med just denna profil som söker nytt uppdrag.\n\nÅterkom gärna om ni vill veta mer.`,
-                en: `Hi ${name},\n\nI see that ${company} is looking for competence in this area. I represent a consultant with this exact profile looking for a new assignment.\n\nPlease get back to me if you want to know more.`
-            },
-            {
-                type: 'Availability',
-                se: `Hej ${name},\n\nVi har en lucka i beläggningen och en av våra vassaste konsulter (inom ${role}) är tillgänglig. Tror det skulle vara en "perfect match" för er.\n\nVänligen,`,
-                en: `Hi ${name},\n\nWe have a gap in our schedule and one of our sharpest consultants (within ${role}) is available. I think it would be a "perfect match" for you.\n\nBest,`
-            },
-            {
-                type: 'Intro',
-                se: `Hej ${name},\n\nÄr du rätt person att prata med gällande ${role}? Jag har ett förslag som kan spara er både tid och pengar i denna process.\n\nAllt gott,`,
-                en: `Hi ${name},\n\nAre you the right person to speak to regarding the ${role}? I have a proposal that might save you both time and money in this process.\n\nBest,`
+        try {
+            // Smart Name Extraction
+            let name = "Hiring Team";
+            if (lead?.name && lead.name !== "Hiring Manager" && lead.name !== "No direct contact found") {
+                name = lead.name.split(' ')[0];
+            } else if (lead?.email) {
+                try {
+                    const parts = lead.email.split('@')[0].split('.');
+                    if (parts[0]) name = parts[0].charAt(0).toUpperCase() + parts[0].slice(1);
+                } catch (err) { /* fallback */ }
             }
-        ];
 
-        const randomTemplate = templates[Math.floor(Math.random() * templates.length)];
+            // Call Server Action
+            const { generateRecruiterPitch } = await import("@/app/actions/ai");
+            const result = await generateRecruiterPitch(
+                job.title,
+                job.company,
+                name,
+                lead?.role || null
+            );
 
-        const pitchText = `🇸🇪 SWEDISH (${randomTemplate.type})\n${randomTemplate.se}\n\n==========================\n\n🇬🇧 ENGLISH (${randomTemplate.type})\n${randomTemplate.en}`;
+            if (result.success && result.data) {
+                setPitch(result.data);
+            } else {
+                // Fallback to Template System if no AI Key
+                console.warn("AI Pitch Failed, using templates:", result.error);
 
-        setPitch(pitchText)
-        setGeneratingPitch(false)
+                // Expanded Professional Templates (10 variants)
+                const templates = [
+                    {
+                        type: 'Direct',
+                        se: `Hej ${name},\n\nJag såg er annons för ${job.title} på ${job.company}. Vi har precis en seniorkonsult ledig som matchar kraven (5+ år) och kan börja omgående. Är ni intresserade av att se profilen?`,
+                        en: `Hi ${name},\n\nI saw your ad for the ${job.title} position at ${job.company}. We have a senior consultant available immediately who matches the requirements perfectly (5+ years exp). Would you be interested in seeing their profile?`
+                    },
+                    {
+                        type: 'Consultant Focus',
+                        se: `Hej ${name},\n\nAngående rollen som ${job.title}. Jag har en kandidat som precis avslutat ett liknande uppdrag och fick högsta betyg. Tänkte att personen kunde passa in bra på ${job.company}.\n\nSka jag skicka över CV?`,
+                        en: `Hi ${name},\n\nRegarding the ${job.title} position. I have a candidate who just finished a similar assignment with top ratings. I thought they would be a great fit for ${job.company}.\n\nShould I send over the CV?`
+                    },
+                    {
+                        type: 'Value Add',
+                        se: `Hej ${name},\n\nVet att rekrytering tar tid. Om ni behöver stöttning med ${job.title} så har jag två starka kandidater tillgängliga för intervju denna vecka.\n\nHörs gärna kort om det är aktuellt.`,
+                        en: `Hi ${name},\n\nI know recruitment takes time. If you need support with the ${job.title} role, I have two strong candidates available for interviews this week.\n\nHappy to have a quick chat if relevant.`
+                    }
+                ];
+
+                const randomTemplate = templates[Math.floor(Math.random() * templates.length)];
+                const pitchText = `🇸🇪 SWEDISH (${randomTemplate.type})\n${randomTemplate.se}\n\n==========================\n\n🇬🇧 ENGLISH (${randomTemplate.type})\n${randomTemplate.en}`;
+                setPitch(pitchText);
+            }
+
+        } catch (err) {
+            console.error(err);
+            alert("Could not generate pitch.");
+        } finally {
+            setGeneratingPitch(false);
+        }
     }
 
     return (
