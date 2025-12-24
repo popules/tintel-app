@@ -27,16 +27,14 @@ export async function fetchCompanyNews(companyName: string): Promise<{ success: 
             .replace(/[^\w\s\å\ä\ö]/gi, '') // Remove special chars
             .trim();
 
-        // Query Google News
-        // hl=sv (Language: Swedish), gl=SE (Location: Sweden), ceid=SE:sv
-        // Improve query: Search for the company name + "Sverige" to ensure relevance if it's a global term
-        // But for big companies "SAAB", just "SAAB" is fine.
-        // Let's try to be specific: "Company Sverige"
+        // Improve query: "Company Sverige"
         const query = `${cleanName} Sverige`;
 
         console.log("Fetching news for: " + query);
 
-        const feedUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=sv&gl=SE&ceid=SE:sv`;
+        // Switch to Bing News (Often more permissive for server-side defaults)
+        // Format: https://www.bing.com/news/search?q=SAAB+Sverige&format=rss
+        const feedUrl = `https://www.bing.com/news/search?q=${encodeURIComponent(query)}&format=rss`;
 
         console.log(`Fetching news from URL: ${feedUrl}`);
 
@@ -45,11 +43,9 @@ export async function fetchCompanyNews(companyName: string): Promise<{ success: 
         const news = feed.items.slice(0, 5).map(item => ({
             title: item.title || "No Title",
             link: item.link || "#",
-            pubDate: item.pubDate ? new Date(item.pubDate).toLocaleDateString('sv-SE', {
-                day: 'numeric', month: 'short'
-            }) : "Recent",
-            source: item.source || "Google News",
-            snippet: item.contentSnippet || ""
+            // Bing dates are usually good
+            pubDate: item.pubDate ? new Date(item.pubDate).toLocaleDateString() : "Recent",
+            source: item.source || "Bing News" // Bing doesn't always give source name clearly in standard RSS fields
         }));
 
         return { success: true, data: news };

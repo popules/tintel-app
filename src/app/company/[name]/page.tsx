@@ -105,25 +105,34 @@ export default function CompanyPage() {
         }));
 
     // 4. AI Company Summary
-    const [summary, setSummary] = useState<string>("");
+    const [summary, setSummary] = useState<string | null>(null);
+    const [summaryError, setSummaryError] = useState<string | null>(null);
     const [loadingSummary, setLoadingSummary] = useState(true);
 
     useEffect(() => {
         let mounted = true;
-        const loadSummary = async () => {
+        const fetchSummary = async () => {
             try {
+                // Dynamically import to ensure we hit the server action correctly
                 const { generateCompanySummary } = await import("@/app/actions/ai");
                 const res = await generateCompanySummary(companyName);
-                if (mounted && res.success && res.data) {
-                    setSummary(res.data);
+
+                if (mounted) {
+                    if (res.success && res.data) {
+                        setSummary(res.data);
+                    } else {
+                        console.error("AI Summary Failed:", res.error);
+                        setSummaryError(res.error || "Unknown error");
+                    }
                 }
             } catch (err) {
                 console.error(err);
+                if (mounted) setSummaryError("Fetch failed");
             } finally {
                 if (mounted) setLoadingSummary(false);
             }
         };
-        loadSummary();
+        fetchSummary();
         return () => { mounted = false; };
     }, [companyName]);
 
@@ -196,17 +205,30 @@ export default function CompanyPage() {
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                {loadingSummary ? (
-                                    <div className="space-y-2">
-                                        <Skeleton className="h-4 w-full" />
-                                        <Skeleton className="h-4 w-[90%]" />
-                                        <Skeleton className="h-4 w-[80%]" />
-                                    </div>
-                                ) : (
-                                    <p className="text-sm text-muted-foreground leading-relaxed">
-                                        {summary || `${companyName} is a leading organization in its field. (AI Summary unavailable)`}
-                                    </p>
-                                )}
+                                <div className="relative">
+                                    {loadingSummary ? (
+                                        <div className="space-y-2 animate-pulse">
+                                            <div className="h-4 bg-white/10 rounded w-full" />
+                                            <div className="h-4 bg-white/10 rounded w-5/6" />
+                                            <div className="h-4 bg-white/10 rounded w-4/6" />
+                                        </div>
+                                    ) : (
+                                        <p className="text-sm text-muted-foreground leading-relaxed">
+                                            {summary || (
+                                                <span className="text-amber-500/80">
+                                                    {companyName} is a leading organization in its field.
+                                                    <br />
+                                                    <span className="text-xs font-mono mt-2 block p-2 bg-amber-500/10 rounded border border-amber-500/20">
+                                                        Debug: {summaryError || "AI Summary unavailable"}
+                                                    </span>
+                                                </span>
+                                            )}
+                                        </p>
+                                    )}
+
+                                    {/* Decorative Quote */}
+                                    <div className="absolute -top-1 -left-2 text-4xl text-indigo-500/10 font-serif">“</div>
+                                </div>
                             </CardContent>
                         </Card>
                     </div>
