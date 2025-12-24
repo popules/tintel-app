@@ -26,7 +26,18 @@ export async function updateSession(request: NextRequest) {
         }
     )
 
-    await supabase.auth.getUser()
+    const {
+        data: { user },
+    } = await supabase.auth.getUser()
+
+    // PROTECTED ROUTES LOGIC
+    if (request.nextUrl.pathname.startsWith('/dashboard') && !user) {
+        return NextResponse.redirect(new URL('/login', request.url))
+    }
+
+    if (request.nextUrl.pathname.startsWith('/candidate/dashboard') && !user) {
+        return NextResponse.redirect(new URL('/candidate/login', request.url))
+    }
 
     return response
 }

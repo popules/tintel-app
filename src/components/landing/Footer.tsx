@@ -19,41 +19,28 @@ export function Footer() {
                     </div>
 
                     <div>
-                        <h4 className="font-bold text-white mb-4">Product</h4>
                         <ul className="space-y-2 text-sm text-muted-foreground">
-                            <li><Link href="/#features" className="hover:text-white transition-colors">Features</Link></li>
-                            <li><Link href="/#pricing" className="hover:text-white transition-colors">Pricing</Link></li>
-                            <li><Link href="#" className="hover:text-white transition-colors">Changelog</Link></li>
-                        </ul>
-                    </div>
-
-                    <div>
-                        <h4 className="font-bold text-white mb-4">Company</h4>
-                        <ul className="space-y-2 text-sm text-muted-foreground">
+                            <li><Link href="/pricing" className="hover:text-white transition-colors">Pricing</Link></li>
+                            <li><Link href="/changelog" className="hover:text-white transition-colors">Changelog</Link></li>
                             <li><Link href="/about" className="hover:text-white transition-colors">About</Link></li>
-                            <li><Link href="#" className="hover:text-white transition-colors">Careers</Link></li>
+                            <li><Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link></li>
+                            <li><Link href="/terms" className="hover:text-white transition-colors">Terms</Link></li>
                             <li><Link href="mailto:hello@tintel.se" className="hover:text-white transition-colors">Contact</Link></li>
                         </ul>
                     </div>
-
-                    <div>
-                        <h4 className="font-bold text-white mb-4">Legal</h4>
-                        <ul className="space-y-2 text-sm text-muted-foreground">
-                            <li><Link href="#" className="hover:text-white transition-colors">Privacy</Link></li>
-                            <li><Link href="#" className="hover:text-white transition-colors">Terms</Link></li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-                    <p className="text-xs text-muted-foreground">
-                        © 2025 Tintel AB. All rights reserved.
-                    </p>
-                    <div className="flex gap-4">
-                        {/* Socials placeholder */}
-                    </div>
+                    {/* Simplified Layout to remove duplicates */}
                 </div>
             </div>
-        </footer>
+
+            <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p className="text-xs text-muted-foreground">
+                    © 2025 Tintel AB. All rights reserved.
+                </p>
+                <div className="flex gap-4">
+                    {/* Socials placeholder */}
+                </div>
+            </div>
+        </div>
+        </footer >
     );
 }
