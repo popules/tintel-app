@@ -49,7 +49,26 @@ export async function GET(req: NextRequest) {
             } catch (e) { console.log("Internal API failed", e); }
         }
 
-        // Fallback: Fetch URL directly
+        // --- FALLBACK: JobTech Public API (Reliable for Text) ---
+        if (!rawText && pbIdMatch) {
+            const adId = pbIdMatch[1];
+            try {
+                const publicRes = await fetch(`https://jobsearch.api.jobtechdev.se/search?q=${adId}`, {
+                    headers: { "Accept": "application/json" }
+                });
+                if (publicRes.ok) {
+                    const publicData = await publicRes.json();
+                    if (publicData.hits && publicData.hits.length > 0) {
+                        const hit = publicData.hits[0];
+                        // JobTech text is often reliable even if they hide structured contacts
+                        rawText = hit.description?.text || "";
+                        source = "Public_API_Text";
+                    }
+                }
+            } catch (e) { console.log("Public API failed", e); }
+        }
+
+        // --- FALLBACK: Generic HTML Scrape ---
         if (!rawText) {
             const response = await fetch(url, {
                 headers: { "User-Agent": "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)" }
