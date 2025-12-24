@@ -104,7 +104,7 @@ export async function GET(req: NextRequest) {
                 If no direct email is found but a name is present, try to INFER the email format if the company domain is obvious (e.g. "Anna Andersson at Spotify" -> "anna.andersson@spotify.com").
                 
                 Text Context:
-                "${rawText.slice(0, 2000)}"
+                "${rawText.slice(0, 20000)}"
 
                 Return JSON:
                 {

@@ -147,7 +147,7 @@ export async function analyzeJobText(text: string) {
     try {
         const prompt = `
         Analyze this job ad text and extract the hiring manager or recruiter's details.
-        Text Context: "${text.slice(0, 3000)}"
+        Text Context: "${text.slice(0, 20000)}"
 
         If no direct email is found but a name is present, try to INFER email (First.Last@Company.com) ONLY if confident.
 
