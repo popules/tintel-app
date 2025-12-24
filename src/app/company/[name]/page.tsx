@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Building2, MapPin, Users, TrendingUp, Briefcase } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { CompanyIntelligence } from "@/components/companies/CompanyIntelligence";
 
 export default function CompanyPage() {
     const params = useParams();
