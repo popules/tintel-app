@@ -2,7 +2,11 @@
 
 import Parser from 'rss-parser';
 
-const parser = new Parser();
+const parser = new Parser({
+    headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36',
+    },
+});
 
 export interface NewsItem {
     title: string;

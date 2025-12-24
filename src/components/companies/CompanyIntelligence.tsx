@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { TrendingUp, Newspaper, Zap, Code2 } from "lucide-react";
+import { TrendingUp, Newspaper, Zap, Code2, HelpCircle } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { motion } from "framer-motion";
 
@@ -160,9 +160,24 @@ export function CompanyIntelligence({ companyName, jobs }: CompanyIntelligencePr
                 {/* Tech Stack */}
                 <Card className="bg-[#0f111a] border-white/5">
                     <CardHeader className="pb-3">
-                        <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                            <Code2 className="h-4 w-4 text-indigo-500" />
-                            Inferred Tech Stack
+                        <CardTitle className="text-sm font-medium text-muted-foreground flex items-center justify-between">
+                            <span className="flex items-center gap-2">
+                                <Code2 className="h-4 w-4 text-indigo-500" />
+                                Inferred Tech Stack
+                            </span>
+                            <TooltipProvider>
+                                <ShadTooltip>
+                                    <TooltipTrigger asChild>
+                                        <HelpCircle className="h-3 w-3 text-muted-foreground cursor-help" />
+                                    </TooltipTrigger>
+                                    <TooltipContent
+                                        side="top"
+                                        className="bg-[#1a1d2d] border border-white/10 text-white text-xs rounded-lg px-3 py-2"
+                                    >
+                                        <p>Detected keywords from company job titles.</p>
+                                    </TooltipContent>
+                                </ShadTooltip>
+                            </TooltipProvider>
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="flex flex-wrap gap-2">
