@@ -27,17 +27,12 @@ export async function fetchCompanyNews(companyName: string): Promise<{ success: 
             .replace(/[^\w\s\å\ä\ö]/gi, '') // Remove special chars
             .trim();
 
-        // Improve query: "Company Sverige"
+        // Query: "Company Sverige"
         const query = `${cleanName} Sverige`;
 
         console.log("Fetching news for: " + query);
 
-        // Improve query: "Company Sverige"
-        const query = `${cleanName} Sverige`;
-
-        console.log("Fetching news for: " + query);
-
-        // Revert to Google News (User request)
+        // Google News RSS URL
         // hl=sv (Language: Swedish), gl=SE (Location: Sweden), ceid=SE:sv
         const feedUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=sv&gl=SE&ceid=SE:sv`;
 
