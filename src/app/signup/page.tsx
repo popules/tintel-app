@@ -27,88 +27,33 @@ export default function SignupPage() {
         setLoading(true)
         setError(null)
 
-        // 1. Check if email is in the allowed list (Invite Only)
-        const { data: allowed, error: allowedError } = await supabase
-            .from('allowed_emails')
-            .select('email')
-            .eq('email', email.toLowerCase())
-            .single()
-
-        if (allowedError || !allowed) {
-            // NOT WHITELISTED -> Submit an Access Request instead
-            const { error: requestError } = await supabase
-                .from('access_requests')
-                .upsert({
-                    email: email.toLowerCase(),
-                    full_name: fullName,
-                    status: 'pending'
-                }, { onConflict: 'email' })
-
-            if (requestError) {
-                setError("Our partner queue is currently full. Please try again later or contact hello@tintel.se.")
-            } else {
-                setRequestSent(true)
-            }
-            setLoading(false)
-            return
-        }
-
-        // 2. Proceed with Signup (They are whitelisted!)
-        const { data, error: signupError } = await supabase.auth.signUp({
-            email,
-            password,
-            options: {
-                emailRedirectTo: `${location.origin}/auth/callback`,
-                data: {
-                    full_name: fullName,
+        try {
+            // Open Registration (Freemium Model)
+            const { data, error: signupError } = await supabase.auth.signUp({
+                email,
+                password,
+                options: {
+                    emailRedirectTo: `${location.origin}/auth/callback`,
+                    data: {
+                        full_name: fullName,
+                        role: 'recruiter', // Explicitly set role
+                    },
                 },
-            },
-        })
+            })
 
-        if (signupError) {
-            setError(signupError.message)
-            setLoading(false)
-        } else if (data.session) {
-            // Confirmation is OFF in Supabase - Logged in immediately
-            router.push('/dashboard')
-            router.refresh()
-        } else {
-            // Confirmation is ON in Supabase - Show verification UI
-            setSubmitted(true)
+            if (signupError) throw signupError;
+
+            if (data.session) {
+                router.push('/dashboard?welcome=true') // Add query param for specialized welcome
+                router.refresh()
+            } else {
+                setSubmitted(true)
+            }
+        } catch (err: any) {
+            setError(err.message || "Something went wrong")
+        } finally {
             setLoading(false)
         }
-    }
-
-    if (requestSent) {
-        return (
-            <div className="flex min-h-screen items-center justify-center bg-muted/20 p-4">
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="w-full max-w-sm"
-                >
-                    <Card className="border-0 shadow-lg shadow-indigo-500/10 backdrop-blur-sm bg-background/80 p-8 text-center space-y-6">
-                        <div className="flex justify-center">
-                            <div className="h-20 w-20 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-500">
-                                <span className="text-4xl font-black italic">t</span>
-                            </div>
-                        </div>
-                        <div className="space-y-2">
-                            <h2 className="text-2xl font-bold tracking-tight">Application Received</h2>
-                            <p className="text-muted-foreground">
-                                Thank you for your interest. We've added <span className="text-foreground font-medium">{email}</span> to our partner queue.
-                            </p>
-                        </div>
-                        <div className="bg-indigo-500/5 border border-indigo-500/10 p-4 rounded-xl text-sm text-indigo-400">
-                            To maintain platform quality, we approve new partners manually. You will receive an invitation link once your access is ready.
-                        </div>
-                        <Button className="w-full bg-white text-black hover:bg-white/90 font-bold h-12 rounded-xl" onClick={() => router.push('/')}>
-                            Back to Home
-                        </Button>
-                    </Card>
-                </motion.div>
-            </div>
-        )
     }
 
     if (submitted) {
