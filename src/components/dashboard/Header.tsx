@@ -125,32 +125,20 @@ export function Header({ searchTerm = "", setSearchTerm = () => { } }: HeaderPro
                 </span>
             </Link>
 
-            {/* Middle Section: Search (Recruiter) vs Nav (Candidate) */}
+            {/* Middle Section: Global Search */}
             <div className="flex-1 max-w-xl mx-4 md:mx-8 hidden md:block group relative">
-                {profile?.role === 'candidate' ? (
-                    <div className="flex items-center gap-4">
-                        <Button asChild variant="ghost" className="text-muted-foreground hover:text-indigo-500">
-                            <Link href="/candidate/jobs">Find Jobs</Link>
-                        </Button>
-                        <Button asChild variant="ghost" className="text-muted-foreground hover:text-indigo-500">
-                            <Link href="/candidate/my-jobs">My Pipeline</Link>
-                        </Button>
-                    </div>
-                ) : (
-                    <div className="relative transition-all duration-300 focus-within:scale-[1.02]">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-indigo-500 transition-colors" />
-                        <Input
-                            type="search"
-                            placeholder="Jump to any company..."
-                            className="w-full bg-muted/50 border-transparent pl-10 h-10 rounded-xl focus:bg-background focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                    </div>
-                )}
+                <div className="relative transition-all duration-300 focus-within:scale-[1.02]">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-indigo-500 transition-colors" />
+                    <Input
+                        type="search"
+                        placeholder="Jump to any company..."
+                        className="w-full bg-muted/50 border-transparent pl-10 h-10 rounded-xl focus:bg-background focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                </div>
 
-                {/* Search Results (Recruiter Only) */}
-                {profile?.role !== 'candidate' && searchResults.length > 0 && (
+                {searchResults.length > 0 && (
                     <motion.div
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}

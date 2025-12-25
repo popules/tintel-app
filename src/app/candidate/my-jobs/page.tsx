@@ -17,7 +17,7 @@ type Application = {
     id: string;
     job_title: string;
     company_name: string;
-    status: 'applied' | 'interview' | 'offer' | 'rejected' | 'ghosted';
+    status: 'saved' | 'applied' | 'interview' | 'offer' | 'rejected' | 'ghosted';
     job_url: string;
     job_data: any;
     notes: string;
@@ -25,6 +25,7 @@ type Application = {
 };
 
 const COLUMNS = [
+    { id: 'saved', title: 'Saved / Interested', color: 'bg-zinc-500/10 text-zinc-400 border-zinc-500/20' },
     { id: 'applied', title: 'Applied', color: 'bg-blue-500/10 text-blue-500 border-blue-500/20' },
     { id: 'interview', title: 'Interview', color: 'bg-amber-500/10 text-amber-500 border-amber-500/20' },
     { id: 'offer', title: 'Offer', color: 'bg-green-500/10 text-green-500 border-green-500/20' },
@@ -93,7 +94,7 @@ export default function MyJobsPage() {
                         </h1>
                         <p className="text-muted-foreground text-lg">Track your applications and manage your career.</p>
                     </div>
-                    <Button variant="outline" className="border-white/10 hover:bg-white/5" onClick={() => router.push('/dashboard')}>
+                    <Button variant="outline" className="border-white/10 hover:bg-white/5" onClick={() => router.push('/candidate/jobs')}>
                         <Briefcase className="mr-2 h-4 w-4" /> Find More Jobs
                     </Button>
                 </div>

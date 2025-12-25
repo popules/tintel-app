@@ -7,59 +7,69 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { Loader2, User, MapPin, Briefcase, Edit, Eye, TrendingUp, Sparkles } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Loader2, User, MapPin, Briefcase, Edit, Eye, TrendingUp, Sparkles, Search, ArrowRight, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { CandidateCard } from "@/components/dashboard/CandidateCard";
+import { motion } from "framer-motion";
 
 export default function CandidateDashboardPage() {
     const [candidate, setCandidate] = useState<any>(null);
+    const [recentApps, setRecentApps] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [isOpen, setIsOpen] = useState(false);
     const [updatingStatus, setUpdatingStatus] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
     const supabase = createClient();
     const router = useRouter();
 
     useEffect(() => {
-        const fetchProfile = async () => {
+        const fetchData = async () => {
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) {
                 router.push("/candidate/login");
                 return;
             }
 
-            // Security Check: Ensure user is a candidate
+            // Security Check
             if (user.user_metadata?.role !== 'candidate') {
-                // Redirect recruiters to their own dashboard if they stumble here
                 router.push("/dashboard");
                 return;
             }
 
-            const { data, error } = await supabase
+            // Fetch Profile
+            const { data: profile } = await supabase
                 .from("candidates")
                 .select("*")
                 .eq("id", user.id)
                 .single();
 
-            if (error && error.code !== 'PGRST116') {
-                console.error("Error fetching profile:", error);
+            if (profile) {
+                setCandidate(profile);
+                setIsOpen(profile.is_open);
+            } else {
+                router.push("/candidate/onboarding");
+                return;
             }
 
-            if (data) {
-                setCandidate(data);
-                setIsOpen(data.is_open);
-            } else {
-                // No profile yet, redirect to onboarding
-                router.push("/candidate/onboarding");
-            }
+            // Fetch Recent Activity (Pipeline)
+            const { data: apps } = await supabase
+                .from("applications")
+                .select("*")
+                .eq("candidate_id", user.id)
+                .order("updated_at", { ascending: false })
+                .limit(3);
+
+            if (apps) setRecentApps(apps);
+
             setLoading(false);
         };
 
-        fetchProfile();
+        fetchData();
     }, [router]);
 
     const handleStatusToggle = async (checked: boolean) => {
         setUpdatingStatus(true);
-        // Optimistic update
         setIsOpen(checked);
 
         const { data: { user } } = await supabase.auth.getUser();
@@ -72,12 +82,18 @@ export default function CandidateDashboardPage() {
 
         if (error) {
             console.error("Error updating status:", error);
-            setIsOpen(!checked); // Revert on error
-            // toast.error("Failed to update status");
+            setIsOpen(!checked);
         } else {
             setCandidate({ ...candidate, is_open: checked });
         }
         setUpdatingStatus(false);
+    };
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        // For now, just go to jobs page. Ideally, pass query param.
+        // We'll fix JobMarketplace to read ?q= later.
+        router.push(`/candidate/jobs?q=${encodeURIComponent(searchTerm)}`);
     };
 
     if (loading) {
@@ -88,117 +104,197 @@ export default function CandidateDashboardPage() {
         );
     }
 
-    if (!candidate) return null; // Redirecting...
+    if (!candidate) return null;
 
     return (
-        <div className="min-h-screen bg-background text-foreground font-sans p-4 md:p-8">
-            <div className="max-w-5xl mx-auto space-y-8">
+        <div className="min-h-screen bg-background text-foreground font-sans">
 
-                {/* Header Section */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <div>
-                        <h1 className="text-3xl font-bold tracking-tight">My Candidate Profile</h1>
-                        <p className="text-muted-foreground mt-1">Manage your professional presence and availability.</p>
-                    </div>
+            {/* 1. Hero / Search Section */}
+            <div className="relative overflow-hidden bg-slate-950 px-6 py-16 md:py-24 lg:px-8 border-b border-white/5">
+                <div className="absolute top-0 right-0 -mr-16 -mt-16 h-64 w-64 rounded-full bg-indigo-500/10 blur-3xl" />
+                <div className="absolute bottom-0 left-0 -ml-16 -mb-16 h-64 w-64 rounded-full bg-purple-500/10 blur-3xl" />
 
-                    <div className="flex items-center gap-4 bg-muted/30 p-2 rounded-lg border border-border/50">
-                        <div className="flex flex-col items-end mr-2">
-                            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                                {isOpen ? "Visible to Recruiters" : "Hidden from Search"}
-                            </span>
-                            {updatingStatus && <span className="text-[10px] text-muted-foreground animate-pulse">Updating...</span>}
+                <div className="mx-auto max-w-2xl text-center relative z-10">
+                    <h1 className="text-4xl font-black tracking-tight text-white sm:text-6xl mb-6">
+                        Find your next <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">career move</span>
+                    </h1>
+                    <p className="text-lg leading-8 text-gray-400 mb-8">
+                        Search thousands of active jobs or let the opportunities come to you.
+                    </p>
+                    <form onSubmit={handleSearch} className="flex gap-2 max-w-md mx-auto">
+                        <div className="relative flex-1">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                            <Input
+                                placeholder="Job title, company, or keyword..."
+                                className="pl-10 h-12 text-base bg-white/10 border-white/20 text-white placeholder:text-gray-500 focus:bg-white/20 transition-all rounded-xl"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
                         </div>
-                        <Switch
-                            checked={isOpen}
-                            onCheckedChange={handleStatusToggle}
-                            className={`${isOpen ? "bg-green-500" : "bg-input"}`}
-                        />
+                        <Button size="lg" className="h-12 px-8 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl shadow-lg shadow-indigo-500/20">
+                            Search
+                        </Button>
+                    </form>
+                    <div className="mt-6 flex justify-center gap-4 text-sm text-gray-500">
+                        <span>Popular:</span>
+                        <Link href="/candidate/jobs?q=Project+Manager" className="hover:text-indigo-400 transition-colors">Project Manager</Link>
+                        <Link href="/candidate/jobs?q=Developer" className="hover:text-indigo-400 transition-colors">Developer</Link>
+                        <Link href="/candidate/jobs?q=Sales" className="hover:text-indigo-400 transition-colors">Sales</Link>
                     </div>
                 </div>
+            </div>
 
-                {/* Main Content Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="max-w-6xl mx-auto p-4 md:p-8 space-y-12">
 
-                    {/* Left Column: Stats & Actions */}
-                    <div className="space-y-6">
-                        <Card>
-                            <CardHeader className="pb-2">
-                                <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Profile Performance</CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2">
-                                        <Eye className="h-4 w-4 text-indigo-500" />
-                                        <span className="font-medium">Profile Views</span>
-                                    </div>
-                                    <span className="font-bold text-lg">12</span>
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2">
-                                        <Sparkles className="h-4 w-4 text-amber-500" />
-                                        <span className="font-medium">Search Appearances</span>
-                                    </div>
-                                    <span className="font-bold text-lg">48</span>
-                                </div>
-                                <div className="pt-2">
-                                    <p className="text-xs text-muted-foreground">
-                                        Your profile is performing well. Add more skills to increase visibility.
-                                    </p>
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Actions</CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-2">
-                                <Button asChild className="w-full justify-start bg-indigo-600 text-white hover:bg-indigo-700">
-                                    <Link href="/candidate/jobs">
-                                        <Briefcase className="mr-2 h-4 w-4" />
-                                        Find Jobs
-                                    </Link>
-                                </Button>
-                                <Button asChild variant="outline" className="w-full justify-start">
-                                    <Link href="/candidate/onboarding">
-                                        <Edit className="mr-2 h-4 w-4" />
-                                        Edit Profile Details
-                                    </Link>
-                                </Button>
-                                <Button asChild variant="ghost" className="w-full justify-start text-muted-foreground hover:text-foreground">
-                                    <Link href="/candidate/cv">
-                                        <Eye className="mr-2 h-4 w-4" />
-                                        View Public Profile
-                                    </Link>
-                                </Button>
-                            </CardContent>
-                        </Card>
+                {/* 2. My Pipeline Snapshot */}
+                <section>
+                    <div className="flex items-center justify-between mb-6">
+                        <h2 className="text-2xl font-bold tracking-tight">Recent Activity</h2>
+                        <Button variant="ghost" asChild className="text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 dark:hover:bg-indigo-950/30">
+                            <Link href="/candidate/my-jobs">
+                                Go to Pipeline <ArrowRight className="ml-2 h-4 w-4" />
+                            </Link>
+                        </Button>
                     </div>
 
-                    {/* Middle & Right: The "Smooth CV" Preview */}
-                    <div className="md:col-span-2">
-                        <div className="relative">
-                            <div className="absolute -top-3 -right-3 z-10">
-                                <Badge className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg">
-                                    Recruiter View
-                                </Badge>
-                            </div>
-
-                            {/* We reuse the CandidateCard component but maybe we want a standard view here? 
-                                Actually, reusing the card shows them EXACTLY what recruiters see. Perfect.
-                            */}
-                            <div className="pointer-events-none select-none"> {/* Disable interaction on the preview */}
-                                <CandidateCard candidate={{ ...candidate, is_open: isOpen }} index={0} />
-                            </div>
-
-                            <div className="mt-4 flex justify-end">
-                                <p className="text-xs text-muted-foreground italic">
-                                    * This card is how you appear in search results.
+                    {recentApps.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {recentApps.map((app) => (
+                                <Link href="/candidate/my-jobs" key={app.id}>
+                                    <Card className="h-full hover:border-indigo-500/30 hover:shadow-lg transition-all cursor-pointer group">
+                                        <CardHeader className="pb-2">
+                                            <div className="flex justify-between items-start">
+                                                <Badge variant="secondary" className={`uppercase text-[10px] font-bold tracking-wider mb-2
+                                                    ${app.status === 'saved' ? 'bg-zinc-100 text-zinc-600' :
+                                                        app.status === 'applied' ? 'bg-blue-100 text-blue-600' : 'bg-green-100 text-green-600'}
+                                                `}>
+                                                    {app.status}
+                                                </Badge>
+                                                <ExternalLink className="h-4 w-4 text-muted-foreground group-hover:text-indigo-500 transition-colors" />
+                                            </div>
+                                            <CardTitle className="text-lg line-clamp-1 group-hover:text-indigo-600 transition-colors">{app.job_title}</CardTitle>
+                                            <CardDescription className="line-clamp-1">{app.company_name}</CardDescription>
+                                        </CardHeader>
+                                        <CardFooter className="text-xs text-muted-foreground pt-0">
+                                            Saved on {new Date(app.created_at).toLocaleDateString()}
+                                        </CardFooter>
+                                    </Card>
+                                </Link>
+                            ))}
+                        </div>
+                    ) : (
+                        <Card className="border-dashed shadow-none bg-muted/30">
+                            <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+                                <Briefcase className="h-12 w-12 text-muted-foreground/30 mb-4" />
+                                <h3 className="font-semibold text-lg text-muted-foreground">No jobs tracked yet</h3>
+                                <p className="text-sm text-muted-foreground/70 max-w-sm mt-1 mb-6">
+                                    Start browsing jobs and track the ones you like to see them here.
                                 </p>
+                                <Button asChild variant="outline">
+                                    <Link href="/candidate/jobs">Find Jobs</Link>
+                                </Button>
+                            </CardContent>
+                        </Card>
+                    )}
+                </section>
+
+                {/* 3. Profile & Stats */}
+                <section className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+                    {/* Status Card */}
+                    <Card className="h-full flex flex-col justify-between overflow-hidden relative border-indigo-500/20 shadow-lg shadow-indigo-500/5">
+                        <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-indigo-500/10 to-transparent rounded-bl-full" />
+
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <User className="h-5 w-5 text-indigo-500" />
+                                My Profile Status
+                            </CardTitle>
+                            <CardDescription>Control your visibility</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            <div className="flex items-center justify-between bg-muted/40 p-3 rounded-xl border">
+                                <div className="space-y-0.5">
+                                    <span className="text-sm font-medium block">Open to Work</span>
+                                    <span className="text-xs text-muted-foreground block">
+                                        {isOpen ? "Visible to recruiters" : "Hidden from search"}
+                                    </span>
+                                </div>
+                                <Switch
+                                    checked={isOpen}
+                                    onCheckedChange={handleStatusToggle}
+                                    className={`${isOpen ? "bg-green-500" : "bg-input"}`}
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Button asChild className="w-full justify-between" variant="outline">
+                                    <Link href="/candidate/onboarding">
+                                        Edit Profile <Edit className="h-4 w-4" />
+                                    </Link>
+                                </Button>
+                                <Button asChild className="w-full justify-between" variant="ghost">
+                                    <Link href="/candidate/cv">
+                                        View Public CV <ExternalLink className="h-4 w-4" />
+                                    </Link>
+                                </Button>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Stats Card */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <TrendingUp className="h-5 w-5 text-emerald-500" />
+                                Performance
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            <div className="flex items-center justify-between border-b pb-4">
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg text-indigo-600">
+                                        <Eye className="h-5 w-5" />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-medium">Profile Views</p>
+                                        <p className="text-xs text-muted-foreground">Last 30 days</p>
+                                    </div>
+                                </div>
+                                <span className="text-2xl font-bold">12</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 bg-amber-100 dark:bg-amber-900/30 rounded-lg text-amber-600">
+                                        <Sparkles className="h-5 w-5" />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-medium">Search Hits</p>
+                                        <p className="text-xs text-muted-foreground">Matched keywords</p>
+                                    </div>
+                                </div>
+                                <span className="text-2xl font-bold">48</span>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Recruiter View Preview (Collapsed/Small) */}
+                    <div className="lg:col-span-1">
+                        <div className="relative group">
+                            <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl opacity-20 group-hover:opacity-40 blur transition duration-500" />
+                            <div className="relative">
+                                <div className="absolute top-2 right-2 z-10 w-full flex justify-end px-2">
+                                    <Badge className="bg-black/70 backdrop-blur text-white border-0 shadow-lg">Recruiter Preview</Badge>
+                                </div>
+                                {/* Scaled down card */}
+                                <div className="transform scale-[0.85] origin-top -mb-16 pointer-events-none select-none">
+                                    <CandidateCard candidate={{ ...candidate, is_open: isOpen }} index={0} />
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+
+                </section>
             </div>
         </div>
     );

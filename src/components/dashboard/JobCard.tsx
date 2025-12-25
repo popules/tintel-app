@@ -431,8 +431,9 @@ export function JobCard({ job, index, initialSaved = false, mode = 'recruiter' }
                                     }
                                 }}
                             >
-                                <ExternalLink className="mr-2 h-4 w-4" />
                                 Apply on Site
+                                <ExternalLink className="mr-2 h-4 w-4" />
+                                Visit & Save
                             </Button>
                         </div>
                     )}
@@ -501,7 +502,7 @@ export function JobCard({ job, index, initialSaved = false, mode = 'recruiter' }
                                         // Open Original
                                         window.open(job.webbplatsurl, '_blank');
                                     }}>
-                                        Apply on Site <ExternalLink className="ml-2 h-4 w-4" />
+                                        Visit & Save <ExternalLink className="ml-2 h-4 w-4" />
                                     </Button>
                                 </div>
                             </DialogContent>

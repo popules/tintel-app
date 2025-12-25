@@ -53,9 +53,9 @@ export async function trackApplication(job: JobSnapshot) {
                 job_title: job.title,
                 company_name: job.company,
                 job_url: job.url,
-                status: 'applied',
+                status: 'saved',
                 job_data: job, // Full snapshot
-                notes: `Applied on ${new Date().toLocaleDateString()}`
+                notes: `Saved on ${new Date().toLocaleDateString()}`
             });
 
         if (error) throw error;
