@@ -6,7 +6,7 @@ import { useDropzone } from "react-dropzone";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { parseResume } from "@/app/actions/ai";
+import { parseResume } from "@/app/actions/resume";
 
 interface ResumeUploadProps {
     onparsed: (data: any) => void;
