@@ -15,6 +15,8 @@ interface ResumeUploadProps {
 export function ResumeUpload({ onparsed }: ResumeUploadProps) {
     const [isUploading, setIsUploading] = useState(false);
     const [isDragActive, setIsDragActive] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [fileName, setFileName] = useState("");
 
     const onDrop = useCallback(async (acceptedFiles: File[]) => {
         const file = acceptedFiles[0];
@@ -31,6 +33,8 @@ export function ResumeUpload({ onparsed }: ResumeUploadProps) {
         }
 
         setIsUploading(true);
+        setFileName(file.name);
+
         const formData = new FormData();
         formData.append("resume", file);
 
@@ -40,12 +44,15 @@ export function ResumeUpload({ onparsed }: ResumeUploadProps) {
             if (result.success && result.data) {
                 toast.success("Resume parsed successfully! Auto-filling profile...");
                 onparsed(result.data);
+                setIsSuccess(true);
             } else {
                 toast.error(result.error || "Failed to parse resume.");
+                setFileName(""); // Reset on failure
             }
         } catch (error) {
             console.error(error);
             toast.error("Something went wrong parsing your resume.");
+            setFileName("");
         } finally {
             setIsUploading(false);
         }
@@ -59,6 +66,38 @@ export function ResumeUpload({ onparsed }: ResumeUploadProps) {
         onDragLeave: () => setIsDragActive(false),
         disabled: isUploading
     });
+
+    if (isSuccess) {
+        return (
+            <div
+                className="border-2 border-green-500/20 bg-green-500/5 rounded-xl p-8 text-center animate-in fade-in zoom-in-95 duration-300"
+            >
+                <div className="flex flex-col items-center gap-4">
+                    <div className="h-12 w-12 rounded-full bg-green-500/20 flex items-center justify-center text-green-400">
+                        <CheckCircle2 className="h-6 w-6" />
+                    </div>
+                    <div className="space-y-1">
+                        <h3 className="font-semibold text-white">Resume Analyzed!</h3>
+                        <p className="text-sm text-muted-foreground">
+                            We used <strong>{fileName}</strong> to fill your profile.
+                        </p>
+                    </div>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        className="mt-2 text-xs text-muted-foreground hover:text-white"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setIsSuccess(false);
+                            setFileName("");
+                        }}
+                    >
+                        Upload a different one
+                    </Button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div
