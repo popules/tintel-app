@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
     try {
         const session = await stripe.checkout.sessions.create({
             mode: planType === 'subscription' ? 'subscription' : 'payment',
-            payment_method_types: ['card'],
+            automatic_payment_methods: { enabled: true },
             customer_email: user.email,
             metadata: {
                 userId: user.id,
@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
     try {
         const session = await stripe.checkout.sessions.create({
             mode: planType === 'subscription' ? 'subscription' : 'payment',
-            payment_method_types: ['card'],
+            automatic_payment_methods: { enabled: true },
             customer_email: user.email,
             metadata: {
                 userId: user.id,
