@@ -25,10 +25,10 @@ async function isAuthenticated() {
 export async function generateCandidateProfile(headline: string, experience: string) {
     console.log("Magic Fill: Start", { headline, experience });
 
-    // if (!await isAuthenticated()) {
-    //    console.log("Magic Fill: Unauthenticated (Bypassing for Debug)");
-    //    // return { success: false, error: "Unauthorized" };
-    // }
+    if (!await isAuthenticated()) {
+        console.log("Magic Fill: Unauthenticated");
+        return { success: false, error: "Unauthorized" };
+    }
 
     if (!openai) {
         console.log("Magic Fill: No OpenAI Key");

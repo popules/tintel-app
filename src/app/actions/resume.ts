@@ -23,7 +23,7 @@ export async function parseResume(formData: FormData) {
     console.log("Resume Parse: Start");
 
     // Auth Check
-    // if (!await isAuthenticated()) return { success: false, error: "Unauthorized" };
+    if (!await isAuthenticated()) return { success: false, error: "Unauthorized" };
 
     if (!openai) {
         console.log("Resume Parse: No OpenAI Key");
@@ -47,7 +47,7 @@ export async function parseResume(formData: FormData) {
         console.log("Resume Parse: Parsing with pdf2json...");
 
         const rawText: string = await new Promise((resolve, reject) => {
-            const pdfParser = new PDFParser(null, 1); // 1 = raw text
+            const pdfParser = new PDFParser(null, true); // true = raw text enabled
 
             pdfParser.on("pdfParser_dataError", (errData: any) => {
                 console.error("pdf2json error:", errData.parserError);
