@@ -1,6 +1,7 @@
+```javascript
 "use client";
 
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
@@ -11,7 +12,7 @@ import Link from 'next/link'
 import { Loader2 } from 'lucide-react'
 import { motion } from 'framer-motion'
 
-export default function SignupPage() {
+function SignupForm() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [fullName, setFullName] = useState('')
@@ -32,7 +33,7 @@ export default function SignupPage() {
                 email,
                 password,
                 options: {
-                    emailRedirectTo: `${location.origin}/auth/callback`,
+                    emailRedirectTo: `${ location.origin } /auth/callback`,
                     data: {
                         full_name: fullName,
                         role: 'recruiter',
@@ -47,7 +48,7 @@ export default function SignupPage() {
                 const priceId = searchParams.get('priceId')
 
                 if (plan && priceId) {
-                    router.push(`/api/checkout?priceId=${priceId}&planType=subscription`)
+                    router.push(`/ api / checkout ? priceId = ${ priceId }& planType=subscription`)
                 } else {
                     router.push('/company/dashboard?welcome=true')
                 }
@@ -169,3 +170,16 @@ export default function SignupPage() {
         </div>
     )
 }
+
+export default function SignupPage() {
+    return (
+        <Suspense fallback={
+            <div className="flex min-h-screen items-center justify-center bg-muted/20">
+                <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+            </div>
+        }>
+            <SignupForm />
+        </Suspense>
+    )
+}
+```
