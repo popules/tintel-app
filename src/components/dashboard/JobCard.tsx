@@ -21,9 +21,10 @@ interface JobCardProps {
     job: JobPost
     index: number
     initialSaved?: boolean
+    mode?: 'recruiter' | 'candidate' // Added mode
 }
 
-export function JobCard({ job, index, initialSaved = false }: JobCardProps) {
+export function JobCard({ job, index, initialSaved = false, mode = 'recruiter' }: JobCardProps) {
     const isRecent = new Date(job.created_at) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
     const [saved, setSaved] = useState(initialSaved)
     const [loading, setLoading] = useState(false)
@@ -331,75 +332,109 @@ export function JobCard({ job, index, initialSaved = false }: JobCardProps) {
                 </CardContent>
 
                 <CardFooter className="pt-2 pb-4 z-10 relative gap-2 flex-col">
-                    {!lead ? (
-                        <div className="grid grid-cols-2 gap-2 w-full">
-                            <Button
-                                className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-md shadow-indigo-500/20 border-0"
-                                onClick={handleEnrich}
-                                disabled={enriching}
-                            >
-                                {enriching ? (
-                                    <Loader2 className="h-4 w-4 animate-spin" />
-                                ) : (
-                                    <>
-                                        <UserSearch className="mr-2 h-4 w-4" />
-                                        Find Lead
-                                    </>
-                                )}
-                            </Button>
-                            <Button
-                                variant="outline"
-                                className="w-full border-indigo-500/20 text-indigo-600 hover:bg-indigo-50"
-                                onClick={handleGeneratePitch}
-                                disabled={generatingPitch}
-                            >
-                                {generatingPitch ? (
-                                    <Loader2 className="h-4 w-4 animate-spin" />
-                                ) : (
-                                    <>
-                                        <Wand2 className="mr-2 h-4 w-4" />
-                                        Draft Pitch
-                                    </>
-                                )}
-                            </Button>
-                        </div>
-                    ) : (
-                        <div className="w-full space-y-2">
-                            <Button variant="outline" className="w-full border-green-500/30 text-green-600 hover:bg-green-500/10 hover:text-green-700 bg-green-500/5 cursor-default">
-                                <Check className="mr-2 h-4 w-4" />
-                                Lead Saved
-                            </Button>
-                            <Button
-                                variant="outline"
-                                className="w-full border-indigo-500/20 text-indigo-600 hover:bg-indigo-50"
-                                onClick={handleGeneratePitch}
-                                disabled={generatingPitch}
-                            >
-                                {generatingPitch ? (
-                                    <Loader2 className="h-4 w-4 animate-spin" />
-                                ) : (
-                                    <>
-                                        <Wand2 className="mr-2 h-4 w-4" />
-                                        {pitch ? "Regenerate Pitch" : "Draft Pitch"}
-                                    </>
-                                )}
-                            </Button>
-                        </div>
-                    )}
+                    {mode === 'recruiter' ? (
+                        <>
+                            {!lead ? (
+                                <div className="grid grid-cols-2 gap-2 w-full">
+                                    <Button
+                                        className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-md shadow-indigo-500/20 border-0"
+                                        onClick={handleEnrich}
+                                        disabled={enriching}
+                                    >
+                                        {enriching ? (
+                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                        ) : (
+                                            <>
+                                                <UserSearch className="mr-2 h-4 w-4" />
+                                                Find Lead
+                                            </>
+                                        )}
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        className="w-full border-indigo-500/20 text-indigo-600 hover:bg-indigo-50"
+                                        onClick={handleGeneratePitch}
+                                        disabled={generatingPitch}
+                                    >
+                                        {generatingPitch ? (
+                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                        ) : (
+                                            <>
+                                                <Wand2 className="mr-2 h-4 w-4" />
+                                                Draft Pitch
+                                            </>
+                                        )}
+                                    </Button>
+                                </div>
+                            ) : (
+                                <div className="w-full space-y-2">
+                                    <Button variant="outline" className="w-full border-green-500/30 text-green-600 hover:bg-green-500/10 hover:text-green-700 bg-green-500/5 cursor-default">
+                                        <Check className="mr-2 h-4 w-4" />
+                                        Lead Saved
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        className="w-full border-indigo-500/20 text-indigo-600 hover:bg-indigo-50"
+                                        onClick={handleGeneratePitch}
+                                        disabled={generatingPitch}
+                                    >
+                                        {generatingPitch ? (
+                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                        ) : (
+                                            <>
+                                                <Wand2 className="mr-2 h-4 w-4" />
+                                                {pitch ? "Regenerate Pitch" : "Draft Pitch"}
+                                            </>
+                                        )}
+                                    </Button>
+                                </div>
+                            )}
 
-                    {pitch && (
-                        <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: 'auto' }}
-                            className="mt-2 w-full"
-                        >
-                            <div className="relative rounded-md border bg-muted/50 p-3 text-xs font-mono text-muted-foreground whitespace-pre-wrap">
-                                {pitch}
-                                <Button size="sm" variant="ghost" className="absolute top-1 right-1 h-6 w-6 p-0" onClick={() => { navigator.clipboard.writeText(pitch) }}>
-                                    <Check className="h-3 w-3" />
-                                </Button>
-                            </div>
-                        </motion.div>
+                            {pitch && (
+                                <motion.div
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: 'auto' }}
+                                    className="mt-2 w-full"
+                                >
+                                    <div className="relative rounded-md border bg-muted/50 p-3 text-xs font-mono text-muted-foreground whitespace-pre-wrap">
+                                        {pitch}
+                                        <Button size="sm" variant="ghost" className="absolute top-1 right-1 h-6 w-6 p-0" onClick={() => { navigator.clipboard.writeText(pitch) }}>
+                                            <Check className="h-3 w-3" />
+                                        </Button>
+                                    </div>
+                                </motion.div>
+                            )}
+                        </>
+                    ) : (
+                        // CANDIDATE VIEW
+                        <div className="w-full">
+                            <Button
+                                className="w-full bg-white text-black hover:bg-gray-200 border border-input shadow-sm mb-2"
+                                onClick={async () => {
+                                    // TRACK APPLICATION
+                                    try {
+                                        const { trackApplication } = await import("@/app/actions/application");
+                                        await trackApplication({
+                                            id: job.id,
+                                            title: job.title,
+                                            company: job.company,
+                                            url: job.webbplatsurl,
+                                            location: job.location,
+                                            created_at: job.created_at,
+                                            description: adConfig?.description
+                                        });
+                                        // Open Original
+                                        window.open(job.webbplatsurl, '_blank');
+                                    } catch (err) {
+                                        console.error("Tracking failed", err);
+                                        window.open(job.webbplatsurl, '_blank');
+                                    }
+                                }}
+                            >
+                                <ExternalLink className="mr-2 h-4 w-4" />
+                                Apply on Site
+                            </Button>
+                        </div>
                     )}
 
                     <div className="flex gap-2 w-full">

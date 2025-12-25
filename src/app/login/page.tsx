@@ -24,16 +24,30 @@ export default function LoginPage() {
         setLoading(true)
         setError(null)
 
-        const { error } = await supabase.auth.signInWithPassword({
+        const { data: { user }, error: authError } = await supabase.auth.signInWithPassword({
             email,
             password,
         })
 
-        if (error) {
-            setError(error.message)
+        if (authError) {
+            setError(authError.message)
             setLoading(false)
-        } else {
-            router.push('/dashboard')
+        } else if (user) {
+            // Check Profile Role
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('role')
+                .eq('id', user.id)
+                .single();
+
+            const role = profile?.role;
+
+            if (role === 'candidate') {
+                router.push('/candidate/dashboard');
+            } else {
+                // Default to company dashboard for recruiters / admins
+                router.push('/company/dashboard');
+            }
             router.refresh()
         }
     }
