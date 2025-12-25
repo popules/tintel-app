@@ -47,11 +47,11 @@ function SignupForm() {
                 const priceId = searchParams.get('priceId')
 
                 if (plan && priceId) {
-                    router.push(`/api/checkout?priceId=${priceId}&planType=subscription`)
+                    window.location.href = `/api/checkout?priceId=${priceId}&planType=subscription`;
                 } else {
                     router.push('/company/dashboard?welcome=true')
+                    router.refresh()
                 }
-                router.refresh()
             } else {
                 setSubmitted(true)
             }
@@ -158,7 +158,10 @@ function SignupForm() {
                             </Button>
                             <p className="text-xs text-center text-muted-foreground">
                                 Already have an account?{' '}
-                                <Link href="/login" className="underline underline-offset-4 hover:text-indigo-600 text-foreground transition-colors">
+                                <Link
+                                    href={`/login${searchParams.toString() ? `?${searchParams.toString()}` : ''}`}
+                                    className="underline underline-offset-4 hover:text-indigo-600 text-foreground transition-colors"
+                                >
                                     Sign in
                                 </Link>
                             </p>

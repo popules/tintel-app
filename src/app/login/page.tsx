@@ -34,12 +34,9 @@ function LoginForm() {
             setError(authError.message)
             setLoading(false)
         } else if (user) {
-            const plan = searchParams.get('plan')
-            const priceId = searchParams.get('priceId')
-
             if (plan && priceId) {
-                // Directly redirect to checkout if they came from a pricing link
-                router.push(`/api/checkout?priceId=${priceId}&planType=subscription`)
+                // Use window.location.href for API redirects to ensure external transition
+                window.location.href = `/api/checkout?priceId=${priceId}&planType=subscription`;
             } else {
                 // Check Profile Role
                 const { data: profile } = await supabase
@@ -56,8 +53,8 @@ function LoginForm() {
                     // Default to company dashboard for recruiters / admins
                     router.push('/company/dashboard');
                 }
+                router.refresh()
             }
-            router.refresh()
         }
     }
 
@@ -118,7 +115,10 @@ function LoginForm() {
                             </Button>
                             <p className="text-xs text-center text-muted-foreground">
                                 Don&apos;t have an account?{' '}
-                                <Link href="/signup" className="underline underline-offset-4 hover:text-indigo-600 text-foreground transition-colors">
+                                <Link
+                                    href={`/signup${searchParams.toString() ? `?${searchParams.toString()}` : ''}`}
+                                    className="underline underline-offset-4 hover:text-indigo-600 text-foreground transition-colors"
+                                >
                                     Sign up
                                 </Link>
                             </p>
