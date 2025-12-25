@@ -3,6 +3,10 @@
     {
       "path": "/api/ingest?cron-token=supersecret",
       "schedule": "0 4 * * *"
+    },
+    {
+      "path": "/api/cron/daily-matches",
+      "schedule": "0 9 * * *"
     }
   ]
 }
