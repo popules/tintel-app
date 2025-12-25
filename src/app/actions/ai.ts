@@ -203,77 +203,7 @@ export async function analyzeJobText(text: string) {
     }
 }
 
-/**
- * PARSE RESUME (PDF)
- * Context: Candidate Onboarding
- */
-// @ts-ignore
-import pdf from 'pdf-parse';
 
-export async function parseResume(formData: FormData) {
-    console.log("Resume Parse: Start");
-    // if (!await isAuthenticated()) return { success: false, error: "Unauthorized" };
-
-    if (!openai) {
-        console.log("Resume Parse: No OpenAI Key");
-        return { success: false, error: "OpenAI API Key not configured." };
-    }
-
-    try {
-        const file = formData.get("resume") as File;
-        if (!file) {
-            console.log("Resume Parse: No file in callback");
-            return { success: false, error: "No file uploaded" };
-        }
-
-        console.log("Resume Parse: File received", file.name, file.size);
-
-        // Convert File to Buffer for pdf-parse
-        const arrayBuffer = await file.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
-
-        // Extract Text
-        console.log("Resume Parse: Parsing PDF text...");
-        const data = await pdf(buffer);
-        const rawText = data.text;
-        console.log("Resume Parse: Text extracted, length:", rawText.length);
-
-        // AI Analysis
-        console.log("Resume Parse: Calling OpenAI...");
-        const prompt = `
-        You are an expert Resume Parser. Extract the following information from this resume text.
-        
-        Resume Text:
-        "${rawText.slice(0, 15000)}"
-
-        Return strict JSON:
-        {
-            "headline": "Professional Headline (e.g. Senior Frontend Engineer)",
-            "experience_years": "Number (integer) or 0 if unknown",
-            "bio": "Professional summary/bio (max 400 chars)",
-            "skills": "Comma separated string of top 10 technical/soft skills",
-            "linkedin_url": "URL or null",
-            "website": "URL or null",
-            "location": "City, Country or null"
-        }
-        `;
-
-        const completion = await openai.chat.completions.create({
-            messages: [{ role: "user", content: prompt }],
-            model: "gpt-4o",
-            response_format: { type: "json_object" },
-        });
-
-        const content = completion.choices[0].message.content;
-        console.log("Resume Parse: OpenAI Response", content);
-
-        return { success: true, data: JSON.parse(content || "{}") };
-
-    } catch (error: any) {
-        console.error("Resume Parsing Error:", error);
-        return { success: false, error: error.message };
-    }
-}
 
 /**
  * GENERATE COMPANY SUMMARY
