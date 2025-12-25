@@ -2,7 +2,7 @@
 
 import { LandingHeader } from "@/components/landing/LandingHeader";
 import { Hero } from "@/components/landing/Hero";
-import { Features } from "@/components/landing/Features";
+import { FeatureGrid } from "@/components/landing/FeatureGrid";
 import { Pricing } from "@/components/landing/Pricing";
 import { Footer } from "@/components/landing/Footer";
 
@@ -12,7 +12,7 @@ export default function LandingPage() {
             <LandingHeader />
             <main>
                 <Hero />
-                <Features />
+                <FeatureGrid />
                 <Pricing />
             </main>
             <Footer />
