@@ -1,7 +1,7 @@
 -- 1. Add Role to Profiles
 -- Default to 'recruiter' for backward compatibility
 alter table profiles 
-add column if not exists role text default 'recruiter' check (role in ('recruiter', 'candidate'));
+add column if not exists role text default 'recruiter' check (role in ('recruiter', 'candidate', 'admin'));
 
 -- 2. Create Candidates Table (Extension of Profile)
 create table if not exists candidates (

@@ -261,6 +261,17 @@ export function Header({ searchTerm = "", setSearchTerm = () => { } }: HeaderPro
                                     </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
+                                {profile?.role === 'admin' && (
+                                    <>
+                                        <DropdownMenuItem className="cursor-pointer font-bold text-indigo-500 focus:text-indigo-600" asChild>
+                                            <Link href="/admin" className="flex items-center w-full">
+                                                <TrendingUp className="mr-2 h-4 w-4" />
+                                                <span>God Mode (Admin)</span>
+                                            </Link>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuSeparator />
+                                    </>
+                                )}
                                 <DropdownMenuItem className="cursor-pointer" asChild>
                                     <Link href={profile?.role === 'candidate' ? "/candidate/dashboard" : "/profile"} className="flex items-center w-full">
                                         <LayoutDashboard className="mr-2 h-4 w-4" />
