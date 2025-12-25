@@ -365,7 +365,7 @@ export default function CandidateOnboarding() {
                                             <SelectTrigger className="bg-black/20 border-white/5 focus:border-indigo-500/50">
                                                 <SelectValue placeholder="Select Region" />
                                             </SelectTrigger>
-                                            <SelectContent>
+                                            <SelectContent className="max-h-[300px]">
                                                 {SWEDISH_COUNTIES.map((county) => (
                                                     <SelectItem key={county} value={county}>{county}</SelectItem>
                                                 ))}
@@ -505,7 +505,7 @@ export default function CandidateOnboarding() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="skills">Skills & Certificates</Label>
+                                    <Label htmlFor="skills">Skills & Certificates (Optional)</Label>
                                     <Textarea
                                         id="skills"
                                         placeholder="Comma separated: React, Node.js, AWS Certified..."
