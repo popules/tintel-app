@@ -174,17 +174,18 @@ export default function CandidateOnboarding() {
 
             // 0. Ensure Profile Exists (Critical for FK Constraint)
             // We force-ensure the public.profiles row exists before inserting into candidates
+            // NOTE: We do NOT insert email here as it's not in the schema (it's in auth.users)
             const { error: profileUpsertError } = await supabase
                 .from("profiles")
                 .upsert({
                     id: user.id,
-                    email: user.email,
                     role: 'candidate',
                     updated_at: new Date().toISOString()
                 }, { onConflict: 'id' });
 
             if (profileUpsertError) {
-                console.warn("Profile auto-creation warning:", profileUpsertError);
+                console.error("Profile auto-creation failed:", profileUpsertError);
+                throw new Error(`Failed to initialize profile: ${profileUpsertError.message}`);
             }
 
             // 1. Update Candidate Table
