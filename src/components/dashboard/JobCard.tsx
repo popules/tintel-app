@@ -447,8 +447,26 @@ export function JobCard({ job, index, initialSaved = false }: JobCardProps) {
                                 </ScrollArea>
                                 <div className="mt-4 flex justify-end gap-2">
                                     <Button variant="outline" onClick={() => setViewingAd(false)}>Close</Button>
-                                    <Button onClick={() => window.open(job.webbplatsurl, '_blank')}>
-                                        Open Original <ExternalLink className="ml-2 h-4 w-4" />
+                                    <Button onClick={async () => {
+                                        // TRACK APPLICATION (Magic Click)
+                                        try {
+                                            const { trackApplication } = await import("@/app/actions/application");
+                                            await trackApplication({
+                                                id: job.id,
+                                                title: job.title,
+                                                company: job.company,
+                                                url: job.webbplatsurl,
+                                                location: job.location,
+                                                created_at: job.created_at, // Add this to type def in action if needed, or omit
+                                                description: adConfig?.description
+                                            });
+                                        } catch (err) {
+                                            console.error("Tracking failed", err);
+                                        }
+                                        // Open Original
+                                        window.open(job.webbplatsurl, '_blank');
+                                    }}>
+                                        Apply on Site <ExternalLink className="ml-2 h-4 w-4" />
                                     </Button>
                                 </div>
                             </DialogContent>
