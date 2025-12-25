@@ -118,26 +118,39 @@ export function Header({ searchTerm = "", setSearchTerm = () => { } }: HeaderPro
 
     return (
         <header className="sticky top-0 z-30 w-full border-b bg-background/80 backdrop-blur-xl px-4 md:px-6 h-16 flex items-center justify-between transition-all duration-300">
-            <Link href="/dashboard" className="flex items-center gap-2 hover:opacity-80 transition-all group">
+            <Link href={profile?.role === 'candidate' ? "/candidate/dashboard" : "/company/dashboard"} className="flex items-center gap-2 hover:opacity-80 transition-all group">
                 <div className="h-3 w-3 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 shadow-lg shadow-indigo-500/20 group-hover:scale-125 transition-transform duration-300 ring-1 ring-white/10" />
                 <span className="font-bold text-xl tracking-tighter bg-gradient-to-br from-foreground to-muted-foreground bg-clip-text text-transparent">
                     tintel
                 </span>
             </Link>
 
+            {/* Middle Section: Search (Recruiter) vs Nav (Candidate) */}
             <div className="flex-1 max-w-xl mx-4 md:mx-8 hidden md:block group relative">
-                <div className="relative transition-all duration-300 focus-within:scale-[1.02]">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-indigo-500 transition-colors" />
-                    <Input
-                        type="search"
-                        placeholder="Jump to any company..."
-                        className="w-full bg-muted/50 border-transparent pl-10 h-10 rounded-xl focus:bg-background focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                </div>
+                {profile?.role === 'candidate' ? (
+                    <div className="flex items-center gap-4">
+                        <Button asChild variant="ghost" className="text-muted-foreground hover:text-indigo-500">
+                            <Link href="/candidate/jobs">Find Jobs</Link>
+                        </Button>
+                        <Button asChild variant="ghost" className="text-muted-foreground hover:text-indigo-500">
+                            <Link href="/candidate/my-jobs">My Pipeline</Link>
+                        </Button>
+                    </div>
+                ) : (
+                    <div className="relative transition-all duration-300 focus-within:scale-[1.02]">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-indigo-500 transition-colors" />
+                        <Input
+                            type="search"
+                            placeholder="Jump to any company..."
+                            className="w-full bg-muted/50 border-transparent pl-10 h-10 rounded-xl focus:bg-background focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                    </div>
+                )}
 
-                {searchResults.length > 0 && (
+                {/* Search Results (Recruiter Only) */}
+                {profile?.role !== 'candidate' && searchResults.length > 0 && (
                     <motion.div
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -175,7 +188,7 @@ export function Header({ searchTerm = "", setSearchTerm = () => { } }: HeaderPro
                         <div className="hidden md:flex flex-col items-end mr-2">
                             <span className="text-xs font-semibold text-foreground">{profile?.full_name || user.email}</span>
                             <span className="text-[10px] text-indigo-500 font-bold uppercase tracking-wider">
-                                {profile?.membership_tier === 'admin' || user.email === 'antonaberg@gmail.com' ? 'Admin / Partner' : 'Partner Access'}
+                                {profile?.role === 'candidate' ? 'Candidate' : (profile?.membership_tier === 'admin' || user.email === 'antonaberg@gmail.com' ? 'Admin / Partner' : 'Partner Access')}
                             </span>
                         </div>
                         <DropdownMenu>
@@ -250,16 +263,16 @@ export function Header({ searchTerm = "", setSearchTerm = () => { } }: HeaderPro
                             <DropdownMenuContent align="end" className="w-56">
                                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                                 <DropdownMenuItem className="cursor-pointer" asChild>
-                                    <Link href="/saved" className="flex items-center w-full">
+                                    <Link href={profile?.role === 'candidate' ? "/candidate/my-jobs" : "/saved"} className="flex items-center w-full">
                                         <Kanban className="mr-2 h-4 w-4" />
-                                        <span>My Pipeline</span>
+                                        <span>{profile?.role === 'candidate' ? "My Pipeline" : "Saved Leads"}</span>
                                     </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem className="cursor-pointer" asChild>
-                                    <Link href="/profile" className="flex items-center w-full">
-                                        <User className="mr-2 h-4 w-4" />
-                                        <span>Profile</span>
+                                    <Link href={profile?.role === 'candidate' ? "/candidate/dashboard" : "/profile"} className="flex items-center w-full">
+                                        <LayoutDashboard className="mr-2 h-4 w-4" />
+                                        <span>Dashboard</span>
                                     </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />

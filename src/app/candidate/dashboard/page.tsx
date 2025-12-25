@@ -153,6 +153,12 @@ export default function CandidateDashboardPage() {
                                 <CardTitle>Actions</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-2">
+                                <Button asChild className="w-full justify-start bg-indigo-600 text-white hover:bg-indigo-700">
+                                    <Link href="/candidate/jobs">
+                                        <Briefcase className="mr-2 h-4 w-4" />
+                                        Find Jobs
+                                    </Link>
+                                </Button>
                                 <Button asChild variant="outline" className="w-full justify-start">
                                     <Link href="/candidate/onboarding">
                                         <Edit className="mr-2 h-4 w-4" />
