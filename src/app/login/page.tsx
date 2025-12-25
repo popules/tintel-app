@@ -34,6 +34,9 @@ function LoginForm() {
             setError(authError.message)
             setLoading(false)
         } else if (user) {
+            const plan = searchParams.get('plan')
+            const priceId = searchParams.get('priceId')
+
             if (plan && priceId) {
                 // Use window.location.href for API redirects to ensure external transition
                 window.location.href = `/api/checkout?priceId=${priceId}&planType=subscription`;
