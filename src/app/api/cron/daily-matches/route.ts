@@ -25,13 +25,13 @@ export async function GET(req: Request) {
 
         // 3. For each candidate, find matches (Simplified for now: latest 3 jobs)
         const { data: latestJobs } = await supabase
-            .from('jobs')
+            .from('job_posts')
             .select('*')
             .order('created_at', { ascending: false })
             .limit(3);
 
         if (!latestJobs || latestJobs.length === 0) {
-            return NextResponse.json({ message: "No new jobs found" });
+            return NextResponse.json({ message: "No new jobs found. Try running /api/ingest first." });
         }
 
         const reports = [];
@@ -47,10 +47,10 @@ export async function GET(req: Request) {
                 react: DailyMatchesEmail({
                     userName: profile.full_name || 'Talang',
                     matches: latestJobs.map(j => ({
-                        title: j.title,
-                        company: j.company_name,
-                        location: j.location,
-                        link: `${process.env.NEXT_PUBLIC_APP_URL}/candidate/dashboard`
+                        title: j.title || 'Jobbmöjlighet',
+                        company: j.company || 'Företag',
+                        location: j.location || 'Sverige',
+                        link: j.webbplatsurl || `${process.env.NEXT_PUBLIC_APP_URL}/candidate/dashboard`
                     }))
                 }),
             });
