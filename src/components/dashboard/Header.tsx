@@ -200,7 +200,10 @@ export function Header({ searchTerm = "", setSearchTerm = () => { } }: HeaderPro
                                             <DropdownMenuItem
                                                 key={n.id}
                                                 className={`cursor-pointer flex flex-col items-start gap-1 p-3 transition-colors ${!n.is_read ? 'bg-indigo-50/50 dark:bg-indigo-950/20' : ''}`}
-                                                onClick={() => markAsRead(n.id)}
+                                                onClick={() => {
+                                                    markAsRead(n.id)
+                                                    if (n.link) router.push(n.link)
+                                                }}
                                             >
                                                 <div className="flex w-full justify-between font-medium items-center">
                                                     <span className="flex items-center gap-2 text-sm">

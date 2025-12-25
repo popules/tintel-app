@@ -49,6 +49,7 @@ export function JobMarketplace({ mode }: JobMarketplaceProps) {
     // If candidate mode, default to 'jobs' and maybe hide the toggle?
     const [searchMode, setSearchMode] = useState<'jobs' | 'people'>('jobs');
     const [candidates, setCandidates] = useState<any[]>([]);
+    const [unlockedIds, setUnlockedIds] = useState<Set<string>>(new Set());
 
     // --- DATA FETCHING ---
     const fetchJobs = async () => {
@@ -87,6 +88,15 @@ export function JobMarketplace({ mode }: JobMarketplaceProps) {
         }
 
         setIsLoading(true);
+
+        // Fetch unlocks to sync state
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+            const { data: unlocks } = await supabase.from('unlocks').select('candidate_id').eq('recruiter_id', user.id);
+            if (unlocks) {
+                setUnlockedIds(new Set(unlocks.map(u => u.candidate_id)));
+            }
+        }
 
         // Mode 1: Smart AI Search (Vector)
         // If user typed a search term, we use vector search
@@ -353,7 +363,12 @@ export function JobMarketplace({ mode }: JobMarketplaceProps) {
                                     ))
                                 ) : (
                                     candidates.map((candidate, index) => (
-                                        <CandidateCard key={candidate.id} candidate={candidate} index={index} />
+                                        <CandidateCard
+                                            key={candidate.id}
+                                            candidate={candidate}
+                                            index={index}
+                                            isUnlockedInitial={unlockedIds.has(candidate.id)}
+                                        />
                                     ))
                                 )}
                             </div>

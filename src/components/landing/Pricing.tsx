@@ -12,7 +12,7 @@ const TIERS = [
         features: [
             "Access to Job Feed",
             "Basic filtering",
-            "5 Lead Credits / month",
+            "3 Free Unlocks",
             "Personal Kanban Board"
         ],
         cta: "Start Free",
@@ -21,13 +21,12 @@ const TIERS = [
     },
     {
         name: "Pro",
-        price: "1900",
+        price: "999",
         period: "/mo",
         description: "For agencies scaling up.",
         features: [
-            "Unlimited Job Feed",
-            "500 Lead Credits / month",
-            "AI Pitch Generator",
+            "Unlimited Unlocks",
+            "Priority AI Parsing",
             "Market Intelligence",
             "Export to CSV"
         ],
@@ -40,7 +39,6 @@ const TIERS = [
         price: "Custom",
         description: "For large teams and firms.",
         features: [
-            "Unlimited Everything",
             "API Access",
             "White-labeling",
             "Dedicated Account Manager",

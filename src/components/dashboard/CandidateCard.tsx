@@ -6,6 +6,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { MapPin, Briefcase, Sparkles, User, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { PricingModal } from "@/components/dashboard/PricingModal";
 
 interface Candidate {
     id: string;
@@ -21,11 +22,13 @@ interface Candidate {
 interface CandidateCardProps {
     candidate: Candidate;
     index: number;
+    isUnlockedInitial?: boolean;
 }
 
-export function CandidateCard({ candidate, index }: CandidateCardProps) {
-    const [isUnlocked, setIsUnlocked] = useState(false);
+export function CandidateCard({ candidate, index, isUnlockedInitial }: CandidateCardProps) {
+    const [isUnlocked, setIsUnlocked] = useState(isUnlockedInitial || false);
     const [loading, setLoading] = useState(false);
+    const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
     const handleUnlock = async () => {
         setLoading(true);
@@ -33,15 +36,14 @@ export function CandidateCard({ candidate, index }: CandidateCardProps) {
             // Dynamically import to keep client bundle clean if needed, or just use direct import if 'use server' is handled correctly.
             // Since we are in a client component, we import the action.
             const { unlockCandidateProfile } = await import('@/app/actions/unlock-candidate');
-            const result = await unlockCandidateProfile();
+            const result = await unlockCandidateProfile(candidate.id);
 
             if (result.success) {
                 setIsUnlocked(true);
                 // toast.success(`Profile Unlocked! ${result.remainingCredits} credits remaining.`); 
             } else {
                 if (result.error === 'insufficient_credits') {
-                    alert("You have run out of credits! Please upgrade to continue unlocking profiles.");
-                    // Ideally open a "Pricing/Upgrade" modal here
+                    setShowUpgradeModal(true);
                 } else {
                     alert("Something went wrong. Please try again.");
                 }
@@ -156,6 +158,7 @@ export function CandidateCard({ candidate, index }: CandidateCardProps) {
                     )}
                 </CardFooter>
             </Card>
+            <PricingModal isOpen={showUpgradeModal} onOpenChange={setShowUpgradeModal} />
         </motion.div>
     );
 }

@@ -1,57 +1,38 @@
-'use server'
+'use server';
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from '@/lib/supabase/server';
+import { revalidatePath } from 'next/cache';
 
-export type UnlockResult =
-    | { success: true; remainingCredits: number }
-    | { success: false; error: 'no_session' | 'no_profile' | 'insufficient_credits' | 'server_error' };
-
-export async function unlockCandidateProfile(): Promise<UnlockResult> {
+export async function unlockCandidateProfile(candidateId: string) {
     const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
 
-    try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return { success: false, error: 'no_session' };
+    if (!user) {
+        return { success: false, error: 'Unauthorized' };
+    }
 
-        // 1. Fetch Profile & Credits
-        const { data: profile, error: profileError } = await supabase
-            .from('profiles')
-            .select('credits_remaining, membership_tier')
-            .eq('id', user.id)
-            .single();
+    const { data, error } = await supabase
+        .rpc('unlock_candidate', { target_candidate_id: candidateId });
 
-        if (profileError || !profile) {
-            console.error("Profile fetch error:", profileError);
-            return { success: false, error: 'no_profile' };
-        }
+    if (error) {
+        console.error("Unlock Error:", error);
+        return { success: false, error: error.message };
+    }
 
-        // 2. Check Credits
-        // If they are unlimited (e.g. Enterprise), we might skip this. 
-        // For now everyone pays 1 credit.
-        if (profile.credits_remaining < 1) {
-            return { success: false, error: 'insufficient_credits' };
-        }
+    // data structure specified in the SQL function:
+    // jsonb_build_object('success', true, 'remaining', current_credits - 1, 'source', 'credit');
 
-        // 3. Decrement Credits
-        const { error: updateError, data: updatedProfile } = await supabase
-            .from('profiles')
-            .update({ credits_remaining: profile.credits_remaining - 1 })
-            .eq('id', user.id)
-            .select('credits_remaining')
-            .single();
-
-        if (updateError) {
-            console.error("Credit update error:", updateError);
-            return { success: false, error: 'server_error' };
-        }
-
+    if (data && data.success) {
+        revalidatePath('/company/dashboard');
         return {
             success: true,
-            remainingCredits: updatedProfile.credits_remaining
+            remainingCredits: data.remaining,
+            source: data.source // 'credit' or 'subscription'
         };
-
-    } catch (err) {
-        console.error("Unexpected error in unlockCandidateProfile:", err);
-        return { success: false, error: 'server_error' };
+    } else {
+        return {
+            success: false,
+            error: data?.message || 'insufficient_credits'
+        };
     }
 }
