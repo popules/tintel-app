@@ -137,9 +137,11 @@ export default function CandidateOnboarding() {
         try {
             // Dynamically import server action
             const { generateCandidateProfile } = await import("@/app/actions/ai");
+            console.log("Calling generateCandidateProfile...");
             const result = await generateCandidateProfile(headline, experience || "5");
+            console.log("Result:", result);
 
-            if (result.success && result.data) {
+            if (result && result.success && result.data) {
                 setBio(result.data.bio);
                 setSkills(result.data.skills);
                 toast.success("Profile magically enhanced by AI! ✨");
