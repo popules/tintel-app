@@ -1,4 +1,3 @@
-```javascript
 "use client";
 
 import { useState, Suspense } from 'react'
@@ -33,7 +32,7 @@ function SignupForm() {
                 email,
                 password,
                 options: {
-                    emailRedirectTo: `${ location.origin } /auth/callback`,
+                    emailRedirectTo: `${location.origin}/auth/callback`,
                     data: {
                         full_name: fullName,
                         role: 'recruiter',
@@ -48,7 +47,7 @@ function SignupForm() {
                 const priceId = searchParams.get('priceId')
 
                 if (plan && priceId) {
-                    router.push(`/ api / checkout ? priceId = ${ priceId }& planType=subscription`)
+                    router.push(`/api/checkout?priceId=${priceId}&planType=subscription`)
                 } else {
                     router.push('/company/dashboard?welcome=true')
                 }
@@ -182,4 +181,3 @@ export default function SignupPage() {
         </Suspense>
     )
 }
-```

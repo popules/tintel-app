@@ -1,5 +1,15 @@
+"use client";
+
 import { useState, Suspense } from 'react'
-// ... rest of imports
+import { createClient } from '@/lib/supabase/client'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Label } from '@/components/ui/label'
+import Link from 'next/link'
+import { Loader2 } from 'lucide-react'
+import { motion } from 'framer-motion'
 
 function LoginForm() {
     const [email, setEmail] = useState('')
@@ -131,4 +141,3 @@ export default function LoginPage() {
         </Suspense>
     )
 }
-
