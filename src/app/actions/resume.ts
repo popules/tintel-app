@@ -5,6 +5,21 @@ import { createClient } from "@/lib/supabase/server";
 // @ts-ignore
 import pdf from 'pdf-parse';
 
+// Polyfill DOMMatrix for Vercel/Node environment (pdfjs-dist dependency)
+if (typeof global.DOMMatrix === 'undefined') {
+    // @ts-ignore
+    global.DOMMatrix = class DOMMatrix {
+        constructor() {
+            this.a = 1; this.b = 0; this.c = 0; this.d = 1; this.e = 0; this.f = 0;
+        }
+        setMatrixValue(str) { return this; }
+        translate(x, y) { return this; }
+        scale(x, y) { return this; }
+        rotate(angle) { return this; }
+        multiply(m) { return this; }
+    }
+}
+
 // Initialize OpenAI
 const openai = process.env.OPENAI_API_KEY
     ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
