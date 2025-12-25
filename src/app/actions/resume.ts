@@ -2,6 +2,8 @@
 
 import OpenAI from 'openai';
 import { createClient } from "@/lib/supabase/server";
+// @ts-ignore
+import PDFParser from "pdf2json";
 
 // Initialize OpenAI
 const openai = process.env.OPENAI_API_KEY
@@ -29,40 +31,6 @@ export async function parseResume(formData: FormData) {
     }
 
     try {
-        // 1. POLYFILLS (Must run before pdf-parse import)
-        if (typeof Promise.withResolvers === 'undefined') {
-            // @ts-ignore
-            Promise.withResolvers = function () {
-                let resolve, reject;
-                const promise = new Promise((res, rej) => {
-                    resolve = res;
-                    reject = rej;
-                });
-                return { promise, resolve, reject };
-            };
-        }
-
-        if (typeof global.DOMMatrix === 'undefined') {
-            // @ts-ignore
-            global.DOMMatrix = class DOMMatrix {
-                constructor() {
-                    this.a = 1; this.b = 0; this.c = 0; this.d = 1; this.e = 0; this.f = 0;
-                }
-                setMatrixValue(str: any) { return this; }
-                translate(x: any, y: any) { return this; }
-                scale(x: any, y: any) { return this; }
-                rotate(angle: any) { return this; }
-                multiply(m: any) { return this; }
-                toString() { return "matrix(1, 0, 0, 1, 0, 0)"; }
-            }
-        }
-
-        // 2. DYNAMIC IMPORT (This prevents hoisting)
-        console.log("Resume Parse: Importing pdf-parse dynamically...");
-        // @ts-ignore
-        const pdfModule = await import('pdf-parse');
-        const pdf = pdfModule.default || pdfModule;
-
         const file = formData.get("resume") as File;
         if (!file) {
             console.log("Resume Parse: No file in callback");
@@ -75,10 +43,32 @@ export async function parseResume(formData: FormData) {
         const arrayBuffer = await file.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
 
-        // Extract Text
-        console.log("Resume Parse: Parsing PDF text...");
-        const data = await pdf(buffer);
-        const rawText = data.text;
+        // Extract Text using pdf2json
+        console.log("Resume Parse: Parsing with pdf2json...");
+
+        const rawText: string = await new Promise((resolve, reject) => {
+            const pdfParser = new PDFParser(null, 1); // 1 = raw text
+
+            pdfParser.on("pdfParser_dataError", (errData: any) => {
+                console.error("pdf2json error:", errData.parserError);
+                reject(errData.parserError);
+            });
+
+            pdfParser.on("pdfParser_dataReady", (pdfData: any) => {
+                try {
+                    // getRawTextContent() is the standard way to get text from pdf2json
+                    const text = pdfParser.getRawTextContent();
+                    resolve(text);
+                } catch (e) {
+                    // Fallback mechanism if method fails or version mismatch
+                    console.log("Raw text extraction failed, trying simple approach");
+                    resolve(JSON.stringify(pdfData));
+                }
+            });
+
+            pdfParser.parseBuffer(buffer);
+        });
+
         console.log("Resume Parse: Text extracted, length:", rawText.length);
 
         // AI Analysis
