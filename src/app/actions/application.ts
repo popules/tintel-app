@@ -11,6 +11,7 @@ export type JobSnapshot = {
     logo_url?: string;
     deadline?: string;
     location?: string;
+    created_at?: string;
 };
 
 /**
@@ -26,12 +27,7 @@ export async function trackApplication(job: JobSnapshot) {
 
     try {
         // 2. Insert into 'applications' table
-        // We use upsert to prevent duplicates if they click multiple times (idempotency)
-        // However, 'id' is auto-generated uuid, so we'd need a composite key or just insert.
-        // For now, let's just insert. A unique constraint on (candidate_id, job_id) would be smart in the DB, 
-        // but let's handle it gracefully here by checking existence or just letting it convert to an 'update' if we want.
-
-        // Let's check if already applied to keep it clean
+        // Check existence to prevent duplicates
         const { data: existing } = await supabase
             .from('applications')
             .select('id')
@@ -40,7 +36,6 @@ export async function trackApplication(job: JobSnapshot) {
             .single();
 
         if (existing) {
-            // Already tracked, just update timestamp maybe?
             await supabase
                 .from('applications')
                 .update({ updated_at: new Date().toISOString() })
@@ -69,6 +64,31 @@ export async function trackApplication(job: JobSnapshot) {
 
     } catch (error: any) {
         console.error("Track Application Error:", error);
+        return { success: false, error: error.message };
+    }
+}
+
+/**
+ * Updates the status of an application (e.g. Applied -> Interview)
+ */
+export async function updateApplicationStatus(applicationId: string, status: string) {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { success: false, error: "Unauthorized" };
+
+    try {
+        const { error } = await supabase
+            .from('applications')
+            .update({
+                status: status,
+                updated_at: new Date().toISOString()
+            })
+            .eq('id', applicationId)
+            .eq('candidate_id', user.id); // Security: Ensure ownership
+
+        if (error) throw error;
+        return { success: true };
+    } catch (error: any) {
         return { success: false, error: error.message };
     }
 }

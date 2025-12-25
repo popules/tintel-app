@@ -26,6 +26,7 @@ export default function CandidateOnboarding() {
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
     const [uploading, setUploading] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
 
     // Form State
     const [headline, setHeadline] = useState("");
@@ -74,7 +75,9 @@ export default function CandidateOnboarding() {
                     setPhone(candidate.phone || "");
                     setAddress(candidate.address || "");
                     setLinkedin(candidate.linkedin_url || "");
+                    setLinkedin(candidate.linkedin_url || "");
                     setWebsite(candidate.website || "");
+                    setIsEditing(true);
                 }
             } catch (err) {
                 console.error("Error loading profile:", err);
@@ -541,7 +544,7 @@ export default function CandidateOnboarding() {
                                     disabled={loading}
                                 >
                                     {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                    {loading ? "Creating Profile..." : "Create Profile"}
+                                    {loading ? "Saving..." : (isEditing ? "Update Profile" : "Create Profile")}
                                 </Button>
                             </CardFooter>
                         </form>

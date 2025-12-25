@@ -159,8 +159,11 @@ export default function CandidateDashboardPage() {
                                         Edit Profile Details
                                     </Link>
                                 </Button>
-                                <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:text-foreground">
-                                    View Public Profile
+                                <Button asChild variant="ghost" className="w-full justify-start text-muted-foreground hover:text-foreground">
+                                    <Link href="/candidate/cv">
+                                        <Eye className="mr-2 h-4 w-4" />
+                                        View Public Profile
+                                    </Link>
                                 </Button>
                             </CardContent>
                         </Card>

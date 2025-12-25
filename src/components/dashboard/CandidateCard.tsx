@@ -11,7 +11,7 @@ interface Candidate {
     id: string;
     headline: string;
     location: string;
-    experience_years: number;
+    years_of_experience: number;
     bio: string;
     skills: string[];
     is_open: boolean;
@@ -97,7 +97,7 @@ export function CandidateCard({ candidate, index }: CandidateCardProps) {
                                     <span className="h-1 w-1 rounded-full bg-border" />
                                     <span className="flex items-center gap-1">
                                         <Clock className="h-3 w-3" />
-                                        {candidate.experience_years}y Exp
+                                        {candidate.years_of_experience}y Exp
                                     </span>
                                 </div>
                             </div>
