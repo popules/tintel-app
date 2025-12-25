@@ -172,6 +172,21 @@ export default function CandidateOnboarding() {
         try {
             if (!user) throw new Error("No user found");
 
+            // 0. Ensure Profile Exists (Critical for FK Constraint)
+            // We force-ensure the public.profiles row exists before inserting into candidates
+            const { error: profileUpsertError } = await supabase
+                .from("profiles")
+                .upsert({
+                    id: user.id,
+                    email: user.email,
+                    role: 'candidate',
+                    updated_at: new Date().toISOString()
+                }, { onConflict: 'id' });
+
+            if (profileUpsertError) {
+                console.warn("Profile auto-creation warning:", profileUpsertError);
+            }
+
             // 1. Update Candidate Table
             const { error: candidateError } = await supabase
                 .from("candidates")
