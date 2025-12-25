@@ -79,9 +79,10 @@ export function Header({ searchTerm = "", setSearchTerm = () => { } }: HeaderPro
 
     const handleSignOut = async () => {
         await supabase.auth.signOut()
-        router.refresh()
         setUser(null)
         setProfile(null)
+        router.push('/')
+        router.refresh()
     }
 
     const markAsRead = async (id: string) => {

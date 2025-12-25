@@ -31,7 +31,7 @@ const TIERS = [
             "Export to CSV"
         ],
         cta: "Get Pro",
-        href: "/signup?plan=pro",
+        href: "/signup?plan=pro&priceId=price_1SiEkFPAQaS8gta8YStHkmpN",
         popular: true
     },
     {
