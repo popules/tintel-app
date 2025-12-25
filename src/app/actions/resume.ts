@@ -2,23 +2,6 @@
 
 import OpenAI from 'openai';
 import { createClient } from "@/lib/supabase/server";
-// @ts-ignore
-import pdf from 'pdf-parse';
-
-// Polyfill DOMMatrix for Vercel/Node environment (pdfjs-dist dependency)
-if (typeof global.DOMMatrix === 'undefined') {
-    // @ts-ignore
-    global.DOMMatrix = class DOMMatrix {
-        constructor() {
-            this.a = 1; this.b = 0; this.c = 0; this.d = 1; this.e = 0; this.f = 0;
-        }
-        setMatrixValue(str) { return this; }
-        translate(x, y) { return this; }
-        scale(x, y) { return this; }
-        rotate(angle) { return this; }
-        multiply(m) { return this; }
-    }
-}
 
 // Initialize OpenAI
 const openai = process.env.OPENAI_API_KEY
@@ -46,6 +29,40 @@ export async function parseResume(formData: FormData) {
     }
 
     try {
+        // 1. POLYFILLS (Must run before pdf-parse import)
+        if (typeof Promise.withResolvers === 'undefined') {
+            // @ts-ignore
+            Promise.withResolvers = function () {
+                let resolve, reject;
+                const promise = new Promise((res, rej) => {
+                    resolve = res;
+                    reject = rej;
+                });
+                return { promise, resolve, reject };
+            };
+        }
+
+        if (typeof global.DOMMatrix === 'undefined') {
+            // @ts-ignore
+            global.DOMMatrix = class DOMMatrix {
+                constructor() {
+                    this.a = 1; this.b = 0; this.c = 0; this.d = 1; this.e = 0; this.f = 0;
+                }
+                setMatrixValue(str: any) { return this; }
+                translate(x: any, y: any) { return this; }
+                scale(x: any, y: any) { return this; }
+                rotate(angle: any) { return this; }
+                multiply(m: any) { return this; }
+                toString() { return "matrix(1, 0, 0, 1, 0, 0)"; }
+            }
+        }
+
+        // 2. DYNAMIC IMPORT (This prevents hoisting)
+        console.log("Resume Parse: Importing pdf-parse dynamically...");
+        // @ts-ignore
+        const pdfModule = await import('pdf-parse');
+        const pdf = pdfModule.default || pdfModule;
+
         const file = formData.get("resume") as File;
         if (!file) {
             console.log("Resume Parse: No file in callback");
@@ -60,20 +77,6 @@ export async function parseResume(formData: FormData) {
 
         // Extract Text
         console.log("Resume Parse: Parsing PDF text...");
-
-        // Polyfill check (sometimes pdf-parse needs this in Vercel/Next)
-        if (typeof Promise.withResolvers === 'undefined') {
-            // @ts-ignore
-            Promise.withResolvers = function () {
-                let resolve, reject;
-                const promise = new Promise((res, rej) => {
-                    resolve = res;
-                    reject = rej;
-                });
-                return { promise, resolve, reject };
-            };
-        }
-
         const data = await pdf(buffer);
         const rawText = data.text;
         console.log("Resume Parse: Text extracted, length:", rawText.length);
