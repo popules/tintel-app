@@ -7,8 +7,10 @@ import { Badge } from "@/components/ui/badge";
 import { Sparkles, ArrowRight, Loader2, MapPin, Briefcase } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { useTranslation } from "@/lib/i18n-context";
 
 export function CandidateMatchmaker() {
+    const { t } = useTranslation();
     const [matches, setMatches] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -20,11 +22,11 @@ export function CandidateMatchmaker() {
                 if (result.success) {
                     setMatches(result.data || []);
                 } else {
-                    setError(result.error || "Failed to load matches");
+                    setError(result.error || t.dashboard.error);
                 }
             } catch (err) {
                 console.error(err);
-                setError("An error occurred");
+                setError(t.dashboard.error);
             } finally {
                 setLoading(false);
             }
@@ -54,12 +56,12 @@ export function CandidateMatchmaker() {
                         <Sparkles className="h-5 w-5" />
                     </div>
                     <div>
-                        <h2 className="text-2xl font-bold tracking-tight">AI Hand-Picked for You</h2>
-                        <p className="text-muted-foreground text-sm">Semantic matching based on your experience and goals</p>
+                        <h2 className="text-2xl font-bold tracking-tight">{t.dashboard.matchmaker_title}</h2>
+                        <p className="text-muted-foreground text-sm">{t.dashboard.matchmaker_desc}</p>
                     </div>
                 </div>
                 <Link href="/candidate/jobs" className="text-sm font-medium text-indigo-600 hover:text-indigo-500 flex items-center gap-1">
-                    View more <ArrowRight className="h-3 w-3" />
+                    {t.dashboard.view_more} <ArrowRight className="h-3 w-3" />
                 </Link>
             </div>
 
@@ -75,7 +77,7 @@ export function CandidateMatchmaker() {
                             {/* Score Gradient Border */}
                             <div className="absolute top-0 right-0 p-3">
                                 <Badge className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white border-0 shadow-lg">
-                                    {(job.match_score * 100).toFixed(0)}% Match
+                                    {(job.match_score * 100).toFixed(0)}{t.dashboard.match_score}
                                 </Badge>
                             </div>
 
@@ -83,7 +85,7 @@ export function CandidateMatchmaker() {
                                 <div className="space-y-1">
                                     <div className="flex items-center gap-2 text-xs font-semibold text-indigo-500 uppercase tracking-wider">
                                         <Briefcase className="h-3 w-3" />
-                                        {job.broad_category || "Opportunity"}
+                                        {job.broad_category || t.dashboard.opportunity}
                                     </div>
                                     <CardTitle className="text-lg line-clamp-1 group-hover:text-indigo-600 transition-colors">
                                         {job.title}
@@ -101,7 +103,7 @@ export function CandidateMatchmaker() {
                                     href={`/candidate/jobs?id=${job.id}`}
                                     className="inline-flex w-full items-center justify-center rounded-lg bg-indigo-50 px-4 py-2 text-sm font-semibold text-indigo-600 border border-indigo-100/50 hover:bg-indigo-600 hover:text-white transition-all group/btn"
                                 >
-                                    View Details
+                                    {t.dashboard.view_details}
                                     <ArrowRight className="ml-2 h-3 w-3 group-hover/btn:translate-x-1 transition-transform" />
                                 </Link>
                             </CardContent>

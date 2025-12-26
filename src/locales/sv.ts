@@ -9,6 +9,9 @@ export const sv = {
         dashboard: "Översikt",
         logout: "Logga ut",
     },
+    landing: {
+        trust_badge: "Används av rekryteringsteam på",
+    },
     auth: {
         login_title: "Välkommen tillbaka",
         login_subtitle: "Ange din e-post för att logga in",
@@ -59,6 +62,17 @@ export const sv = {
         clear_all: "Rensa alla",
         no_results: "Inga resultat hittades.",
         no_results_desc: "Försök justera dina filter eller sökterm.",
+        label_city: "Stad",
+        label_search: "Sök",
+        loading: "Laddar...",
+        error: "Fel vid laddning",
+        my_pipeline: "Min Pipeline",
+        matchmaker_title: "AI-Utvalt för dig",
+        matchmaker_desc: "Semantisk matchning baserat på din erfarenhet och mål",
+        view_more: "Visa mer",
+        match_score: "% Matchning",
+        opportunity: "Möjlighet",
+        view_details: "Visa detaljer",
     },
     job_card: {
         new: "NY",

@@ -8,6 +8,10 @@ export const en = {
         features: "Features",
         pricing: "Pricing",
         dashboard: "Dashboard",
+        logout: "Log out",
+    },
+    landing: {
+        trust_badge: "Trusted by recruiting teams at",
     },
     emails: {
         daily_matches: {
@@ -191,6 +195,17 @@ export const en = {
         clear_all: "Clear All",
         no_results: "No results found.",
         no_results_desc: "Try adjusting your filters or search term.",
+        label_city: "City",
+        label_search: "Search",
+        loading: "Loading...",
+        error: "Error loading data",
+        my_pipeline: "My Pipeline",
+        matchmaker_title: "AI Hand-Picked for You",
+        matchmaker_desc: "Semantic matching based on your experience and goals",
+        view_more: "View more",
+        match_score: "% Match",
+        opportunity: "Opportunity",
+        view_details: "View Details",
     },
     job_card: {
         new: "NEW",
@@ -287,6 +302,7 @@ export const en = {
         enterprise_f4: "Custom Integrations",
         cta_contact: "Contact Sales",
     },
+
     footer: {
         legal: "Legal",
         footer_legal: "Legal",

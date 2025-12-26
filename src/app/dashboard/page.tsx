@@ -9,6 +9,7 @@ import { CandidateCard } from "@/components/dashboard/CandidateCard";
 import { StatsRow } from "@/components/dashboard/Stats";
 import { Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useTranslation } from "@/lib/i18n-context";
 
 // --- TYPE DEFINITIONS ---
 interface JobPost {
@@ -28,6 +29,7 @@ type LocationData = {
 
 // --- MAIN PAGE COMPONENT ---
 export default function Home() {
+  const { t } = useTranslation();
   const supabase = createClient();
   // --- STATE MANAGEMENT ---
   const [jobPosts, setJobPosts] = useState<JobPost[]>([]);
@@ -238,17 +240,17 @@ export default function Home() {
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="text-2xl font-bold tracking-tight">
-                    {searchMode === 'jobs' ? 'Active Jobs' : 'Active Candidates'}
+                    {searchMode === 'jobs' ? t.dashboard.title_jobs : t.dashboard.title_candidates}
                   </h2>
                   <p className="text-muted-foreground text-sm">
                     {searchMode === 'jobs'
-                      ? 'Find your next client or career move.'
-                      : 'Discover talent ready for your projects.'}
+                      ? t.dashboard.subtitle_jobs_recruiter
+                      : t.dashboard.subtitle_candidates}
                   </p>
                 </div>
                 <div className="flex items-center gap-2 bg-background p-1 rounded-lg border shadow-sm">
                   <span className="text-xs font-medium px-2 py-1 bg-muted rounded">
-                    {isLoading ? "..." : (searchMode === 'jobs' ? jobPosts.length : candidates.length)} matches
+                    {isLoading ? "..." : (searchMode === 'jobs' ? jobPosts.length : candidates.length)} {t.dashboard.matches_count}
                   </span>
                 </div>
               </div>
@@ -256,7 +258,7 @@ export default function Home() {
               {/* Active Filter Badges */}
               {(selectedCounties.length > 0 || selectedCategories.length > 0 || selectedCity || searchTerm) && (
                 <div className="flex flex-wrap gap-2 items-center">
-                  <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mr-1">Active Filters:</span>
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mr-1">{t.dashboard.active_filters}</span>
 
                   {selectedCounties.map(county => (
                     <Badge key={county} variant="secondary" className="pl-2 pr-1 py-1 gap-1 bg-indigo-500/10 text-indigo-700 border-indigo-500/20 hover:bg-indigo-500/20 transition-all">
@@ -269,7 +271,7 @@ export default function Home() {
 
                   {searchMode === 'jobs' && selectedCity && (
                     <Badge variant="secondary" className="pl-2 pr-1 py-1 gap-1 bg-indigo-500/10 text-indigo-700 border-indigo-500/20">
-                      City: {selectedCity}
+                      {t.dashboard.label_city}: {selectedCity}
                       <button onClick={() => setSelectedCity(null)} className="hover:bg-indigo-500/20 rounded-full p-0.5">
                         <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                       </button>
@@ -287,7 +289,7 @@ export default function Home() {
 
                   {searchTerm && (
                     <Badge variant="secondary" className="pl-2 pr-1 py-1 gap-1 bg-emerald-500/10 text-emerald-700 border-emerald-500/20">
-                      Search: {searchTerm}
+                      {t.dashboard.label_search}: {searchTerm}
                       <button onClick={() => setSearchTerm("")} className="hover:bg-emerald-500/20 rounded-full p-0.5">
                         <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                       </button>
@@ -303,7 +305,7 @@ export default function Home() {
                     }}
                     className="text-[10px] font-black uppercase tracking-wider text-muted-foreground hover:text-indigo-500 transition-colors ml-2"
                   >
-                    Clear All
+                    {t.dashboard.clear_all}
                   </button>
                 </div>
               )}
@@ -343,8 +345,8 @@ export default function Home() {
 
             {!isLoading && (searchMode === 'jobs' ? jobPosts.length === 0 : candidates.length === 0) && (
               <div className="flex h-64 flex-col items-center justify-center text-muted-foreground bg-muted/20 rounded-2xl border-2 border-dashed border-muted">
-                <p className="text-lg font-medium">No results found.</p>
-                <p className="text-sm">Try adjusting your filters or search term.</p>
+                <p className="text-lg font-medium">{t.dashboard.no_results}</p>
+                <p className="text-sm">{t.dashboard.no_results_desc}</p>
               </div>
             )}
           </div>
