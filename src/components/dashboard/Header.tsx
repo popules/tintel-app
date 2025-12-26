@@ -148,7 +148,7 @@ export function Header({ searchTerm = "", setSearchTerm = () => { } }: HeaderPro
                         className="absolute top-full left-0 right-0 mt-2 bg-background border rounded-xl shadow-2xl overflow-hidden z-50 p-2"
                     >
                         <div className="px-3 py-1.5 mb-1">
-                            <span className="text-[10px] font-black uppercase text-indigo-500 tracking-wider">Results</span>
+                            <span className="text-[10px] font-black uppercase text-indigo-500 tracking-wider">{t.header.search_results}</span>
                         </div>
                         {searchResults.map((res) => (
                             <Link
@@ -165,7 +165,7 @@ export function Header({ searchTerm = "", setSearchTerm = () => { } }: HeaderPro
                                 </div>
                                 <div className="flex flex-col">
                                     <span className="text-sm font-bold group-hover:text-indigo-600">{res.name}</span>
-                                    <span className="text-[10px] text-muted-foreground font-medium">Market Intelligence • Profile</span>
+                                    <span className="text-[10px] text-muted-foreground font-medium">{t.header.market_intel} • Profile</span>
                                 </div>
                             </Link>
                         ))}
@@ -193,8 +193,8 @@ export function Header({ searchTerm = "", setSearchTerm = () => { } }: HeaderPro
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-80">
                                 <DropdownMenuLabel className="flex justify-between items-center">
-                                    Notifications
-                                    {unreadCount > 0 && <Badge variant="secondary" className="text-[10px]">{unreadCount} New</Badge>}
+                                    {t.header.notifications}
+                                    {unreadCount > 0 && <Badge variant="secondary" className="text-[10px]">{unreadCount} {t.header.new_badge}</Badge>}
                                 </DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <div className="max-h-[400px] overflow-y-auto">
@@ -225,7 +225,7 @@ export function Header({ searchTerm = "", setSearchTerm = () => { } }: HeaderPro
                                     ) : (
                                         <div className="p-8 text-center text-muted-foreground">
                                             <Bell className="h-8 w-8 mx-auto mb-2 opacity-20" />
-                                            <p className="text-xs italic">No new signals detected yet.</p>
+                                            <p className="text-xs italic">{t.header.no_signals}</p>
                                         </div>
                                     )}
                                 </div>
@@ -243,7 +243,7 @@ export function Header({ searchTerm = "", setSearchTerm = () => { } }: HeaderPro
                                     ) : (
                                         <RefreshCcw className="h-3 w-3 mr-2" />
                                     )}
-                                    {isSyncing ? "Scanning Market..." : "Scan for Signals"}
+                                    {isSyncing ? t.header.scanning : t.header.scan_signals}
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
@@ -255,7 +255,7 @@ export function Header({ searchTerm = "", setSearchTerm = () => { } }: HeaderPro
                                 </div>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-56">
-                                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                                <DropdownMenuLabel>{t.header.my_account}</DropdownMenuLabel>
                                 <DropdownMenuItem className="cursor-pointer" asChild>
                                     <Link href={profile?.role === 'candidate' ? "/candidate/my-jobs" : "/saved"} className="flex items-center w-full">
                                         <Kanban className="mr-2 h-4 w-4" />
@@ -268,7 +268,7 @@ export function Header({ searchTerm = "", setSearchTerm = () => { } }: HeaderPro
                                         <DropdownMenuItem className="cursor-pointer font-bold text-indigo-500 focus:text-indigo-600" asChild>
                                             <Link href="/admin" className="flex items-center w-full">
                                                 <TrendingUp className="mr-2 h-4 w-4" />
-                                                <span>God Mode (Admin)</span>
+                                                <span>{t.header.admin_mode}</span>
                                             </Link>
                                         </DropdownMenuItem>
                                         <DropdownMenuSeparator />

@@ -40,7 +40,7 @@ export default function PricingPage() {
             period: txt.pro.period,
             popular: true,
             features: [
-                "Everything in Starter", // TODO: Maybe generalize this string if needed
+                txt.everything_starter, // TODO: Maybe generalize this string if needed
                 feats.five_hundred_unlocks,
                 feats.ai_pitch_unlimited,
                 feats.vector_match,
@@ -59,7 +59,7 @@ export default function PricingPage() {
             description: txt.enterprise.description,
             price: txt.enterprise.price,
             features: [
-                "Everything in Pro",
+                txt.everything_pro,
                 feats.unlimited_unlocks,
                 feats.api_full,
                 feats.whitelabel,
