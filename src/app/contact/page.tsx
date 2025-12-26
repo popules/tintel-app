@@ -1,9 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useTranslation } from "@/lib/i18n";
+import { useTranslation } from "@/lib/i18n-context";
 import Footer from "@/components/landing/Footer";
-import Navbar from "@/components/landing/Navbar";
+import { LandingHeader } from "@/components/landing/LandingHeader";
 import { Mail, ArrowRight, MessageCircle, MapPin } from "lucide-react";
 
 export default function ContactPage() {
@@ -11,7 +11,7 @@ export default function ContactPage() {
 
     return (
         <div className="min-h-screen bg-[#030014] text-white selection:bg-purple-500/30 overflow-hidden flex flex-col">
-            <Navbar />
+            <LandingHeader />
 
             <main className="flex-1 pt-32 pb-20 relative">
                 {/* Background Gradients */}
