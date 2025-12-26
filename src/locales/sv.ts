@@ -28,7 +28,8 @@ export const sv = {
         creating_account: "Skapar konto...",
     },
     dashboard: {
-        search_placeholder: "Sök kandidater...",
+        dashboard: "Översikt",
+        search_placeholder: "Sök efter kandidater...",
         search_companies_placeholder: "Sök bolag...",
         candidates: "Kandidater",
         jobs: "Jobb",
@@ -89,15 +90,17 @@ export const sv = {
         contact: "Kontakta",
         unlock: "Lås upp profil (1 Kredit)",
         unlocking: "Låser upp...",
+    },
+    emails: {
         daily_matches: {
-            subject: "3 nya jobb på Tintel som matchar din profil",
+            subject: "3 nya matchningar på Tintel",
             preview: "Vi hittade {{count}} nya jobb till dig på Tintel!",
             greeting: "Hej {{name}}! 👋",
-            body_pre: "Nu händer det grejer. Vi har hittat",
+            body_pre: "Det rör på sig. Vi hittade",
             body_post: "nya jobb som matchar din profil perfekt.",
             button: "Visa jobb",
-            footer_reason: "Du får detta mail för att du har skapat en profil på Tintel.se.",
-            footer_settings: "För att ändra dina notiser, logga in på din dashboard.",
+            footer_reason: "Du får detta mejl för att du har skapat en profil på Tintel.se.",
+            footer_settings: "För att ändra dina inställningar, logga in på din dashboard.",
         }
     },
     public: {
@@ -288,6 +291,7 @@ export const sv = {
         rights: "Alla rättigheter förbehållna.",
         privacy: "Integritetspolicy",
         terms: "Användarvillkor",
+        footer_legal: "Juridik",
         product: "Produkt",
         pricing: "Priser",
         changelog: "Ändringslogg",

@@ -6,7 +6,7 @@ import { useTranslation } from "@/lib/i18n-context";
 
 export function Footer() {
     const { t } = useTranslation();
-    const txt = t.landing.footer;
+    const txt = t.footer;
 
     return (
         <footer className="border-t border-white/10 bg-black/40 py-12">

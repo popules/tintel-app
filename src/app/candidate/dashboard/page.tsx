@@ -13,6 +13,7 @@ import Link from "next/link";
 import { CandidateCard } from "@/components/dashboard/CandidateCard";
 import { motion } from "framer-motion";
 import { useTranslation } from "@/lib/i18n-context";
+import { CandidateMatchmaker } from "@/components/dashboard/CandidateMatchmaker";
 
 export default function CandidateDashboardPage() {
     const { t } = useTranslation();
@@ -148,7 +149,10 @@ export default function CandidateDashboardPage() {
                 </div>
             </div>
 
-            <div className="max-w-6xl mx-auto p-4 md:p-8 space-y-12">
+            <div className="max-w-6xl mx-auto p-4 md:p-8 space-y-16">
+
+                {/* Matchmaker Section */}
+                <CandidateMatchmaker />
 
                 {/* 2. My Pipeline Snapshot */}
                 <section>

@@ -136,8 +136,8 @@ export async function generateRecruiterPitch(jobTitle: string, company: string, 
  * GENERATE VECTOR EMBEDDING
  * Context: Smart Search & Matchmaking
  */
-export async function generateEmbedding(text: string) {
-    if (!await isAuthenticated()) return { success: false, error: "Unauthorized" };
+export async function generateEmbedding(text: string, bypassAuth: boolean = false) {
+    if (!bypassAuth && !await isAuthenticated()) return { success: false, error: "Unauthorized" };
 
     if (!openai) {
         return { success: false, error: "OpenAI API Key not configured." };

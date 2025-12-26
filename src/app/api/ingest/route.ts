@@ -3,6 +3,7 @@
 
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { generateEmbedding } from "@/app/actions/ai";
 
 // --- SECURE CONFIGURATION ---
 const SUPABASE_URL = process.env.SUPABASE_URL;
@@ -10,7 +11,7 @@ const SUPABASE_SERVICE_ROLE = process.env.SUPABASE_SERVICE_ROLE;
 const CRON_TOKEN = "supersecret";
 
 export const dynamic = "force-dynamic";
-export const maxDuration = 300; 
+export const maxDuration = 300;
 
 export async function GET(req: Request) {
   console.log("LOG: Ingest function started via GET request.");
@@ -29,7 +30,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "Database configuration is missing on the server." }, { status: 500 });
   }
   console.log("LOG: Supabase environment variables loaded successfully.");
-  
+
   const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE);
 
   try {
@@ -48,7 +49,7 @@ export async function GET(req: Request) {
       }
     }
     console.log(`LOG: Successfully fetched ${allJobs.length} total jobs from Platsbanken.`);
-    
+
     const uniqueJobsMap = new Map();
     for (const job of allJobs) {
       if (job && job.id) {
@@ -62,10 +63,10 @@ export async function GET(req: Request) {
     const jobsToUpsert = uniqueJobs.map((job: any) => {
       const broadCategoryName = job.occupation_field?.label || null;
       if (job.occupation?.concept_id && job.occupation_field?.concept_id) {
-          categoryMap.set(job.occupation.concept_id, {
-              id: job.occupation.concept_id, name: job.occupation.label,
-              broader_id: job.occupation_field.concept_id, broader_name: job.occupation_field.label,
-          });
+        categoryMap.set(job.occupation.concept_id, {
+          id: job.occupation.concept_id, name: job.occupation.label,
+          broader_id: job.occupation_field.concept_id, broader_name: job.occupation_field.label,
+        });
       }
       return {
         externalId: job.id,
@@ -80,7 +81,7 @@ export async function GET(req: Request) {
         publishedAt: job.publication_date,
       };
     });
-    
+
     const categoriesToUpsert = Array.from(categoryMap.values());
     console.log(`LOG: Mapped ${jobsToUpsert.length} jobs and discovered ${categoriesToUpsert.length} categories.`);
 
@@ -90,14 +91,53 @@ export async function GET(req: Request) {
     console.log("LOG: Jobs upsert successful.");
 
     if (categoriesToUpsert.length > 0) {
-        console.log("LOG: Upserting categories to Supabase...");
-        const { error: categoriesError } = await supabaseAdmin.from("job_categories").upsert(categoriesToUpsert, { onConflict: "id" });
-        if (categoriesError) throw new Error(`Supabase categories upsert failed: ${categoriesError.message}`);
-        console.log("LOG: Categories upsert successful.");
+      console.log("LOG: Upserting categories to Supabase...");
+      const { error: categoriesError } = await supabaseAdmin.from("job_categories").upsert(categoriesToUpsert, { onConflict: "id" });
+      if (categoriesError) throw new Error(`Supabase categories upsert failed: ${categoriesError.message}`);
+      console.log("LOG: Categories upsert successful.");
+    }
+
+    // --- STEP 2: GENERATE EMBEDDINGS FOR NEW JOBS ---
+    // We do this in a small batch to avoid timeouts.
+    console.log("LOG: Checking for jobs without embeddings...");
+    const { data: jobsWithoutEmbeds, error: fetchError } = await supabaseAdmin
+      .from("job_posts")
+      .select("id, title, company, category, location")
+      .not("id", "in", supabaseAdmin.from("job_embeddings").select("job_id"))
+      .order("created_at", { ascending: false })
+      .limit(10); // Batch size
+
+    if (fetchError) {
+      console.warn("LOG: Error fetching jobs without embeddings:", fetchError);
+    } else if (jobsWithoutEmbeds && jobsWithoutEmbeds.length > 0) {
+      console.log(`LOG: Generating embeddings for ${jobsWithoutEmbeds.length} jobs...`);
+
+      for (const job of jobsWithoutEmbeds) {
+        try {
+          const textToEmbed = `${job.title} at ${job.company}. Category: ${job.category}. Location: ${job.location}`;
+          const embedResult = await generateEmbedding(textToEmbed, true);
+
+          if (embedResult.success && embedResult.data) {
+            const { error: insertError } = await supabaseAdmin
+              .from("job_embeddings")
+              .upsert({
+                job_id: job.id,
+                embedding: embedResult.data
+              }, { onConflict: 'job_id' });
+
+            if (insertError) console.error(`LOG: Failed to store embedding for job ${job.id}:`, insertError);
+          } else {
+            console.warn(`LOG: Failed to generate embedding for job ${job.id}:`, embedResult.error);
+          }
+        } catch (e) {
+          console.error(`LOG: Exception during embedding generation for job ${job.id}:`, e);
+        }
+      }
+      console.log("LOG: Embedding generation batch complete.");
     }
 
     return NextResponse.json({
-      message: `SUCCESS! Ingest complete.`,
+      message: `SUCCESS! Ingest complete and ${jobsWithoutEmbeds?.length || 0} embeddings processed.`,
     });
 
   } catch (error: any) {

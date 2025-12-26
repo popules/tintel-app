@@ -8,7 +8,8 @@ export const en = {
         features: "Features",
         pricing: "Pricing",
         dashboard: "Dashboard",
-        logout: "Log out",
+    },
+    emails: {
         daily_matches: {
             subject: "3 new jobs on Tintel matching your profile",
             preview: "We found {{count}} new jobs for you on Tintel!",
@@ -159,6 +160,7 @@ export const en = {
         creating_account: "Creating account...",
     },
     dashboard: {
+        dashboard: "Dashboard",
         search_placeholder: "Search for candidates...",
         search_companies_placeholder: "Search for companies...",
         candidates: "Candidates",
@@ -286,6 +288,8 @@ export const en = {
         cta_contact: "Contact Sales",
     },
     footer: {
+        legal: "Legal",
+        footer_legal: "Legal",
         rights: "All rights reserved.",
         privacy: "Privacy Policy",
         terms: "Terms of Service",
