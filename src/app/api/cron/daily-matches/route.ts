@@ -70,7 +70,8 @@ export async function GET(req: Request) {
                                 title: j.title || 'Job Opening',
                                 company: j.company || 'Company',
                                 location: j.location || 'Sweden',
-                                link: j.webbplatsurl || `${appUrl}/candidate/dashboard`
+                                // LINK FIX: Point to internal job search instead of external URL
+                                link: `${appUrl}/candidate/jobs?q=${encodeURIComponent(j.title || '')}`
                             })),
                             texts: {
                                 preview: emailDict.preview.replace('{{count}}', String(latestJobs.length)),
@@ -84,7 +85,8 @@ export async function GET(req: Request) {
                             },
                             links: {
                                 home: appUrl,
-                                settings: `${appUrl}/dashboard/settings`
+                                // LINK FIX: Point to Profile page as settings
+                                settings: `${appUrl}/profile`
                             }
                         });
 
@@ -170,7 +172,7 @@ export async function GET(req: Request) {
                             },
                             links: {
                                 home: appUrl,
-                                settings: `${appUrl}/dashboard/settings`
+                                settings: `${appUrl}/profile`
                             }
                         });
 
