@@ -148,3 +148,54 @@ export const getTalentAlertHtml = (props: {
 </html>
     `;
 };
+
+export const getWelcomeEmailHtml = (props: {
+    name: string;
+    links: {
+        dashboard: string;
+        home: string;
+    };
+}) => {
+    const { name, links } = props;
+
+    // Styles
+    const main = `font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif; background-color: #ffffff;`;
+    const container = `margin: 0 auto; padding: 20px 0 48px; max-width: 580px;`;
+    const header = `padding: 32px 0;`;
+    const logo = `font-size: 24px; font-weight: bold; letter-spacing: -1px; margin: 0; color: #4f46e5; text-decoration: none;`;
+    const heading = `font-size: 24px; letter-spacing: -0.5px; line-height: 1.3; font-weight: 700; color: #484848; padding: 17px 0 0;`;
+    const paragraph = `margin: 0 0 15px; font-size: 16px; line-height: 1.4; color: #3c4149;`;
+    const button = `background-color: #4f46e5; border-radius: 8px; color: #fff; font-size: 14px; font-weight: bold; text-decoration: none; text-align: center; display: inline-block; padding: 12px 24px; margin-top: 10px;`;
+    const footer = `color: #8898aa; font-size: 12px; line-height: 16px; margin-top: 20px; border-top: 1px solid #e6ebf1; padding-top: 20px;`;
+
+    return `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Welcome to Tintel</title>
+</head>
+<body style="${main}">
+    <div style="${container}">
+        <div style="${header}">
+            <a href="${links.home}" style="${logo}">tintel</a>
+        </div>
+        <h1 style="${heading}">Welcome to Tintel, ${name}!</h1>
+        <p style="${paragraph}">
+            We're thrilled to have you on board. Tintel is designed to give you the intelligence and speed you need to win the best candidates.
+        </p>
+        <p style="${paragraph}">
+            Your account is ready. You can now access thousands of active job leads and use our AI tools to streamline your recruitment process.
+        </p>
+        
+        <a href="${links.dashboard}" style="${button}">Go to Dashboard</a>
+
+        <div style="${footer}">
+            Designed in Gothenburg. <br />
+            © ${new Date().getFullYear()} Tintel.
+        </div>
+    </div>
+</body>
+</html>
+    `;
+};

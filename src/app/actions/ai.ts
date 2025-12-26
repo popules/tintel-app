@@ -83,6 +83,20 @@ export async function generateCandidateProfile(headline: string, experience: str
 export async function generateRecruiterPitch(jobTitle: string, company: string, leadName: string, leadRole: string | null) {
     if (!await isAuthenticated()) return { success: false, error: "Unauthorized" };
 
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    // Check subscription tier
+    const { data: profile } = await supabase
+        .from('profiles')
+        .select('subscription_tier')
+        .eq('id', user?.id)
+        .single();
+
+    if (profile?.subscription_tier !== 'pro' && profile?.subscription_tier !== 'enterprise') {
+        return { success: false, error: "Upgrade to Pro to use AI Pitch Generator." };
+    }
+
     if (!openai) {
         return { success: false, error: "OpenAI API Key not configured." };
     }

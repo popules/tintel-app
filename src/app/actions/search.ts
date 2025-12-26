@@ -12,12 +12,20 @@ export async function searchCandidates(query: string) {
     // Defense in Depth: Check if user is a recruiter
     const { data: profile } = await supabase
         .from('profiles')
-        .select('role')
+        .select('role, subscription_tier')
         .eq('id', user.id)
         .single();
 
     if (profile?.role !== 'recruiter') {
         return { success: false, error: "Only recruiters can search candidates." };
+    }
+
+    // Gating: Only Pro or Enterprise can use Vector Search
+    if (profile?.subscription_tier !== 'pro' && profile?.subscription_tier !== 'enterprise') {
+        return {
+            success: false,
+            error: "Standard Search is available. Upgrade to Pro for AI Vector Search."
+        };
     }
 
     try {

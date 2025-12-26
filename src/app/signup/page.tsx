@@ -53,6 +53,12 @@ function SignupForm() {
                 const plan = searchParams.get('plan')
                 const priceId = searchParams.get('priceId')
 
+                // Send Welcome Email (Fire and forget)
+                // We use the fullName passed to the form, or fallback to 'there'
+                import('@/app/actions/email').then(mod => {
+                    mod.sendWelcomeEmail(email, fullName);
+                });
+
                 if (plan && priceId) {
                     window.location.href = `/api/checkout?priceId=${priceId}&planType=subscription`;
                 } else {
