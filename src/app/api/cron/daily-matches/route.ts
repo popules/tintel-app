@@ -30,7 +30,8 @@ export async function GET(req: Request) {
         let candidateQuery = supabase
             .from('profiles')
             .select('id, full_name, email, role, preferred_language')
-            .in('role', ['candidate', 'CANDIDATE']);
+            .in('role', ['candidate', 'CANDIDATE'])
+            .not('email_notification_enabled', 'is', false); // Default true, so check it's NOT explicitly false
 
         if (testEmail) {
             candidateQuery = supabase.from('profiles').select('id, full_name, email, role, preferred_language').eq('email', testEmail);
@@ -119,7 +120,8 @@ export async function GET(req: Request) {
         let recruiterQuery = supabase
             .from('profiles')
             .select('id, full_name, email, role, preferred_language')
-            .in('role', ['recruiter', 'RECRUITER']); // Standardized role check
+            .in('role', ['recruiter', 'RECRUITER']) // Standardized role check
+            .not('email_notification_enabled', 'is', false);
 
         if (testEmail) {
             // For testing, we might want to pretend the test user is a recruiter too, 

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Header } from "@/components/dashboard/Header";
 import { FilterSidebar } from "@/components/dashboard/FilterSidebar";
+import { useSearchParams } from "next/navigation";
 import { JobCard } from "@/components/dashboard/JobCard";
 import { CandidateCard } from "@/components/dashboard/CandidateCard";
 import { StatsRow } from "@/components/dashboard/Stats";
@@ -44,7 +45,10 @@ export function JobMarketplace({ mode }: JobMarketplaceProps) {
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
     const [selectedCounties, setSelectedCounties] = useState<string[]>([]);
     const [selectedCity, setSelectedCity] = useState<string | null>(null);
-    const [searchTerm, setSearchTerm] = useState("");
+
+    // --- QUERY PARAM HANDLING ---
+    const searchParams = useSearchParams();
+    const [searchTerm, setSearchTerm] = useState(searchParams.get("q") || "");
     const [savedJobIds, setSavedJobIds] = useState<Set<string>>(new Set());
 
     // New State for Marketplace Pivot

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 import { User, Mail, Trophy, Target, TrendingUp, Shield, MapPin, Globe, Loader2, CheckCircle2, AlertCircle, Radar } from "lucide-react";
 import { motion } from "framer-motion";
 import { SwedenMap } from "@/components/dashboard/SwedenMap";
@@ -87,6 +88,7 @@ export default function ProfilePage() {
                 .update({
                     home_city: homeCity,
                     territories: selectedTerritories,
+                    email_notification_enabled: profile.email_notification_enabled,
                     updated_at: new Date().toISOString()
                 })
                 .eq("id", user.id);
@@ -261,6 +263,24 @@ export default function ProfilePage() {
                                     <div>
                                         <label className="text-[11px] font-black uppercase tracking-[0.2em] text-indigo-500/80 block mb-1">{txt.territory.label}</label>
                                         <p className="text-[10px] text-muted-foreground mb-4 italic leading-relaxed">{txt.territory.help_text}</p>
+                                    </div>
+
+                                    {/* Email Notification Toggle */}
+                                    <div className="flex items-center justify-between bg-muted/30 p-3 rounded-xl border border-muted/50 mb-6">
+                                        <div className="space-y-0.5">
+                                            <span className="text-sm font-medium block flex items-center gap-2">
+                                                <Mail className="h-4 w-4 text-indigo-500" />
+                                                Email Notifications
+                                            </span>
+                                            <span className="text-[10px] text-muted-foreground block">
+                                                Receive daily job matches & updates
+                                            </span>
+                                        </div>
+                                        <Switch
+                                            checked={profile?.email_notification_enabled !== false} // Default to true if null
+                                            onCheckedChange={(checked) => setProfile({ ...profile, email_notification_enabled: checked })}
+                                            className={`${profile?.email_notification_enabled !== false ? "bg-indigo-500" : "bg-input"}`}
+                                        />
                                     </div>
 
                                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
