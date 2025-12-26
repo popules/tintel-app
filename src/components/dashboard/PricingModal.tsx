@@ -51,72 +51,67 @@ export function PricingModal({ trigger, isOpen, onOpenChange }: PricingModalProp
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
             {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
             <DialogContent className="sm:max-w-4xl bg-background/95 backdrop-blur-xl border-white/10 p-0 overflow-hidden gap-0">
-                <div className="grid md:grid-cols-2">
-                    {/* LEFT: Subscription */}
-                    <div className="p-8 flex flex-col items-center text-center border-b md:border-b-0 md:border-r border-border/50 relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 p-12 bg-indigo-500/10 blur-3xl rounded-full translate-x-12 -translate-y-12" />
+                <div className="flex flex-col items-center justify-center p-8 text-center bg-background relative overflow-hidden">
+                    <div className="absolute top-0 right-0 p-32 bg-indigo-500/5 blur-3xl rounded-full translate-x-12 -translate-y-12" />
+                    <div className="absolute bottom-0 left-0 p-32 bg-purple-500/5 blur-3xl rounded-full -translate-x-12 translate-y-12" />
 
-                        <div className="mb-4">
-                            <Badge className="bg-gradient-to-r from-indigo-500 to-purple-500 border-none text-white px-3 py-1 text-xs uppercase tracking-widest">
-                                Most Popular
-                            </Badge>
+                    <div className="mb-6 z-10">
+                        <Badge className="bg-gradient-to-r from-indigo-500 to-purple-500 border-none text-white px-4 py-1.5 text-xs uppercase tracking-widest shadow-lg shadow-indigo-500/20">
+                            Unlimited Access
+                        </Badge>
+                    </div>
+
+                    <h3 className="text-3xl font-bold mb-2 z-10">Tintel Pro</h3>
+                    <div className="text-5xl font-black mb-2 text-transparent bg-clip-text bg-gradient-to-br from-foreground to-foreground/70 z-10">
+                        {STRIPE_PLANS.PRO_SUBSCRIPTION.price}
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-8 z-10">per month</p>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 mb-10 w-full max-w-lg z-10">
+                        <div className="flex items-center gap-3 text-left">
+                            <div className="h-8 w-8 rounded-full bg-indigo-500/10 flex items-center justify-center shrink-0">
+                                <Check className="h-4 w-4 text-indigo-500" />
+                            </div>
+                            <span className="font-medium">Unlimited Candidate Unlocks</span>
                         </div>
-
-                        <h3 className="text-2xl font-bold mb-2">{STRIPE_PLANS.PRO_SUBSCRIPTION.name}</h3>
-                        <div className="text-4xl font-black mb-1">{STRIPE_PLANS.PRO_SUBSCRIPTION.price}</div>
-                        <p className="text-sm text-muted-foreground mb-6">per month</p>
-
-                        <ul className="space-y-3 mb-8 text-left w-full max-w-[200px] mx-auto">
-                            <li className="flex gap-2 text-sm justify-center">
-                                <Check className="h-5 w-5 text-indigo-500 shrink-0" />
-                                <span>Unlimited Unlocks</span>
-                            </li>
-                            <li className="flex gap-2 text-sm justify-center">
-                                <Check className="h-5 w-5 text-indigo-500 shrink-0" />
-                                <span>Priority Parsing</span>
-                            </li>
-                            <li className="flex gap-2 text-sm justify-center">
-                                <Check className="h-5 w-5 text-indigo-500 shrink-0" />
-                                <span>Advanced Filters</span>
-                            </li>
-                        </ul>
-
-                        <div className="mt-auto w-full">
-                            <Button
-                                size="lg"
-                                className="w-full bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl shadow-lg shadow-indigo-500/25 transition-all hover:scale-105"
-                                onClick={() => handleCheckout('subscription')}
-                                disabled={!!isLoading}
-                            >
-                                {isLoading === 'subscription' ? "Connecting..." : "Upgrade to Pro"}
-                            </Button>
+                        <div className="flex items-center gap-3 text-left">
+                            <div className="h-8 w-8 rounded-full bg-indigo-500/10 flex items-center justify-center shrink-0">
+                                <Sparkles className="h-4 w-4 text-indigo-500" />
+                            </div>
+                            <span className="font-medium">Priority AI Matching</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-left">
+                            <div className="h-8 w-8 rounded-full bg-indigo-500/10 flex items-center justify-center shrink-0">
+                                <Infinity className="h-4 w-4 text-indigo-500" />
+                            </div>
+                            <span className="font-medium">Full Contact Details</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-left">
+                            <div className="h-8 w-8 rounded-full bg-indigo-500/10 flex items-center justify-center shrink-0">
+                                <CreditCard className="h-4 w-4 text-indigo-500" />
+                            </div>
+                            <span className="font-medium">Cancel Anytime</span>
                         </div>
                     </div>
 
-                    {/* RIGHT: Credits */}
-                    <div className="p-8 flex flex-col items-center text-center bg-muted/20 relative">
-                        <div className="mb-8">
-                            <div className="h-12 w-12 rounded-2xl bg-muted border border-border flex items-center justify-center mx-auto mb-4">
-                                <Sparkles className="h-6 w-6 text-orange-500" />
-                            </div>
-                            <h3 className="text-xl font-bold mb-2">{STRIPE_PLANS.CREDIT_PACK.name}</h3>
-                            <p className="text-muted-foreground text-sm max-w-xs mx-auto mb-4">
-                                {STRIPE_PLANS.CREDIT_PACK.description}
-                            </p>
-                            <div className="text-3xl font-bold">{STRIPE_PLANS.CREDIT_PACK.price}</div>
-                        </div>
-
-                        <div className="mt-auto w-full">
-                            <Button
-                                variant="outline"
-                                size="lg"
-                                className="w-full border-2 hover:bg-orange-500 hover:text-white hover:border-orange-500 transition-all rounded-xl"
-                                onClick={() => handleCheckout('credits')}
-                                disabled={!!isLoading}
-                            >
-                                {isLoading === 'credits' ? "Processing..." : "Buy Credit Pack"}
-                            </Button>
-                        </div>
+                    <div className="w-full max-w-xs z-10">
+                        <Button
+                            size="lg"
+                            className="w-full h-12 text-base font-bold bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl shadow-xl shadow-indigo-500/25 transition-all hover:scale-105 active:scale-95"
+                            onClick={() => handleCheckout('subscription')}
+                            disabled={!!isLoading}
+                        >
+                            {isLoading === 'subscription' ? (
+                                <span className="flex items-center gap-2">
+                                    <span className="animate-spin">⏳</span> Connecting...
+                                </span>
+                            ) : (
+                                "Upgrade to Pro"
+                            )}
+                        </Button>
+                        <p className="text-xs text-muted-foreground mt-4">
+                            Secure payment via Stripe. 14-day money-back guarantee.
+                        </p>
                     </div>
                 </div>
             </DialogContent>
