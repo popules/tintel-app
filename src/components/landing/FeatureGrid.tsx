@@ -20,7 +20,7 @@ export function FeatureGrid() {
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">{t.features.subtitle}</span>
                 </h2>
                 <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                    We removed the forms, the ghosting, and the noise. Just pure matching based on skills and intent.
+                    {t.landing.desc}
                 </p>
             </div>
 

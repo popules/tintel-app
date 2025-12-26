@@ -11,6 +11,7 @@ export const sv = {
     },
     landing: {
         trust_badge: "Används av rekryteringsteam på",
+        desc: "Vi tog bort formulären, ghostingen och bruset. Bara ren matchning baserad på kompetens och intention.",
     },
     auth: {
         login_title: "Välkommen tillbaka",
@@ -287,6 +288,23 @@ export const sv = {
         card_direct: "Direktkontakt",
         card_save: "Spara",
         card_draft: "Skapa Pitch ✨",
+        mockup: {
+            active_jobs: "Aktiva Jobb",
+            find_next: "Hitta din nästa kund eller karriärsteg.",
+            matches: "100 träffar",
+            new_badge: "NYTT",
+            role_frontend: "Senior Frontend Utvecklare",
+            role_product: "Produktdesigner",
+            role_backend: "Backend Ingenjör",
+            tech_giant: "Tech Giant AB",
+            creative_agency: "Kreativ Byrå",
+            fintech_corp: "Fintech Corp",
+            direct_contact: "Direktkontakt",
+            save: "Spara",
+            create_pitch: "Skapa Pitch ✨",
+            full_time: "HELTID",
+            remote: "DISTANS"
+        }
     },
     features: {
         title: "Sluta Ansöka.",

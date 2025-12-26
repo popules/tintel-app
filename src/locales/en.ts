@@ -10,7 +10,8 @@ export const en = {
         logout: "Log out",
     },
     landing: {
-        trust_badge: "Trusted by recruiting teams at",
+        trust_badge: "Used by recruiting teams at",
+        desc: "We removed the forms, the ghosting, and the noise. Just pure matching based on skills and intent.",
     },
     auth: {
         login_title: "Welcome back",

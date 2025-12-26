@@ -108,15 +108,15 @@ export function Hero() {
 
                             <div className="space-y-3">
                                 <div className="p-3 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-sm font-medium flex items-center gap-3">
-                                    <div className="w-4 h-4 rounded bg-indigo-400/20" /> Find Jobs
+                                    <div className="w-4 h-4 rounded bg-indigo-400/20" /> {t.dashboard.jobs}
                                 </div>
                                 <div className="p-3 rounded-lg hover:bg-white/5 text-muted-foreground text-sm font-medium flex items-center gap-3">
-                                    <div className="w-4 h-4 rounded bg-white/10" /> Find People
+                                    <div className="w-4 h-4 rounded bg-white/10" /> {t.dashboard.candidates}
                                 </div>
                             </div>
 
                             <div className="mt-4 space-y-2">
-                                <div className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-2">Filters</div>
+                                <div className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-2">{t.dashboard.filter_title}</div>
                                 <div className="h-4 w-3/4 bg-white/5 rounded" />
                                 <div className="h-4 w-1/2 bg-white/5 rounded" />
                                 <div className="h-4 w-2/3 bg-white/5 rounded" />
@@ -156,10 +156,10 @@ export function Hero() {
                             <div className="flex-1">
                                 <div className="flex justify-between items-end mb-4">
                                     <div>
-                                        <h3 className="text-xl font-bold text-white">Active Jobs</h3>
-                                        <p className="text-sm text-muted-foreground">Find your next client or career move.</p>
+                                        <h3 className="text-xl font-bold text-white">{t.hero.mockup.active_jobs}</h3>
+                                        <p className="text-sm text-muted-foreground">{t.hero.mockup.find_next}</p>
                                     </div>
-                                    <div className="text-xs bg-white/10 px-2 py-1 rounded text-white">100 matches</div>
+                                    <div className="text-xs bg-white/10 px-2 py-1 rounded text-white">{t.hero.mockup.matches}</div>
                                 </div>
 
                                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -167,9 +167,9 @@ export function Hero() {
                                     <div className="bg-[#1e2235] border border-indigo-500/30 rounded-xl p-5 shadow-2xl shadow-indigo-500/10 relative group-hover:-translate-y-1 transition-transform duration-500">
                                         <div className="flex justify-between items-start mb-4">
                                             <div>
-                                                <div className="text-[10px] text-indigo-400 font-bold uppercase tracking-wider mb-1">{t.hero.card_new}</div>
-                                                <div className="font-bold text-white text-lg leading-tight">Senior Frontend Developer</div>
-                                                <div className="text-sm text-muted-foreground mt-1">Tech Giant AB</div>
+                                                <div className="text-[10px] text-indigo-400 font-bold uppercase tracking-wider mb-1">{t.hero.mockup.new_badge}</div>
+                                                <div className="font-bold text-white text-lg leading-tight">{t.hero.mockup.role_frontend}</div>
+                                                <div className="text-sm text-muted-foreground mt-1">{t.hero.mockup.tech_giant}</div>
                                             </div>
                                         </div>
 
@@ -182,21 +182,21 @@ export function Hero() {
                                                     <div className="text-[10px] text-indigo-300">Engineering Manager</div>
                                                 </div>
                                             </div>
-                                            <div className="bg-green-500/20 text-green-400 text-[10px] px-2 py-0.5 rounded-full font-bold">{t.hero.card_direct}</div>
+                                            <div className="bg-green-500/20 text-green-400 text-[10px] px-2 py-0.5 rounded-full font-bold">{t.hero.mockup.direct_contact}</div>
                                         </div>
 
                                         <div className="mt-4 grid grid-cols-2 gap-2">
-                                            <div className="h-9 rounded-md bg-white/5 border border-white/5 flex items-center justify-center text-xs font-medium text-white/50">{t.hero.card_save}</div>
-                                            <div className="h-9 rounded-md bg-indigo-600 flex items-center justify-center text-xs font-bold text-white shadow-lg shadow-indigo-500/20">{t.hero.card_draft}</div>
+                                            <div className="h-9 rounded-md bg-white/5 border border-white/5 flex items-center justify-center text-xs font-medium text-white/50">{t.hero.mockup.save}</div>
+                                            <div className="h-9 rounded-md bg-indigo-600 flex items-center justify-center text-xs font-bold text-white shadow-lg shadow-indigo-500/20">{t.hero.mockup.create_pitch}</div>
                                         </div>
                                     </div>
 
                                     {/* Card 2 */}
                                     <div className="bg-[#1a1d2d] border border-white/5 rounded-xl p-5 opacity-60 blur-[1px]">
                                         <div className="mb-4">
-                                            <div className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-1">Full-time</div>
-                                            <div className="font-bold text-white text-lg">Product Designer</div>
-                                            <div className="text-sm text-muted-foreground mt-1">Creative Agency</div>
+                                            <div className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-1">{t.hero.mockup.full_time}</div>
+                                            <div className="font-bold text-white text-lg">{t.hero.mockup.role_product}</div>
+                                            <div className="text-sm text-muted-foreground mt-1">{t.hero.mockup.creative_agency}</div>
                                         </div>
                                         <div className="mt-8 grid grid-cols-2 gap-2">
                                             <div className="h-9 rounded-md bg-white/5" />
@@ -207,9 +207,9 @@ export function Hero() {
                                     {/* Card 3 */}
                                     <div className="bg-[#1a1d2d] border border-white/5 rounded-xl p-5 opacity-40 blur-[2px]">
                                         <div className="mb-4">
-                                            <div className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-1">Remote</div>
-                                            <div className="font-bold text-white text-lg">Backend Engineer</div>
-                                            <div className="text-sm text-muted-foreground mt-1">Fintech Corp</div>
+                                            <div className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-1">{t.hero.mockup.remote}</div>
+                                            <div className="font-bold text-white text-lg">{t.hero.mockup.role_backend}</div>
+                                            <div className="text-sm text-muted-foreground mt-1">{t.hero.mockup.fintech_corp}</div>
                                         </div>
                                         <div className="mt-8 grid grid-cols-2 gap-2">
                                             <div className="h-9 rounded-md bg-white/5" />
