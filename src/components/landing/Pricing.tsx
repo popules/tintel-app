@@ -90,12 +90,9 @@ export function Pricing() {
                                 <p className="text-muted-foreground text-sm h-10">{tier.description}</p>
                             </div>
 
-                            <div className="mb-8 flex items-baseline gap-1">
-                                <span className="text-4xl font-bold text-white">
-                                    {tier.price === "Custom" ? "Custom" : `${tier.price} kr`}
-                                </span>
-                                {tier.period && <span className="text-muted-foreground">{tier.period}</span>}
-                            </div>
+                            <span className="text-4xl font-bold text-white">
+                                {tier.price}
+                            </span>
 
                             <ul className="space-y-4 mb-8 flex-1">
                                 {tier.features.map((feature, f) => (
