@@ -296,9 +296,10 @@ export const en = {
         about: "About",
         contact: "Contact",
         tagline: "The talent intelligence platform for modern recruitment. Built in Gothenburg.",
-        cookie_msg: "We use cookies to enhance your experience and analyze our traffic. By clicking 'Accept', you consent to our use of cookies.",
-        cookie_accept: "Accept All",
-        cookie_settings: "Manage Settings",
+        cookie_title: "Here's a cookie! 🍪",
+        cookie_msg: "We use them to make Tintel smarter (and to remember you're special). Nothing shady, just data to help you win.",
+        cookie_accept: "Take the Cookie",
+        cookie_settings: "Nah, I'm good",
         cookie_privacy: "Privacy Policy"
     },
     profile: {

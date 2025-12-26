@@ -295,9 +295,10 @@ export const sv = {
         about: "Om oss",
         contact: "Kontakt",
         tagline: "Talangplattformen för modern rekrytering. Byggd i Göteborg.",
-        cookie_msg: "Vi använder cookies för att förbättra din upplevelse och analysera vår trafik. Genom att klicka på 'Acceptera' godkänner du vår användning av cookies.",
-        cookie_accept: "Acceptera alla",
-        cookie_settings: "Hantera inställningar",
+        cookie_title: "Här får du en kaka! 🍪",
+        cookie_msg: "Vi använder dem för att göra Tintel smartare (och för att komma ihåg vem du är). Inget skumt, bara data som hjälper dig vinna.",
+        cookie_accept: "Ge mig kakan",
+        cookie_settings: "Nej tack",
         cookie_privacy: "Integritetspolicy"
     },
     profile: {

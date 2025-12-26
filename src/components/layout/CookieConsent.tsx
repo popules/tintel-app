@@ -48,9 +48,12 @@ export function CookieConsent() {
                                 <Cookie className="h-5 w-5" />
                             </div>
                             <div className="space-y-3">
-                                <p className="text-sm leading-relaxed text-muted-foreground pt-1">
-                                    {txt.cookie_msg}
-                                </p>
+                                <div className="pt-1">
+                                    <h4 className="font-bold text-foreground text-sm">{txt.cookie_title}</h4>
+                                    <p className="text-xs leading-relaxed text-muted-foreground mt-1">
+                                        {txt.cookie_msg}
+                                    </p>
+                                </div>
                                 <div className="flex flex-wrap gap-2 pt-2">
                                     <Button
                                         onClick={handleAccept}
