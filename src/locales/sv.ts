@@ -222,9 +222,9 @@ export const sv = {
     },
     hero: {
         badge: "Nu lanserat i Sverige",
-        title_start: "Hitta jobben som",
-        title_end: "inte syns",
-        subtitle: "Sluta skicka CV:n i blindo. Tintel matchar dig med dolda möjligheter baserat på din talang, inte ditt nätverk.",
+        title_start: "Plattformen för",
+        title_end: "Talangintelligens",
+        subtitle: "Automatisera din lead-generering. Personifiera din kommunikation. Hitta din framtid.",
         cta_hiring: "Jag rekryterar",
         cta_work: "Jag söker jobb",
         read_more: "Läs mer",

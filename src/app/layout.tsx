@@ -5,11 +5,11 @@ import { cn } from "@/lib/utils";
 import { I18nProvider } from "@/lib/i18n-context";
 
 export const metadata: Metadata = {
-  title: "Tintel | Hitta dolda jobb och talanger i Sverige",
-  description: "Skippa ansöknings-tröttheten. Tintel är marknadsplatsen för dolda jobb och personliga matchningar för blågula proffs. Access the Hidden Job Market.",
+  title: "Tintel",
+  description: "The Talent Intelligence Platform. Automate your lead gen. Personalize your outreach. Find your future.",
   openGraph: {
-    title: "Tintel | Hitta dolda jobb och talanger i Sverige",
-    description: "Hitta jobben som inte syns på LinkedIn. Tintel samlar den dolda marknaden på ett ställe.",
+    title: "Tintel",
+    description: "The Talent Intelligence Platform.",
     url: "https://tintel.se",
     siteName: "Tintel",
     locale: "sv_SE",
