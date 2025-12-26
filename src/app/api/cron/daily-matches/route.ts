@@ -64,33 +64,40 @@ export async function GET(req: Request) {
                     const subject = emailDict.subject;
 
                     try {
+                        console.log(`[Cron Debug] 1. Preparing props for ${profile.email}`);
+                        const componentProps = {
+                            userName: profile.full_name || 'Candidate',
+                            matches: latestJobs.map(j => ({
+                                title: j.title || 'Job Opening',
+                                company: j.company || 'Company',
+                                location: j.location || 'Sweden',
+                                link: j.webbplatsurl || `${appUrl}/candidate/dashboard`
+                            })),
+                            texts: {
+                                preview: emailDict.preview.replace('{{count}}', String(latestJobs.length)),
+                                greeting: emailDict.greeting.replace('{{name}}', profile.full_name || 'Candidate'),
+                                pre_summary: emailDict.body_pre,
+                                post_summary: emailDict.body_post,
+                                button: emailDict.button,
+                                reason: emailDict.footer_reason,
+                                settings: emailDict.footer_settings,
+                                unsubscribe: emailDict.unsubscribe || "Unsubscribe"
+                            },
+                            links: {
+                                home: appUrl,
+                                settings: `${appUrl}/dashboard/settings`
+                            }
+                        };
+
+                        console.log(`[Cron Debug] 2. Calling DailyMatchesEmail component`);
+                        const emailComponent = DailyMatchesEmail(componentProps);
+
+                        console.log(`[Cron Debug] 3. Sending email via Resend`);
                         const { data, error } = await resend.emails.send({
                             from: 'Tintel <hello@tintel.se>',
                             to: profile.email,
                             subject: subject,
-                            react: DailyMatchesEmail({
-                                userName: profile.full_name || 'Candidate',
-                                matches: latestJobs.map(j => ({
-                                    title: j.title || 'Job Opening',
-                                    company: j.company || 'Company',
-                                    location: j.location || 'Sweden',
-                                    link: j.webbplatsurl || `${appUrl}/candidate/dashboard`
-                                })),
-                                texts: {
-                                    preview: emailDict.preview.replace('{{count}}', String(latestJobs.length)),
-                                    greeting: emailDict.greeting.replace('{{name}}', profile.full_name || 'Candidate'),
-                                    pre_summary: emailDict.body_pre,
-                                    post_summary: emailDict.body_post,
-                                    button: emailDict.button,
-                                    reason: emailDict.footer_reason,
-                                    settings: emailDict.footer_settings,
-                                    unsubscribe: emailDict.unsubscribe || "Unsubscribe"
-                                },
-                                links: {
-                                    home: appUrl,
-                                    settings: `${appUrl}/dashboard/settings`
-                                }
-                            })
+                            react: emailComponent
                         });
 
                         if (error) {
