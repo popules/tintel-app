@@ -295,7 +295,11 @@ export const en = {
         company: "Company",
         about: "About",
         contact: "Contact",
-        tagline: "The talent intelligence platform for modern recruitment. Built in Gothenburg."
+        tagline: "The talent intelligence platform for modern recruitment. Built in Gothenburg.",
+        cookie_msg: "We use cookies to enhance your experience and analyze our traffic. By clicking 'Accept', you consent to our use of cookies.",
+        cookie_accept: "Accept All",
+        cookie_settings: "Manage Settings",
+        cookie_privacy: "Privacy Policy"
     },
     profile: {
         title: "Agent Profile",

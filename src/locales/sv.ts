@@ -294,7 +294,11 @@ export const sv = {
         company: "Företag",
         about: "Om oss",
         contact: "Kontakt",
-        tagline: "Talangplattformen för modern rekrytering. Byggd i Göteborg."
+        tagline: "Talangplattformen för modern rekrytering. Byggd i Göteborg.",
+        cookie_msg: "Vi använder cookies för att förbättra din upplevelse och analysera vår trafik. Genom att klicka på 'Acceptera' godkänner du vår användning av cookies.",
+        cookie_accept: "Acceptera alla",
+        cookie_settings: "Hantera inställningar",
+        cookie_privacy: "Integritetspolicy"
     },
     profile: {
         title: "Agentprofil",

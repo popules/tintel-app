@@ -3,6 +3,7 @@ import { GeistSans } from "geist/font/sans";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { I18nProvider } from "@/lib/i18n-context";
+import { CookieConsent } from "@/components/layout/CookieConsent";
 
 export const metadata: Metadata = {
   title: "Tintel",
@@ -33,6 +34,7 @@ export default function RootLayout({
       >
         <I18nProvider>
           {children}
+          <CookieConsent />
         </I18nProvider>
       </body>
     </html>
