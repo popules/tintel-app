@@ -8,47 +8,51 @@ import { useTranslation } from "@/lib/i18n-context";
 export function Pricing() {
     const { t } = useTranslation();
 
+    const txt = t.public.pricing;
+
     const TIERS = [
         {
-            name: t.pricing.starter_title,
-            price: "0",
-            description: t.pricing.starter_desc,
+            name: txt.starter.name,
+            price: txt.starter.price,
+            description: txt.starter.description,
             features: [
-                t.pricing.starter_f1,
-                t.pricing.starter_f2,
-                t.pricing.starter_f3,
-                t.pricing.starter_f4
+                txt.features.unlimited_search,
+                txt.features.five_unlocks,
+                txt.features.basic_kanban,
+                txt.features.community
             ],
-            cta: t.pricing.cta_free,
+            cta: txt.starter.button,
             href: "/signup",
             popular: false
         },
         {
-            name: t.pricing.pro_plan,
-            price: "999",
-            period: "/mo",
-            description: t.pricing.pro_desc,
+            name: txt.pro.name,
+            price: txt.pro.price,
+            period: txt.pro.period,
+            description: txt.pro.description,
             features: [
-                t.pricing.feature_unlimited,
-                t.pricing.feature_ai,
-                t.pricing.feature_export,
-                t.pricing.feature_api
+                txt.everything_starter,
+                txt.features.five_hundred_unlocks,
+                txt.features.ai_pitch_unlimited,
+                txt.features.vector_match,
+                txt.features.detective
             ],
-            cta: t.pricing.cta_pro,
+            cta: txt.pro.button,
             href: "/signup?plan=pro&priceId=price_1SiNAhA7zW1DXhtp0myVyevQ",
             popular: true
         },
         {
-            name: t.pricing.enterprise_title,
-            price: "Custom",
-            description: t.pricing.enterprise_desc,
+            name: txt.enterprise.name,
+            price: txt.enterprise.price,
+            description: txt.enterprise.description,
             features: [
-                t.pricing.enterprise_f1,
-                t.pricing.enterprise_f2,
-                t.pricing.enterprise_f3,
-                t.pricing.enterprise_f4
+                txt.everything_pro,
+                txt.features.unlimited_unlocks,
+                txt.features.api_full,
+                txt.features.whitelabel,
+                txt.features.account_manager
             ],
-            cta: t.pricing.cta_contact,
+            cta: txt.enterprise.button,
             href: "mailto:sales@tintel.se",
             popular: false
         }
@@ -62,10 +66,10 @@ export function Pricing() {
             <div className="container px-4 md:px-6 mx-auto">
                 <div className="text-center max-w-2xl mx-auto mb-16">
                     <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-4 text-white">
-                        {t.pricing.title}
+                        {txt.title}
                     </h2>
                     <p className="text-muted-foreground text-lg">
-                        {t.pricing.subtitle}
+                        {txt.desc}
                     </p>
                 </div>
 
@@ -77,7 +81,7 @@ export function Pricing() {
                         >
                             {tier.popular && (
                                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-indigo-500 text-white text-xs font-bold uppercase tracking-wider">
-                                    {t.pricing.most_popular}
+                                    {txt.pro.badge}
                                 </div>
                             )}
 
