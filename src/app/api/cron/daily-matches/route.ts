@@ -2,14 +2,14 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { resend } from '@/lib/resend';
 import { DailyMatchesEmail } from '@/components/emails/DailyMatches';
+// import { TalentAlertEmail } from '@/components/emails/TalentAlert'; // FUTURE: Enable for recruiters
 import { en } from '@/locales/en';
 import { sv } from '@/locales/sv';
 
 export async function GET(req: Request) {
-    // 1. Verify cron secret (if set)
     const { searchParams } = new URL(req.url);
     const cronSecret = searchParams.get('secret');
-    const testEmail = searchParams.get('test_email'); // NEW: Debug specific email
+    const testEmail = searchParams.get('test_email');
 
     console.log(`[Cron] Starting Daily Match. Test Mode: ${testEmail ? 'ON' : 'OFF'}`);
 
@@ -19,129 +19,103 @@ export async function GET(req: Request) {
     }
 
     const supabase = createClient();
+    const reports = [];
 
     try {
-        // 2. Fetch candidates
-        console.log(`[Cron] Fetching profiles...`);
-        let query = supabase
+        // ==========================================
+        // 1. CANDIDATE MATCHING (Jobs -> Candidates)
+        // ==========================================
+        console.log(`[Cron] Fetching candidates...`);
+
+        let candidateQuery = supabase
             .from('profiles')
             .select('id, full_name, email, role, preferred_language')
-            .in('role', ['candidate', 'CANDIDATE']); // Handle case sensitivity
+            .in('role', ['candidate', 'CANDIDATE']);
 
         if (testEmail) {
-            query = query.eq('email', testEmail);
-        } else {
-            query = query.eq('role', 'candidate'); // Default to strict if not testing? Actually sticking to .in is safer for all.
-            // Re-apply .in properly for the bulk run
-            query = supabase
-                .from('profiles')
-                .select('id, full_name, email, role, preferred_language')
-                .in('role', ['candidate', 'CANDIDATE']);
+            candidateQuery = supabase.from('profiles').select('id, full_name, email, role, preferred_language').eq('email', testEmail);
         }
 
-        // Apply test filter if provided (User might want to test 'role' logic even with test_email, but let's prioritize finding the user)
-        if (testEmail) {
-            query = supabase
-                .from('profiles')
-                .select('id, full_name, email, role, preferred_language')
-                .eq('email', testEmail);
-        }
+        const { data: candidates, error: candidateError } = await candidateQuery;
 
-        const { data: profiles, error: profileError } = await query;
+        if (candidateError) throw candidateError;
 
-        if (profileError) {
-            console.error(`[Cron] Profile fetch error:`, profileError);
-            throw profileError;
-        }
+        if (candidates && candidates.length > 0) {
+            // Fetch recent jobs (Global "New Jobs" for now - smart matching comes later)
+            const { data: latestJobs } = await supabase
+                .from('job_posts')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(3);
 
-        console.log(`[Cron] Found ${profiles?.length || 0} candidates.`);
+            if (latestJobs && latestJobs.length > 0) {
+                // Determine App URL
+                const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://tintel.se';
 
-        if (!profiles || profiles.length === 0) {
-            return NextResponse.json({ message: "No candidates found matching criteria." });
-        }
+                for (const profile of candidates) {
+                    if (!profile.email) continue;
 
-        // 3. For each candidate, find matches
-        const { data: latestJobs, error: jobError } = await supabase
-            .from('job_posts')
-            .select('*')
-            .order('created_at', { ascending: false })
-            .limit(3);
+                    // Manual Locale Selection & Text Extraction
+                    // forcing 'en' or 'sv' ensures type safety with our dictionaries
+                    const userLocale = (profile.preferred_language === 'sv') ? 'sv' : 'en';
+                    const dictionary = (userLocale === 'sv') ? sv : en;
+                    const emailDict = dictionary.emails.daily_matches;
 
-        if (jobError) {
-            console.error(`[Cron] Job fetch error:`, jobError);
-            throw jobError;
-        }
+                    const subject = emailDict.subject;
 
-        if (!latestJobs || latestJobs.length === 0) {
-            console.log(`[Cron] No jobs found.`);
-            return NextResponse.json({ message: "No new jobs found." });
-        }
+                    try {
+                        const { data, error } = await resend.emails.send({
+                            from: 'Tintel <hello@tintel.se>',
+                            to: profile.email,
+                            subject: subject,
+                            react: DailyMatchesEmail({
+                                userName: profile.full_name || 'Candidate',
+                                matches: latestJobs.map(j => ({
+                                    title: j.title || 'Job Opening',
+                                    company: j.company || 'Company',
+                                    location: j.location || 'Sweden',
+                                    link: j.webbplatsurl || `${appUrl}/candidate/dashboard`
+                                })),
+                                texts: {
+                                    preview: emailDict.preview.replace('{{count}}', String(latestJobs.length)),
+                                    greeting: emailDict.greeting.replace('{{name}}', profile.full_name || 'Candidate'),
+                                    pre_summary: emailDict.body_pre,
+                                    post_summary: emailDict.body_post,
+                                    button: emailDict.button,
+                                    reason: emailDict.footer_reason,
+                                    settings: emailDict.footer_settings,
+                                    unsubscribe: emailDict.unsubscribe || "Unsubscribe"
+                                },
+                                links: {
+                                    home: appUrl,
+                                    settings: `${appUrl}/dashboard/settings`
+                                }
+                            })
+                        });
 
-        const reports = [];
+                        if (error) {
+                            console.error(`[Cron] Resend Error for ${profile.email}:`, error);
+                            reports.push({ email: profile.email, type: 'candidate_digest', status: 'failed', error: error.message });
+                        } else {
+                            reports.push({ email: profile.email, type: 'candidate_digest', status: 'sent', id: data?.id });
+                        }
 
-        // 4. Send Emails
-        for (const profile of profiles) {
-            if (!profile.email) {
-                console.warn(`[Cron] Skipping user ${profile.id} (No email)`);
-                continue;
-            }
-
-            console.log(`[Cron] Processing user: ${profile.email}`);
-
-            const locale = (profile.preferred_language === 'sv' || profile.preferred_language === 'en') ? profile.preferred_language : 'en';
-            // Temporary debug: hardcode subject to see if 't' access is the crash
-            const subject = locale === 'sv' ? "3 nya matchningar på Tintel" : "3 new jobs on Tintel matching your profile";
-
-            try {
-                console.log(`[Cron] Preparing email for ${profile.email} (Locale: ${locale})`);
-                const { data, error } = await resend.emails.send({
-                    from: 'Tintel <hello@tintel.se>',
-                    to: profile.email,
-                    subject: subject,
-                    html: `
-                        <h1>${subject}</h1>
-                        <p>Hi ${profile.full_name || 'Candidate'}, we found ${latestJobs.length} new jobs for you.</p>
-                        <p>This is a debug email to verify connectivity.</p>
-                        <ul>
-                            ${latestJobs.map(j => `<li><strong>${j.title}</strong> at ${j.company}</li>`).join('')}
-                        </ul>
-                    `
-                    /*
-                    // Temporarily disabled React template to debug "t is not a function" error
-                    react: DailyMatchesEmail({
-                        userName: profile.full_name || 'Talang',
-                        matches: latestJobs.map(j => ({
-                            title: j.title || 'Jobbmöjlighet',
-                            company: j.company || 'Företag',
-                            location: j.location || 'Sverige',
-                            link: j.webbplatsurl || `${process.env.NEXT_PUBLIC_APP_URL}/candidate/dashboard`
-                        })),
-                        locale: locale
-                    }),
-                    */
-                });
-
-                if (error) {
-                    console.error(`[Cron] Resend Error for ${profile.email}:`, error);
-                    reports.push({ email: profile.email, status: 'error', error });
-                } else {
-                    console.log(`[Cron] Success: ${profile.email} (ID: ${data?.id})`);
-                    reports.push({ email: profile.email, status: 'sent', id: data?.id });
+                    } catch (err: any) {
+                        console.error(`[Cron] System Error for ${profile.email}:`, err);
+                        reports.push({ email: profile.email, type: 'candidate_digest', status: 'failed', error: err.message || String(err) });
+                    }
                 }
-            } catch (emailErr: any) {
-                console.error(`[Cron] Unexpected email error for ${profile.email}:`, emailErr);
-                reports.push({
-                    email: profile.email,
-                    status: 'failed',
-                    error: emailErr.message || String(emailErr)
-                });
             }
         }
+
+        // ==========================================
+        // 2. RECRUITER MATCHING (Candidates -> Recruiters)
+        // ==========================================
+        // (Placeholder: To be enabled once we confirm the Candidate email works perfectly)
+        // We will fetch recruiters and send them 'TalentAlertEmail' with new candidates.
 
         return NextResponse.json({
             success: true,
-            candidatesFound: profiles.length,
-            emailsSent: reports.filter(r => r.status === 'sent').length,
             reports
         });
 

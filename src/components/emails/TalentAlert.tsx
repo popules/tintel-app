@@ -13,22 +13,20 @@ import {
 } from '@react-email/components';
 import * as React from 'react';
 
-export interface DailyMatchesEmailProps {
-    userName: string;
-    matches: {
-        title: string;
-        company: string;
+export interface TalentAlertEmailProps {
+    recruiterName: string;
+    candidates: {
+        role: string;
+        experience: string;
         location: string;
         link: string;
     }[];
     texts: {
         preview: string;
         greeting: string;
-        pre_summary: string;
-        post_summary: string;
+        intro: string;
         button: string;
-        reason: string;
-        settings: string;
+        footer_reason: string;
         unsubscribe: string;
     };
     links: {
@@ -37,12 +35,12 @@ export interface DailyMatchesEmailProps {
     };
 }
 
-export const DailyMatchesEmail = ({
-    userName,
-    matches,
+export const TalentAlertEmail = ({
+    recruiterName,
+    candidates,
     texts,
     links
-}: DailyMatchesEmailProps) => {
+}: TalentAlertEmailProps) => {
     return (
         <Html>
             <Head />
@@ -54,18 +52,18 @@ export const DailyMatchesEmail = ({
                     </Section>
                     <Heading style={heading}>{texts.greeting}</Heading>
                     <Text style={paragraph}>
-                        {texts.pre_summary} <strong>{matches.length}</strong> {texts.post_summary}
+                        {texts.intro}
                     </Text>
 
                     <Hr style={hr} />
 
-                    {matches.map((job, i) => (
-                        <Section key={i} style={jobSection}>
-                            <Text style={jobTitle}>{job.title}</Text>
-                            <Text style={jobCompany}>{job.company} • {job.location}</Text>
+                    {candidates.map((candidate, i) => (
+                        <Section key={i} style={candidateSection}>
+                            <Text style={candidateRole}>{candidate.role}</Text>
+                            <Text style={candidateDetail}>{candidate.experience} • {candidate.location}</Text>
                             <Button
                                 style={button}
-                                href={job.link}
+                                href={candidate.link}
                             >
                                 {texts.button}
                             </Button>
@@ -75,9 +73,8 @@ export const DailyMatchesEmail = ({
                     <Hr style={hr} />
 
                     <Text style={footer}>
-                        {texts.reason}
+                        {texts.footer_reason}
                         <br />
-                        {texts.settings}{' '}
                         <Link href={links.settings} style={link}>
                             {texts.unsubscribe}
                         </Link>
@@ -88,7 +85,7 @@ export const DailyMatchesEmail = ({
     );
 };
 
-// Styles
+// Styles (Reusing consistent styles)
 const main = {
     backgroundColor: '#ffffff',
     fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif',
@@ -109,7 +106,7 @@ const logo = {
     fontWeight: 'bold',
     letterSpacing: '-1px',
     margin: '0',
-    color: '#4f46e5',
+    color: '#000000', // Darker for Recruiter/B2B feel
     textDecoration: 'none',
 };
 
@@ -118,7 +115,7 @@ const heading = {
     letterSpacing: '-0.5px',
     lineHeight: '1.3',
     fontWeight: '700',
-    color: '#484848',
+    color: '#1a1a1a',
     padding: '17px 0 0',
 };
 
@@ -126,15 +123,15 @@ const paragraph = {
     margin: '0 0 15px',
     fontSize: '16px',
     lineHeight: '1.4',
-    color: '#3c4149',
+    color: '#444444',
 };
 
 const button = {
-    backgroundColor: '#4f46e5',
-    borderRadius: '8px',
+    backgroundColor: '#000000', // Black for premium B2B
+    borderRadius: '6px',
     color: '#fff',
     fontSize: '14px',
-    fontWeight: 'bold',
+    fontWeight: '600',
     textDecoration: 'none',
     textAlign: 'center' as const,
     display: 'block',
@@ -142,17 +139,21 @@ const button = {
     marginTop: '10px',
 };
 
-const jobSection = {
+const candidateSection = {
     padding: '20px 0',
+    borderLeft: '2px solid #eaeaea',
+    paddingLeft: '16px',
+    marginBottom: '16px',
 };
 
-const jobTitle = {
+const candidateRole = {
     fontSize: '18px',
     fontWeight: 'bold',
     margin: '0',
+    color: '#111',
 };
 
-const jobCompany = {
+const candidateDetail = {
     fontSize: '14px',
     color: '#666',
     margin: '4px 0 12px',
@@ -170,8 +171,8 @@ const footer = {
 };
 
 const link = {
-    color: '#4f46e5',
+    color: '#000',
     textDecoration: 'underline',
 };
 
-export default DailyMatchesEmail;
+export default TalentAlertEmail;

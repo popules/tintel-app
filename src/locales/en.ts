@@ -23,6 +23,16 @@ export const en = {
             button: "View Job",
             footer_reason: "You are receiving this email because you created a profile on Tintel.se.",
             footer_settings: "To change your notifications, log in to your dashboard.",
+            unsubscribe: "Unsubscribe from these emails",
+        },
+        talent_alert: {
+            subject: "New Talent Alert: {{count}} candidates found",
+            preview: "Highly qualified candidates just joined Tintel.",
+            greeting: "Hi {{name}},",
+            intro: "We found new candidates matching your typical search criteria:",
+            button: "View Profile",
+            footer_reason: "You are receiving this because you are a registered recruiter on Tintel.",
+            unsubscribe: "Manage notification settings"
         }
     },
     public: {

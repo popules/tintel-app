@@ -115,6 +115,16 @@ export const sv = {
             button: "Visa jobb",
             footer_reason: "Du får detta mejl för att du har skapat en profil på Tintel.se.",
             footer_settings: "För att ändra dina inställningar, logga in på din dashboard.",
+            unsubscribe: "Avregistrera dig här",
+        },
+        talent_alert: {
+            subject: "Ny Talangnotis: {{count}} kandidater hittade",
+            preview: "Högkvalificerade kandidater har precis anslutit till Tintel.",
+            greeting: "Hej {{name}},",
+            intro: "Vi har hittat nya kandidater som matchar dina sökningar:",
+            button: "Visa Profil",
+            footer_reason: "Du får detta för att du är en registrerad rekryterare på Tintel.",
+            unsubscribe: "Hantera notisinställningar"
         }
     },
     public: {
