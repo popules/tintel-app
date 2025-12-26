@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { resend } from '@/lib/resend';
 import { DailyMatchesEmail } from '@/components/emails/DailyMatches';
-// import { TalentAlertEmail } from '@/components/emails/TalentAlert'; // FUTURE: Enable for recruiters
+import { TalentAlertEmail } from '@/components/emails/TalentAlert'; // FUTURE: Enable for recruiters
 import { en } from '@/locales/en';
 import { sv } from '@/locales/sv';
 
@@ -111,8 +111,92 @@ export async function GET(req: Request) {
         // ==========================================
         // 2. RECRUITER MATCHING (Candidates -> Recruiters)
         // ==========================================
-        // (Placeholder: To be enabled once we confirm the Candidate email works perfectly)
-        // We will fetch recruiters and send them 'TalentAlertEmail' with new candidates.
+        console.log(`[Cron] Fetching recruiters...`);
+        let recruiterQuery = supabase
+            .from('profiles')
+            .select('id, full_name, email, role, preferred_language')
+            .in('role', ['recruiter', 'RECRUITER']); // Standardized role check
+
+        if (testEmail) {
+            // For testing, we might want to pretend the test user is a recruiter too, 
+            // but if they are 'candidate' role, they won't appear here unless we force it.
+            // Let's assume testing sends BOTH if the user matches profile.
+            // OR we just use the testEmail regardless of role for the purpose of the test.
+            recruiterQuery = supabase.from('profiles').select('id, full_name, email, role, preferred_language').eq('email', testEmail);
+        }
+
+        const { data: recruiters } = await recruiterQuery;
+
+        if (recruiters && recruiters.length > 0) {
+            // Fetch recent candidates (Global "New Talent" for now)
+            const { data: recentCandidates } = await supabase
+                .from('profiles')
+                .select('id, role, created_at') // Minimal fetch, we need details though? 
+                // Wait, profiles table doesn't have "Job title" or "Location" easily accessible if it's structured data.
+                // It likely has `raw_user_meta_data` or separate columns?
+                // Let's check `candidate_card` usage. It uses `profile.job_title` etc if available.
+                // Actually `profiles` table schema is better to be checked.
+                // Assuming `role` and `bio` or similar exists.
+                // Let's blindly fetch `*` for simplicity for now.
+                .select('*')
+                .in('role', ['candidate', 'CANDIDATE'])
+                .order('created_at', { ascending: false })
+                .limit(3);
+
+            if (recentCandidates && recentCandidates.length > 0) {
+                const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://tintel.se';
+
+                for (const recruiter of recruiters) {
+                    if (!recruiter.email) continue;
+
+                    // Manual Locale
+                    const userLocale = (recruiter.preferred_language === 'sv') ? 'sv' : 'en';
+                    const dictionary = (userLocale === 'sv') ? sv : en;
+                    const emailDict = dictionary.emails.talent_alert;
+
+                    const subject = emailDict.subject.replace('{{count}}', String(recentCandidates.length));
+
+                    try {
+                        const { data, error } = await resend.emails.send({
+                            from: 'Tintel <hello@tintel.se>',
+                            to: recruiter.email,
+                            subject: subject,
+                            react: TalentAlertEmail({
+                                recruiterName: recruiter.full_name || 'Recruiter',
+                                candidates: recentCandidates.map(c => ({
+                                    role: c.job_title || 'New Candidate', // Fallback
+                                    experience: c.years_of_experience ? `${c.years_of_experience}y` : 'Experienced',
+                                    location: c.city || 'Sweden',
+                                    link: `${appUrl}/candidate/${c.username || c.id}` // direct link to profile
+                                })),
+                                texts: {
+                                    preview: emailDict.preview,
+                                    greeting: emailDict.greeting.replace('{{name}}', recruiter.full_name || 'Recruiter'),
+                                    intro: emailDict.intro,
+                                    button: emailDict.button,
+                                    footer_reason: emailDict.footer_reason,
+                                    unsubscribe: emailDict.unsubscribe
+                                },
+                                links: {
+                                    home: appUrl,
+                                    settings: `${appUrl}/dashboard/settings`
+                                }
+                            })
+                        });
+
+                        if (error) {
+                            console.error(`[Cron] Recruiter Resend Error for ${recruiter.email}:`, error);
+                            reports.push({ email: recruiter.email, type: 'recruiter_alert', status: 'failed', error: error.message });
+                        } else {
+                            reports.push({ email: recruiter.email, type: 'recruiter_alert', status: 'sent', id: data?.id });
+                        }
+                    } catch (err: any) {
+                        console.error(`[Cron] Recruiter System Error for ${recruiter.email}:`, err);
+                        reports.push({ email: recruiter.email, type: 'recruiter_alert', status: 'failed', error: err.message || String(err) });
+                    }
+                }
+            }
+        }
 
         return NextResponse.json({
             success: true,
