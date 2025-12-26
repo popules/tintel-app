@@ -222,8 +222,8 @@ export const sv = {
     },
     hero: {
         badge: "Nu lanserat i Sverige",
-        title_start: "Plattformen för",
-        title_end: "Talangintelligens",
+        title_start: "The Talent Intelligence",
+        title_end: "Platform",
         subtitle: "Automatisera din lead-generering. Personifiera din kommunikation. Hitta din framtid.",
         cta_hiring: "Jag rekryterar",
         cta_work: "Jag söker jobb",
