@@ -98,6 +98,16 @@ export async function GET(req: Request) {
                     from: 'Tintel <hello@tintel.se>',
                     to: profile.email,
                     subject: subject,
+                    html: `
+                        <h1>${subject}</h1>
+                        <p>Hi ${profile.full_name || 'Candidate'}, we found ${latestJobs.length} new jobs for you.</p>
+                        <p>This is a debug email to verify connectivity.</p>
+                        <ul>
+                            ${latestJobs.map(j => `<li><strong>${j.title}</strong> at ${j.company}</li>`).join('')}
+                        </ul>
+                    `
+                    /*
+                    // Temporarily disabled React template to debug "t is not a function" error
                     react: DailyMatchesEmail({
                         userName: profile.full_name || 'Talang',
                         matches: latestJobs.map(j => ({
@@ -108,6 +118,7 @@ export async function GET(req: Request) {
                         })),
                         locale: locale
                     }),
+                    */
                 });
 
                 if (error) {
