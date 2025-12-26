@@ -1,8 +1,8 @@
+
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { resend } from '@/lib/resend';
-import { DailyMatchesEmail } from '@/components/emails/DailyMatches';
-import { TalentAlertEmail } from '@/components/emails/TalentAlert'; // FUTURE: Enable for recruiters
+import { getDailyMatchesHtml, getTalentAlertHtml } from '@/lib/email-templates';
 import { en } from '@/locales/en';
 import { sv } from '@/locales/sv';
 
@@ -64,8 +64,7 @@ export async function GET(req: Request) {
                     const subject = emailDict.subject;
 
                     try {
-                        console.log(`[Cron Debug] 1. Preparing props for ${profile.email}`);
-                        const componentProps = {
+                        const htmlContent = getDailyMatchesHtml({
                             userName: profile.full_name || 'Candidate',
                             matches: latestJobs.map(j => ({
                                 title: j.title || 'Job Opening',
@@ -87,17 +86,13 @@ export async function GET(req: Request) {
                                 home: appUrl,
                                 settings: `${appUrl}/dashboard/settings`
                             }
-                        };
+                        });
 
-                        console.log(`[Cron Debug] 2. Calling DailyMatchesEmail component`);
-                        const emailComponent = DailyMatchesEmail(componentProps);
-
-                        console.log(`[Cron Debug] 3. Sending email via Resend`);
                         const { data, error } = await resend.emails.send({
                             from: 'Tintel <hello@tintel.se>',
                             to: profile.email,
                             subject: subject,
-                            react: emailComponent
+                            html: htmlContent
                         });
 
                         if (error) {
@@ -138,13 +133,6 @@ export async function GET(req: Request) {
             // Fetch recent candidates (Global "New Talent" for now)
             const { data: recentCandidates } = await supabase
                 .from('profiles')
-                .select('id, role, created_at') // Minimal fetch, we need details though? 
-                // Wait, profiles table doesn't have "Job title" or "Location" easily accessible if it's structured data.
-                // It likely has `raw_user_meta_data` or separate columns?
-                // Let's check `candidate_card` usage. It uses `profile.job_title` etc if available.
-                // Actually `profiles` table schema is better to be checked.
-                // Assuming `role` and `bio` or similar exists.
-                // Let's blindly fetch `*` for simplicity for now.
                 .select('*')
                 .in('role', ['candidate', 'CANDIDATE'])
                 .order('created_at', { ascending: false })
@@ -164,31 +152,33 @@ export async function GET(req: Request) {
                     const subject = emailDict.subject.replace('{{count}}', String(recentCandidates.length));
 
                     try {
+                        const htmlContent = getTalentAlertHtml({
+                            recruiterName: recruiter.full_name || 'Recruiter',
+                            candidates: recentCandidates.map(c => ({
+                                role: c.job_title || 'New Candidate', // Fallback
+                                experience: c.years_of_experience ? `${c.years_of_experience}y` : 'Experienced',
+                                location: c.city || 'Sweden',
+                                link: `${appUrl}/candidate/${c.username || c.id}` // direct link to profile
+                            })),
+                            texts: {
+                                preview: emailDict.preview,
+                                greeting: emailDict.greeting.replace('{{name}}', recruiter.full_name || 'Recruiter'),
+                                intro: emailDict.intro,
+                                button: emailDict.button,
+                                footer_reason: emailDict.footer_reason,
+                                unsubscribe: emailDict.unsubscribe
+                            },
+                            links: {
+                                home: appUrl,
+                                settings: `${appUrl}/dashboard/settings`
+                            }
+                        });
+
                         const { data, error } = await resend.emails.send({
                             from: 'Tintel <hello@tintel.se>',
                             to: recruiter.email,
                             subject: subject,
-                            react: TalentAlertEmail({
-                                recruiterName: recruiter.full_name || 'Recruiter',
-                                candidates: recentCandidates.map(c => ({
-                                    role: c.job_title || 'New Candidate', // Fallback
-                                    experience: c.years_of_experience ? `${c.years_of_experience}y` : 'Experienced',
-                                    location: c.city || 'Sweden',
-                                    link: `${appUrl}/candidate/${c.username || c.id}` // direct link to profile
-                                })),
-                                texts: {
-                                    preview: emailDict.preview,
-                                    greeting: emailDict.greeting.replace('{{name}}', recruiter.full_name || 'Recruiter'),
-                                    intro: emailDict.intro,
-                                    button: emailDict.button,
-                                    footer_reason: emailDict.footer_reason,
-                                    unsubscribe: emailDict.unsubscribe
-                                },
-                                links: {
-                                    home: appUrl,
-                                    settings: `${appUrl}/dashboard/settings`
-                                }
-                            })
+                            html: htmlContent
                         });
 
                         if (error) {
