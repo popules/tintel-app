@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useTranslation } from "@/lib/i18n-context";
-import Footer from "@/components/landing/Footer";
+import { Footer } from "@/components/landing/Footer";
 import { LandingHeader } from "@/components/landing/LandingHeader";
 import { Mail, ArrowRight, MessageCircle, MapPin } from "lucide-react";
 
