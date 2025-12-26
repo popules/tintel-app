@@ -31,8 +31,8 @@ export const DailyMatchesEmail = ({
     matches,
     locale = 'en',
 }: DailyMatchesEmailProps) => {
-    const t = locale === 'sv' ? sv : en;
-    const dict = t.emails.daily_matches;
+    const translations = locale === 'sv' ? sv : en;
+    const dict = translations.emails.daily_matches;
 
     return (
         <Html>
