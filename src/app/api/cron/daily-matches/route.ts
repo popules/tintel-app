@@ -117,9 +117,13 @@ export async function GET(req: Request) {
                     console.log(`[Cron] Success: ${profile.email} (ID: ${data?.id})`);
                     reports.push({ email: profile.email, status: 'sent', id: data?.id });
                 }
-            } catch (emailErr) {
+            } catch (emailErr: any) {
                 console.error(`[Cron] Unexpected email error for ${profile.email}:`, emailErr);
-                reports.push({ email: profile.email, status: 'failed', error: emailErr });
+                reports.push({
+                    email: profile.email,
+                    status: 'failed',
+                    error: emailErr.message || String(emailErr)
+                });
             }
         }
 
