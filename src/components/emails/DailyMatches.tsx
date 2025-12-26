@@ -37,52 +37,13 @@ export interface DailyMatchesEmailProps {
     };
 }
 
-export const DailyMatchesEmail = ({
-    userName,
-    matches,
-    texts,
-    links
-}: DailyMatchesEmailProps) => {
+export const DailyMatchesEmail = (props: any) => {
     return (
         <Html>
-            <Head />
-            <Preview>{texts.preview}</Preview>
-            <Body style={main}>
-                <Container style={container}>
-                    <Section style={header}>
-                        <Link href={links.home} style={logo}>tintel</Link>
-                    </Section>
-                    <Heading style={heading}>{texts.greeting}</Heading>
-                    <Text style={paragraph}>
-                        {texts.pre_summary} <strong>{matches.length}</strong> {texts.post_summary}
-                    </Text>
-
-                    <Hr style={hr} />
-
-                    {matches.map((job, i) => (
-                        <Section key={i} style={jobSection}>
-                            <Text style={jobTitle}>{job.title}</Text>
-                            <Text style={jobCompany}>{job.company} • {job.location}</Text>
-                            <Button
-                                style={button}
-                                href={job.link}
-                            >
-                                {texts.button}
-                            </Button>
-                        </Section>
-                    ))}
-
-                    <Hr style={hr} />
-
-                    <Text style={footer}>
-                        {texts.reason}
-                        <br />
-                        {texts.settings}{' '}
-                        <Link href={links.settings} style={link}>
-                            {texts.unsubscribe}
-                        </Link>
-                    </Text>
-                </Container>
+            <Body>
+                <h1>Hello World Debug</h1>
+                <p>If you see this, the component logic was the issue.</p>
+                <pre>{JSON.stringify(props, null, 2)}</pre>
             </Body>
         </Html>
     );
