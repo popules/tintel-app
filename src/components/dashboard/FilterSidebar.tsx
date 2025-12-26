@@ -9,6 +9,7 @@ import { SwedenMap } from "./SwedenMap"
 import { Map as MapIcon, List, Radar, Briefcase, Users } from "lucide-react"
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import { useTranslation } from "@/lib/i18n-context"
 
 interface FilterSidebarProps {
     categories: string[]
@@ -40,6 +41,7 @@ export function FilterSidebar({
     showCandidateToggle = true
 }: FilterSidebarProps) {
     const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
+    const { t } = useTranslation()
 
     const toggleCounty = (county: string) => {
         const isSelected = selectedCounties.includes(county);
@@ -56,9 +58,9 @@ export function FilterSidebar({
                     <span className="bg-indigo-500/10 text-indigo-500 p-1.5 rounded-lg">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" /></svg>
                     </span>
-                    Filters
+                    {t.dashboard.filter_title}
                 </h3>
-                <p className="text-xs text-muted-foreground pl-1">Refine your job search</p>
+                <p className="text-xs text-muted-foreground pl-1">{t.dashboard.filter_clear}</p>
             </div>
 
             {/* Search Mode Toggle (Jobs vs People) - Conditionally Rendered */}
@@ -69,14 +71,14 @@ export function FilterSidebar({
                         className={`flex items-center justify-center gap-2 py-2 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all ${searchMode === 'jobs' ? 'bg-background text-indigo-600 shadow-sm ring-1 ring-black/5' : 'text-muted-foreground hover:text-foreground'}`}
                     >
                         <Briefcase className="h-3 w-3" />
-                        Find Jobs
+                        {t.dashboard.jobs}
                     </button>
                     <button
                         onClick={() => setSearchMode('people')}
                         className={`flex items-center justify-center gap-2 py-2 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all ${searchMode === 'people' ? 'bg-background text-indigo-600 shadow-sm ring-1 ring-black/5' : 'text-muted-foreground hover:text-foreground'}`}
                     >
                         <Users className="h-3 w-3" />
-                        Find People
+                        {t.dashboard.candidates}
                     </button>
                 </div>
             )}
@@ -94,7 +96,7 @@ export function FilterSidebar({
                     className={`flex-1 flex items-center justify-center gap-2 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all ${viewMode === 'map' ? 'bg-background text-indigo-600 shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
                 >
                     <Radar className="h-3 w-3" />
-                    Radar
+                    Map
                 </button>
             </div>
 

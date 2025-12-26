@@ -18,6 +18,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useTranslation } from "@/lib/i18n-context"
 
 interface HeaderProps {
     searchTerm?: string
@@ -29,6 +30,7 @@ export function Header({ searchTerm = "", setSearchTerm = () => { } }: HeaderPro
     const [profile, setProfile] = useState<any>(null)
     const supabase = createClient()
     const router = useRouter()
+    const { t } = useTranslation()
 
     const [notifications, setNotifications] = useState<any[]>([])
     const [unreadCount, setUnreadCount] = useState(0)
@@ -132,7 +134,7 @@ export function Header({ searchTerm = "", setSearchTerm = () => { } }: HeaderPro
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-indigo-500 transition-colors" />
                     <Input
                         type="search"
-                        placeholder="Jump to any company..."
+                        placeholder={t.dashboard.search_companies_placeholder}
                         className="w-full bg-muted/50 border-transparent pl-10 h-10 rounded-xl focus:bg-background focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
@@ -146,7 +148,7 @@ export function Header({ searchTerm = "", setSearchTerm = () => { } }: HeaderPro
                         className="absolute top-full left-0 right-0 mt-2 bg-background border rounded-xl shadow-2xl overflow-hidden z-50 p-2"
                     >
                         <div className="px-3 py-1.5 mb-1">
-                            <span className="text-[10px] font-black uppercase text-indigo-500 tracking-wider">Company Results</span>
+                            <span className="text-[10px] font-black uppercase text-indigo-500 tracking-wider">Results</span>
                         </div>
                         {searchResults.map((res) => (
                             <Link
@@ -257,7 +259,7 @@ export function Header({ searchTerm = "", setSearchTerm = () => { } }: HeaderPro
                                 <DropdownMenuItem className="cursor-pointer" asChild>
                                     <Link href={profile?.role === 'candidate' ? "/candidate/my-jobs" : "/saved"} className="flex items-center w-full">
                                         <Kanban className="mr-2 h-4 w-4" />
-                                        <span>{profile?.role === 'candidate' ? "My Pipeline" : "Saved Leads"}</span>
+                                        <span>{profile?.role === 'candidate' ? "My Pipeline" : t.dashboard.saved}</span>
                                     </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
@@ -275,13 +277,13 @@ export function Header({ searchTerm = "", setSearchTerm = () => { } }: HeaderPro
                                 <DropdownMenuItem className="cursor-pointer" asChild>
                                     <Link href={profile?.role === 'candidate' ? "/candidate/dashboard" : "/profile"} className="flex items-center w-full">
                                         <LayoutDashboard className="mr-2 h-4 w-4" />
-                                        <span>Dashboard</span>
+                                        <span>{t.dashboard.dashboard}</span>
                                     </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem onClick={handleSignOut} className="text-red-500 cursor-pointer focus:text-red-500">
                                     <LogOut className="mr-2 h-4 w-4" />
-                                    <span>Log out</span>
+                                    <span>{t.nav.logout}</span>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
@@ -289,10 +291,10 @@ export function Header({ searchTerm = "", setSearchTerm = () => { } }: HeaderPro
                 ) : (
                     <div className="flex gap-2">
                         <Button variant="ghost" asChild>
-                            <Link href="/login">Log in</Link>
+                            <Link href="/login">{t.nav.login}</Link>
                         </Button>
                         <Button asChild className="bg-indigo-600 hover:bg-indigo-700">
-                            <Link href="/signup">Sign up</Link>
+                            <Link href="/signup">{t.nav.signup}</Link>
                         </Button>
                     </div>
                 )}
@@ -300,4 +302,3 @@ export function Header({ searchTerm = "", setSearchTerm = () => { } }: HeaderPro
         </header>
     )
 }
-

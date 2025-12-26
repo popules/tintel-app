@@ -8,8 +8,9 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import Link from 'next/link'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Globe } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { useTranslation } from '@/lib/i18n-context'
 
 function SignupForm() {
     const [email, setEmail] = useState('')
@@ -21,6 +22,11 @@ function SignupForm() {
     const router = useRouter()
     const searchParams = useSearchParams()
     const supabase = createClient()
+    const { t, locale, setLocale } = useTranslation()
+
+    const toggleLanguage = () => {
+        setLocale(locale === 'en' ? 'sv' : 'en');
+    };
 
     const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -36,6 +42,7 @@ function SignupForm() {
                     data: {
                         full_name: fullName,
                         role: 'recruiter',
+                        preferred_language: locale, // Important: Save preference on signup
                     },
                 },
             })
@@ -64,7 +71,14 @@ function SignupForm() {
 
     if (submitted) {
         return (
-            <div className="flex min-h-screen items-center justify-center bg-muted/20 p-4">
+            <div className="flex min-h-screen items-center justify-center bg-muted/20 p-4 relative">
+                <div className="absolute top-4 right-4 z-50">
+                    <Button variant="ghost" size="sm" onClick={toggleLanguage} className="uppercase font-bold text-muted-foreground hover:text-foreground">
+                        <Globe className="mr-2 h-4 w-4" />
+                        {locale}
+                    </Button>
+                </div>
+
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -91,7 +105,14 @@ function SignupForm() {
     }
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-muted/20 p-4">
+        <div className="flex min-h-screen items-center justify-center bg-muted/20 p-4 relative">
+            <div className="absolute top-4 right-4 z-50">
+                <Button variant="ghost" size="sm" onClick={toggleLanguage} className="uppercase font-bold text-muted-foreground hover:text-foreground">
+                    <Globe className="mr-2 h-4 w-4" />
+                    {locale}
+                </Button>
+            </div>
+
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -104,9 +125,9 @@ function SignupForm() {
                             <div className="h-4 w-4 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 shadow-xl shadow-indigo-500/20 ring-2 ring-white/10" />
                             <span className="font-black text-3xl tracking-tighter">tintel</span>
                         </div>
-                        <CardTitle className="text-2xl font-bold tracking-tight">Partner Access</CardTitle>
+                        <CardTitle className="text-2xl font-bold tracking-tight">{t.auth.signup_title}</CardTitle>
                         <CardDescription>
-                            Membership is currently by invitation only
+                            {t.auth.signup_subtitle}
                         </CardDescription>
                     </CardHeader>
                     <form onSubmit={handleSignup}>
@@ -117,10 +138,10 @@ function SignupForm() {
                                 </div>
                             )}
                             <div className="grid gap-2">
-                                <Label htmlFor="fullname font-semibold">Full Name</Label>
+                                <Label htmlFor="fullname">{t.auth.full_name_label}</Label>
                                 <Input
                                     id="fullname"
-                                    placeholder="John Doe"
+                                    placeholder={t.auth.full_name_placeholder}
                                     required
                                     value={fullName}
                                     onChange={(e) => setFullName(e.target.value)}
@@ -128,11 +149,11 @@ function SignupForm() {
                                 />
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="email font-semibold">Email</Label>
+                                <Label htmlFor="email">{t.auth.email_label}</Label>
                                 <Input
                                     id="email"
                                     type="email"
-                                    placeholder="name@example.com"
+                                    placeholder={t.auth.email_placeholder}
                                     required
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
@@ -140,11 +161,10 @@ function SignupForm() {
                                 />
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="password font-semibold">Password</Label>
+                                <Label htmlFor="password">{t.auth.password_label}</Label>
                                 <Input
                                     id="password"
                                     type="password"
-                                    placeholder="••••••••"
                                     required
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
@@ -154,15 +174,15 @@ function SignupForm() {
                         </CardContent>
                         <CardFooter className="flex flex-col gap-4">
                             <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-500/20 h-12 rounded-xl font-bold" disabled={loading}>
-                                {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Apply for Access"}
+                                {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : t.auth.create_account}
                             </Button>
                             <p className="text-xs text-center text-muted-foreground">
-                                Already have an account?{' '}
+                                {t.auth.already_account}{' '}
                                 <Link
                                     href={`/login${searchParams.toString() ? `?${searchParams.toString()}` : ''}`}
                                     className="underline underline-offset-4 hover:text-indigo-600 text-foreground transition-colors"
                                 >
-                                    Sign in
+                                    {t.auth.sign_in}
                                 </Link>
                             </p>
                         </CardFooter>

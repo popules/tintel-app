@@ -1,67 +1,74 @@
+"use client";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check, X } from "lucide-react";
 import Link from "next/link";
+import { useTranslation } from "@/lib/i18n-context";
 
 export default function PricingPage() {
+    const { t } = useTranslation();
+    const txt = t.public.pricing;
+    const feats = txt.features;
+
     const tiers = [
         {
-            name: "Starter",
-            description: "For independent recruiters and small teams.",
-            price: "Free",
+            name: txt.starter.name,
+            description: txt.starter.description,
+            price: txt.starter.price,
             features: [
-                "Unlimited Job Search",
-                "5 Lead Unlocks / month",
-                "Basic Kanban Board",
-                "Community Support",
-                "Standard Speed"
+                feats.unlimited_search,
+                feats.five_unlocks,
+                feats.basic_kanban,
+                feats.community,
+                feats.std_speed
             ],
             notIncluded: [
-                "AI Pitch Generator",
-                "Smart Search (Vector)",
-                "Team Collaboration",
-                "API Access"
+                feats.ai_pitch,
+                feats.smart_search,
+                feats.team_collab,
+                feats.api
             ],
-            button: "Get Started",
+            button: txt.starter.button,
             variant: "outline"
         },
         {
-            name: "Pro",
-            description: "For power users who need AI superpowers.",
-            price: "1999 SEK",
-            period: "/ month",
+            name: txt.pro.name,
+            description: txt.pro.description,
+            price: txt.pro.price,
+            period: txt.pro.period,
             popular: true,
             features: [
-                "Everything in Starter",
-                "500 Lead Unlocks / month",
-                "AI Pitch Generator (Unlimited)",
-                "Smart Search (Vector Matching)",
-                "Find Lead Detective (AI)",
-                "Priority Support"
+                "Everything in Starter", // TODO: Maybe generalize this string if needed
+                feats.five_hundred_unlocks,
+                feats.ai_pitch_unlimited,
+                feats.vector_match,
+                feats.detective,
+                feats.priority
             ],
             notIncluded: [
-                "White-labeling",
-                "Dedicated Account Manager"
+                feats.whitelabel,
+                feats.account_manager
             ],
-            button: "Upgrade to Pro",
+            button: txt.pro.button,
             variant: "default"
         },
         {
-            name: "Enterprise",
-            description: "For agencies requiring scale and custom integrations.",
-            price: "Custom",
+            name: txt.enterprise.name,
+            description: txt.enterprise.description,
+            price: txt.enterprise.price,
             features: [
                 "Everything in Pro",
-                "Unlimited Lead Unlocks",
-                "API Access (JobTech + Internal)",
-                "White-labeling",
-                "SSO / SAML",
-                "Dedicated Account Manager",
-                "SLA Guarantee"
+                feats.unlimited_unlocks,
+                feats.api_full,
+                feats.whitelabel,
+                feats.sso,
+                feats.account_manager,
+                feats.sla
             ],
             notIncluded: [],
-            button: "Contact Sales",
+            button: txt.enterprise.button,
             variant: "outline"
         }
     ];
@@ -70,12 +77,12 @@ export default function PricingPage() {
         <div className="min-h-screen bg-background pt-24 pb-16">
             <div className="container max-w-6xl mx-auto px-4">
                 <div className="text-center mb-16">
-                    <Badge variant="secondary" className="mb-4">Simple Pricing</Badge>
+                    <Badge variant="secondary" className="mb-4">{txt.badge}</Badge>
                     <h1 className="text-4xl font-bold tracking-tight sm:text-5xl mb-4">
-                        Invest in intelligence
+                        {txt.title}
                     </h1>
                     <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                        Choose the plan that fits your recruitment needs. No hidden fees, cancel anytime.
+                        {txt.desc}
                     </p>
                 </div>
 
@@ -84,7 +91,7 @@ export default function PricingPage() {
                         <Card key={tier.name} className={`relative flex flex-col ${tier.popular ? 'border-indigo-500 shadow-xl shadow-indigo-500/10 scale-105 z-10' : 'border-border shadow-sm'}`}>
                             {tier.popular && (
                                 <div className="absolute -top-4 left-0 right-0 flex justify-center">
-                                    <Badge className="bg-gradient-to-r from-indigo-500 to-purple-600 border-0">Most Popular</Badge>
+                                    <Badge className="bg-gradient-to-r from-indigo-500 to-purple-600 border-0">{txt.pro.badge}</Badge>
                                 </div>
                             )}
                             <CardHeader>

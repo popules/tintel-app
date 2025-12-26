@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { resend } from '@/lib/resend';
 import { DailyMatchesEmail } from '@/components/emails/DailyMatches';
+import { en } from '@/locales/en';
+import { sv } from '@/locales/sv';
 
 export async function GET(req: Request) {
     // 1. Verify cron secret (if set)
@@ -15,10 +17,10 @@ export async function GET(req: Request) {
     const supabase = createClient();
 
     try {
-        // 2. Fetch candidates with notifications enabled
+        // 2. Fetch candidates with notifications enabled including language pref
         const { data: profiles, error: profileError } = await supabase
             .from('profiles')
-            .select('id, full_name, email, role')
+            .select('id, full_name, email, role, preferred_language')
             .eq('role', 'candidate');
 
         if (profileError) throw profileError;
@@ -40,10 +42,13 @@ export async function GET(req: Request) {
         for (const profile of (profiles || [])) {
             if (!profile.email) continue;
 
+            const locale = (profile.preferred_language === 'sv' || profile.preferred_language === 'en') ? profile.preferred_language : 'en';
+            const t = locale === 'sv' ? sv : en;
+
             const { data, error } = await resend.emails.send({
                 from: 'Tintel <hello@tintel.se>',
                 to: profile.email,
-                subject: '3 nya jobb på Tintel som matchar din profil',
+                subject: t.emails.daily_matches.subject,
                 react: DailyMatchesEmail({
                     userName: profile.full_name || 'Talang',
                     matches: latestJobs.map(j => ({
@@ -51,7 +56,8 @@ export async function GET(req: Request) {
                         company: j.company || 'Företag',
                         location: j.location || 'Sverige',
                         link: j.webbplatsurl || `${process.env.NEXT_PUBLIC_APP_URL}/candidate/dashboard`
-                    }))
+                    })),
+                    locale: locale
                 }),
             });
 

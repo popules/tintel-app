@@ -12,6 +12,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { updateApplicationStatus } from "@/app/actions/application";
 import { toast } from "sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useTranslation } from "@/lib/i18n-context";
 
 type Application = {
     id: string;
@@ -24,19 +25,22 @@ type Application = {
     created_at: string;
 };
 
-const COLUMNS = [
-    { id: 'saved', title: 'Saved / Interested', color: 'bg-zinc-500/10 text-zinc-400 border-zinc-500/20' },
-    { id: 'applied', title: 'Applied', color: 'bg-blue-500/10 text-blue-500 border-blue-500/20' },
-    { id: 'interview', title: 'Interview', color: 'bg-amber-500/10 text-amber-500 border-amber-500/20' },
-    { id: 'offer', title: 'Offer', color: 'bg-green-500/10 text-green-500 border-green-500/20' },
-    { id: 'rejected', title: 'Rejected', color: 'bg-red-500/10 text-red-500 border-red-500/20' }
-];
-
 export default function MyJobsPage() {
+    const { t } = useTranslation();
+    const txt = t.pipeline.candidate;
+
     const [applications, setApplications] = useState<Application[]>([]);
     const [loading, setLoading] = useState(true);
     const supabase = createClient();
     const router = useRouter();
+
+    const COLUMNS = [
+        { id: 'saved', title: txt.columns.saved, color: 'bg-zinc-500/10 text-zinc-400 border-zinc-500/20' },
+        { id: 'applied', title: txt.columns.applied, color: 'bg-blue-500/10 text-blue-500 border-blue-500/20' },
+        { id: 'interview', title: txt.columns.interview, color: 'bg-amber-500/10 text-amber-500 border-amber-500/20' },
+        { id: 'offer', title: txt.columns.offer, color: 'bg-green-500/10 text-green-500 border-green-500/20' },
+        { id: 'rejected', title: txt.columns.rejected, color: 'bg-red-500/10 text-red-500 border-red-500/20' }
+    ];
 
     useEffect(() => {
         const fetchApps = async () => {
@@ -90,12 +94,12 @@ export default function MyJobsPage() {
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
                         <h1 className="text-3xl font-black tracking-tighter bg-gradient-to-br from-white to-gray-500 bg-clip-text text-transparent">
-                            My Pipeline
+                            {txt.title}
                         </h1>
-                        <p className="text-muted-foreground text-lg">Track your applications and manage your career.</p>
+                        <p className="text-muted-foreground text-lg">{txt.subtitle}</p>
                     </div>
                     <Button variant="outline" className="border-white/10 hover:bg-white/5" onClick={() => router.push('/candidate/jobs')}>
-                        <Briefcase className="mr-2 h-4 w-4" /> Find More Jobs
+                        <Briefcase className="mr-2 h-4 w-4" /> {txt.find_more}
                     </Button>
                 </div>
 
@@ -152,7 +156,7 @@ export default function MyJobsPage() {
                                                     <SelectContent align="end">
                                                         {COLUMNS.map(c => (
                                                             <SelectItem key={c.id} value={c.id} disabled={c.id === app.status}>
-                                                                Move to {c.title}
+                                                                {txt.move_to} {c.title}
                                                             </SelectItem>
                                                         ))}
                                                     </SelectContent>
@@ -164,7 +168,7 @@ export default function MyJobsPage() {
 
                                 {applications.filter(a => a.status === col.id).length === 0 && (
                                     <div className="h-24 flex items-center justify-center border-2 border-dashed border-white/5 rounded-lg text-muted-foreground/30 text-xs">
-                                        Empty
+                                        {txt.empty}
                                     </div>
                                 )}
                             </div>

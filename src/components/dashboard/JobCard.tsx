@@ -7,6 +7,7 @@ import { MapPin, Building2, ExternalLink, CalendarDays, Briefcase, Bookmark, Che
 import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
 import { createClient } from "@/lib/supabase/client"
+import { useTranslation } from "@/lib/i18n-context"
 
 interface JobPost {
     id: string
@@ -29,6 +30,7 @@ export function JobCard({ job, index, initialSaved = false, mode = 'recruiter' }
     const [saved, setSaved] = useState(initialSaved)
     const [loading, setLoading] = useState(false)
     const supabase = createClient()
+    const { t } = useTranslation()
 
     // Sync state when parent data arrives
     useEffect(() => {
@@ -141,7 +143,7 @@ export function JobCard({ job, index, initialSaved = false, mode = 'recruiter' }
 
             // Apply Data
             setLead({
-                name: enrichedData.name || "Hiring Manager",
+                name: enrichedData.name || t.job_card.hiring_manager,
                 role: enrichedData.role || "Recruiter",
                 email: enrichedData.email || null,
                 avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${enrichedData.email || job.company}`,
@@ -156,7 +158,7 @@ export function JobCard({ job, index, initialSaved = false, mode = 'recruiter' }
             console.error(e);
             alert("Could not find contact details.");
             setLead({
-                name: "No direct contact found",
+                name: t.job_card.no_contact,
                 role: "N/A",
                 email: null,
                 avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${job.company}`,
@@ -178,7 +180,7 @@ export function JobCard({ job, index, initialSaved = false, mode = 'recruiter' }
         try {
             // Smart Name Extraction
             let name = "Hiring Team";
-            if (lead?.name && lead.name !== "Hiring Manager" && lead.name !== "No direct contact found") {
+            if (lead?.name && lead.name !== t.job_card.hiring_manager && lead.name !== t.job_card.no_contact) {
                 name = lead.name.split(' ')[0];
             } else if (lead?.email) {
                 try {
@@ -252,11 +254,11 @@ export function JobCard({ job, index, initialSaved = false, mode = 'recruiter' }
                             <div className="flex items-center gap-2">
                                 {isRecent && (
                                     <Badge variant="secondary" className="px-1.5 h-5 text-[10px] font-semibold bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300 border-0">
-                                        NEW
+                                        {t.job_card.new}
                                     </Badge>
                                 )}
                                 <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground/70">
-                                    FULL-TIME
+                                    {t.job_card.full_time}
                                 </span>
                             </div>
                             <CardTitle className="text-lg font-bold tracking-tight text-foreground/90 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-2 leading-tight">
@@ -293,7 +295,7 @@ export function JobCard({ job, index, initialSaved = false, mode = 'recruiter' }
                         <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-muted-foreground">
                             <div className="flex items-center gap-1.5">
                                 <MapPin className="h-3 w-3" />
-                                {job.location || "Remote / Unknown"}
+                                {job.location || t.job_card.remote_unknown}
                             </div>
                             <div className="flex items-center gap-1.5">
                                 <CalendarDays className="h-3 w-3" />
@@ -318,13 +320,13 @@ export function JobCard({ job, index, initialSaved = false, mode = 'recruiter' }
                                         {lead.email ? (
                                             <a href={`mailto:${lead.email}`} className="text-xs text-blue-500 hover:underline block">{lead.email}</a>
                                         ) : (
-                                            <span className="text-xs text-amber-600 block">Indirect contact only</span>
+                                            <span className="text-xs text-amber-600 block">{t.job_card.indirect_contact}</span>
                                         )}
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-1 text-xs font-medium text-green-600 bg-green-100 px-2 py-1 rounded-full">
                                     <Check className="h-3 w-3" />
-                                    {lead.email ? "Direct Contact" : "Company Identified"}
+                                    {lead.email ? t.job_card.direct_contact : t.job_card.company_identified}
                                 </div>
                             </motion.div>
                         )}
@@ -346,7 +348,7 @@ export function JobCard({ job, index, initialSaved = false, mode = 'recruiter' }
                                         ) : (
                                             <>
                                                 <UserSearch className="mr-2 h-4 w-4" />
-                                                Find Lead
+                                                {t.job_card.find_lead}
                                             </>
                                         )}
                                     </Button>
@@ -361,7 +363,7 @@ export function JobCard({ job, index, initialSaved = false, mode = 'recruiter' }
                                         ) : (
                                             <>
                                                 <Wand2 className="mr-2 h-4 w-4" />
-                                                Draft Pitch
+                                                {t.job_card.draft_pitch}
                                             </>
                                         )}
                                     </Button>
@@ -370,7 +372,7 @@ export function JobCard({ job, index, initialSaved = false, mode = 'recruiter' }
                                 <div className="w-full space-y-2">
                                     <Button variant="outline" className="w-full border-green-500/30 text-green-600 hover:bg-green-500/10 hover:text-green-700 bg-green-500/5 cursor-default">
                                         <Check className="mr-2 h-4 w-4" />
-                                        Lead Saved
+                                        {t.job_card.saved}
                                     </Button>
                                     <Button
                                         variant="outline"
@@ -383,7 +385,7 @@ export function JobCard({ job, index, initialSaved = false, mode = 'recruiter' }
                                         ) : (
                                             <>
                                                 <Wand2 className="mr-2 h-4 w-4" />
-                                                {pitch ? "Regenerate Pitch" : "Draft Pitch"}
+                                                {pitch ? t.job_card.regenerate_pitch : t.job_card.draft_pitch}
                                             </>
                                         )}
                                     </Button>
@@ -431,9 +433,9 @@ export function JobCard({ job, index, initialSaved = false, mode = 'recruiter' }
                                     }
                                 }}
                             >
-                                Apply on Site
+                                {t.job_card.apply}
                                 <ExternalLink className="mr-2 h-4 w-4" />
-                                Visit & Save
+                                {t.job_card.visit_save}
                             </Button>
                         </div>
                     )}
@@ -464,7 +466,7 @@ export function JobCard({ job, index, initialSaved = false, mode = 'recruiter' }
                                         }
                                     }}
                                 >
-                                    <span className="mr-2">View Job Ad</span>
+                                    <span className="mr-2">{t.job_card.view_ad}</span>
                                     {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <FileText className="h-3.5 w-3.5 opacity-50" />}
                                 </Button>
                             </DialogTrigger>
@@ -482,7 +484,7 @@ export function JobCard({ job, index, initialSaved = false, mode = 'recruiter' }
                                     </div>
                                 </ScrollArea>
                                 <div className="mt-4 flex justify-end gap-2">
-                                    <Button variant="outline" onClick={() => setViewingAd(false)}>Close</Button>
+                                    <Button variant="outline" onClick={() => setViewingAd(false)}>{t.job_card.close}</Button>
                                     <Button onClick={async () => {
                                         // TRACK APPLICATION (Magic Click)
                                         try {
@@ -502,7 +504,7 @@ export function JobCard({ job, index, initialSaved = false, mode = 'recruiter' }
                                         // Open Original
                                         window.open(job.webbplatsurl, '_blank');
                                     }}>
-                                        Visit & Save <ExternalLink className="ml-2 h-4 w-4" />
+                                        {t.job_card.visit_save} <ExternalLink className="ml-2 h-4 w-4" />
                                     </Button>
                                 </div>
                             </DialogContent>

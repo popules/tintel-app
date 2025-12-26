@@ -7,6 +7,7 @@ import { MapPin, Briefcase, Sparkles, User, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { PricingModal } from "@/components/dashboard/PricingModal";
+import { useTranslation } from "@/lib/i18n-context";
 
 interface Candidate {
     id: string;
@@ -29,6 +30,7 @@ export function CandidateCard({ candidate, index, isUnlockedInitial }: Candidate
     const [isUnlocked, setIsUnlocked] = useState(isUnlockedInitial || false);
     const [loading, setLoading] = useState(false);
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+    const { t } = useTranslation();
 
     const handleUnlock = async () => {
         setLoading(true);
@@ -80,7 +82,7 @@ export function CandidateCard({ candidate, index, isUnlockedInitial }: Candidate
                             </div>
                             <div>
                                 <h3 className="font-bold text-lg leading-tight transition-colors">
-                                    {isUnlocked ? "John Doe" : (candidate.headline || "Unspecified Role")}
+                                    {isUnlocked ? "John Doe" : (candidate.headline || t.candidate_card.unspecified)}
                                 </h3>
 
                                 {isUnlocked && <p className="text-xs font-medium text-indigo-600 mb-0.5">{candidate.headline}</p>}
@@ -89,17 +91,17 @@ export function CandidateCard({ candidate, index, isUnlockedInitial }: Candidate
                                     {(candidate as any).match_score && (
                                         <div className="flex items-center gap-1 text-emerald-600 font-bold bg-emerald-500/10 px-1.5 py-0.5 rounded">
                                             <Sparkles className="h-3 w-3" />
-                                            {Math.round((candidate as any).match_score * 100)}% Match
+                                            {Math.round((candidate as any).match_score * 100)}{t.candidate_card.match}
                                         </div>
                                     )}
                                     <span className="flex items-center gap-1">
                                         <MapPin className="h-3 w-3" />
-                                        {candidate.location || "Remote"}
+                                        {candidate.location || t.candidate_card.remote}
                                     </span>
                                     <span className="h-1 w-1 rounded-full bg-border" />
                                     <span className="flex items-center gap-1">
                                         <Clock className="h-3 w-3" />
-                                        {candidate.years_of_experience}y Exp
+                                        {candidate.years_of_experience}{t.candidate_card.exp}
                                     </span>
                                 </div>
                             </div>
@@ -107,7 +109,7 @@ export function CandidateCard({ candidate, index, isUnlockedInitial }: Candidate
 
                         {candidate.is_open && (
                             <Badge variant="secondary" className="bg-green-500/10 text-green-600 border-green-500/20 text-[10px] uppercase font-bold tracking-wider">
-                                Available
+                                {t.candidate_card.available}
                             </Badge>
                         )}
                     </div>
@@ -116,12 +118,12 @@ export function CandidateCard({ candidate, index, isUnlockedInitial }: Candidate
                 <CardContent className="px-5 pb-4 flex-1">
                     <div className="relative">
                         <p className={`text-sm text-muted-foreground line-clamp-3 mb-4 ${!isUnlocked && 'blur-[2px] select-none opacity-70'}`}>
-                            {isUnlocked ? candidate.bio : "This candidate represents a strong match for roles in this sector. Unlock full profile to view detailed biography, work history, availability and contact information."}
+                            {isUnlocked ? candidate.bio : t.candidate_card.blur_text}
                         </p>
                         {!isUnlocked && (
                             <div className="absolute inset-0 flex items-center justify-center">
                                 <span className="bg-background/80 backdrop-blur-sm text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded border border-border/50 shadow-sm text-muted-foreground">
-                                    Preview
+                                    {t.candidate_card.preview}
                                 </span>
                             </div>
                         )}
@@ -140,10 +142,10 @@ export function CandidateCard({ candidate, index, isUnlockedInitial }: Candidate
                     {isUnlocked ? (
                         <div className="flex gap-2 w-full">
                             <Button className="flex-1 bg-white hover:bg-gray-50 text-foreground border border-input shadow-sm h-9 text-xs font-semibold">
-                                View CV
+                                {t.candidate_card.view_cv}
                             </Button>
                             <Button className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white h-9 text-xs font-semibold">
-                                Contact
+                                {t.candidate_card.contact}
                             </Button>
                         </div>
                     ) : (
@@ -153,7 +155,7 @@ export function CandidateCard({ candidate, index, isUnlockedInitial }: Candidate
                             className="w-full bg-indigo-600/90 hover:bg-indigo-600 text-white shadow-indigo-500/20 h-9 text-xs font-semibold uppercase tracking-wider group-hover:scale-[1.02] transition-transform"
                         >
                             {loading ? <span className="animate-spin mr-2">⏳</span> : <Sparkles className="mr-2 h-3 w-3" />}
-                            {loading ? "Unlocking..." : "Unlock Profile (1 Credit)"}
+                            {loading ? t.candidate_card.unlocking : t.candidate_card.unlock}
                         </Button>
                     )}
                 </CardFooter>

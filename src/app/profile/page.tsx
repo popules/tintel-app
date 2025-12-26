@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { User, Mail, Trophy, Target, TrendingUp, Shield, MapPin, Globe, Loader2, CheckCircle2, AlertCircle, Radar } from "lucide-react";
 import { motion } from "framer-motion";
 import { SwedenMap } from "@/components/dashboard/SwedenMap";
+import { useTranslation } from "@/lib/i18n-context";
 
 // Simple Progress component
 const Progress = ({ value = 0, className = "" }: { value?: number, className?: string }) => (
@@ -20,6 +21,8 @@ const Progress = ({ value = 0, className = "" }: { value?: number, className?: s
 );
 
 export default function ProfilePage() {
+    const { t } = useTranslation();
+    const txt = t.profile;
     const [loading, setLoading] = useState(true);
     const [profile, setProfile] = useState<any>(null);
     const [user, setUser] = useState<any>(null);
@@ -96,7 +99,7 @@ export default function ProfilePage() {
             setTimeout(() => setShowSuccess(false), 3000);
         } catch (err: any) {
             console.error("Failed to save preferences", err);
-            setErrorMsg("Error saving preferences. Please ensure you have run the 'add_territories.sql' migration in Supabase.");
+            setErrorMsg(txt.territory.error_save);
         } finally {
             setUpdating(false);
         }
@@ -159,8 +162,8 @@ export default function ProfilePage() {
 
             <main className="container mx-auto px-4 pt-24 max-w-4xl">
                 <div className="mb-8">
-                    <h1 className="text-3xl font-bold tracking-tight">Agent Profile</h1>
-                    <p className="text-muted-foreground transition-all duration-300">Track your progress and stats in tintel</p>
+                    <h1 className="text-3xl font-bold tracking-tight">{txt.title}</h1>
+                    <p className="text-muted-foreground transition-all duration-300">{txt.subtitle}</p>
                 </div>
 
                 {loading ? (
@@ -185,11 +188,11 @@ export default function ProfilePage() {
                                         <span className="text-sm">{user.email}</span>
                                     </div>
                                     <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-500/30 text-indigo-100 border border-indigo-500/50">
-                                        {profile?.membership_tier || "Free"} Operative
+                                        {profile?.membership_tier || "Free"} {txt.operative}
                                     </div>
                                 </div>
                                 <div className="ml-auto hidden md:block text-right">
-                                    <div className="text-sm text-indigo-300 font-medium">Current Rank</div>
+                                    <div className="text-sm text-indigo-300 font-medium">{txt.rank_label}</div>
                                     <div className="text-3xl font-black tracking-widest uppercase text-white drop-shadow-md">{stats.currentLevel}</div>
                                 </div>
                             </CardContent>
@@ -199,7 +202,7 @@ export default function ProfilePage() {
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <Card className="bg-background/50 backdrop-blur-sm">
                                 <CardHeader className="flex flex-row items-center justify-between pb-2">
-                                    <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Leads Contacted</CardTitle>
+                                    <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{txt.stats.leads_contacted}</CardTitle>
                                     <Target className="h-4 w-4 text-indigo-500" />
                                 </CardHeader>
                                 <CardContent>
@@ -208,33 +211,33 @@ export default function ProfilePage() {
                                         <div className="bg-indigo-500 h-full rounded-full transition-all duration-1000" style={{ width: `${progress}%` }} />
                                     </div>
                                     <p className="text-[10px] text-muted-foreground mt-2 font-medium">
-                                        {stats.leadsGoal - stats.leadsContacted} more to reach {stats.nextLevel}
+                                        {stats.leadsGoal - stats.leadsContacted} {txt.stats.more_to_reach} {stats.nextLevel}
                                     </p>
                                 </CardContent>
                             </Card>
                             <Link href="/saved" className="block cursor-pointer group">
                                 <Card className="h-full border-dashed border-2 group-hover:border-solid hover:border-amber-500/50 transition-all duration-300 bg-background/50 backdrop-blur-sm group-hover:bg-amber-500/[0.02]">
                                     <CardHeader className="flex flex-row items-center justify-between pb-2">
-                                        <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Saved Opportunities</CardTitle>
+                                        <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{txt.stats.saved_ops}</CardTitle>
                                         <Trophy className="h-4 w-4 text-amber-500" />
                                     </CardHeader>
                                     <CardContent>
                                         <div className="text-2xl font-bold">{stats.savedJobs}</div>
                                         <p className="text-[10px] text-muted-foreground mt-1 font-medium">
-                                            Potential deals in pipeline
+                                            {txt.stats.pipeline_text}
                                         </p>
                                     </CardContent>
                                 </Card>
                             </Link>
                             <Card className="bg-background/50 backdrop-blur-sm">
                                 <CardHeader className="flex flex-row items-center justify-between pb-2">
-                                    <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Response Rate</CardTitle>
+                                    <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{txt.stats.response_rate}</CardTitle>
                                     <TrendingUp className="h-4 w-4 text-green-500" />
                                 </CardHeader>
                                 <CardContent>
                                     <div className="text-2xl font-bold">{stats.responseRate}</div>
                                     <p className="text-[10px] text-muted-foreground mt-1 font-medium">
-                                        Based on email tracking
+                                        {txt.stats.tracking_text}
                                     </p>
                                 </CardContent>
                             </Card>
@@ -248,16 +251,16 @@ export default function ProfilePage() {
                                         <MapPin className="h-5 w-5" />
                                     </div>
                                     <div>
-                                        <CardTitle className="text-lg">Unified Territory Scoping</CardTitle>
-                                        <CardDescription className="text-xs">Select Counties (Län) to monitor. Your primary selection defines your dashboard default.</CardDescription>
+                                        <CardTitle className="text-lg">{txt.territory.title}</CardTitle>
+                                        <CardDescription className="text-xs">{txt.territory.desc}</CardDescription>
                                     </div>
                                 </div>
                             </CardHeader>
                             <CardContent className="space-y-8 p-6">
                                 <div className="grid gap-4">
                                     <div>
-                                        <label className="text-[11px] font-black uppercase tracking-[0.2em] text-indigo-500/80 block mb-1">Target Territories</label>
-                                        <p className="text-[10px] text-muted-foreground mb-4 italic leading-relaxed">Selecting a territory enables "Signal Flashes" and sets your localized intelligence feed.</p>
+                                        <label className="text-[11px] font-black uppercase tracking-[0.2em] text-indigo-500/80 block mb-1">{txt.territory.label}</label>
+                                        <p className="text-[10px] text-muted-foreground mb-4 italic leading-relaxed">{txt.territory.help_text}</p>
                                     </div>
 
                                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -275,7 +278,7 @@ export default function ProfilePage() {
                                                         <span className="truncate pr-2">{county}</span>
                                                         <div className="flex items-center gap-2">
                                                             {isPrimary && (
-                                                                <Badge variant="outline" className="text-[8px] h-4 px-1 border-indigo-200 text-indigo-500 bg-white">Primary</Badge>
+                                                                <Badge variant="outline" className="text-[8px] h-4 px-1 border-indigo-200 text-indigo-500 bg-white">{txt.territory.primary}</Badge>
                                                             )}
                                                             {isSelected ? (
                                                                 <div className="h-2 w-2 rounded-full bg-indigo-500 shadow-sm shadow-indigo-500/50 flex-shrink-0" />
@@ -292,7 +295,7 @@ export default function ProfilePage() {
                                         <div className="flex flex-col items-center justify-center bg-muted/20 rounded-2xl p-6 border border-muted/50 relative group">
                                             <div className="absolute top-4 left-4 flex items-center gap-2 text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">
                                                 <Radar className="h-3 w-3" />
-                                                Intelligence Radar
+                                                {txt.territory.radar_label}
                                             </div>
                                             <SwedenMap
                                                 selectedCounties={selectedTerritories}
@@ -323,10 +326,10 @@ export default function ProfilePage() {
                                         {updating ? (
                                             <>
                                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                Syncing Territories...
+                                                {txt.territory.syncing}
                                             </>
                                         ) : (
-                                            "Update Intelligence Scope"
+                                            txt.territory.update_button
                                         )}
                                     </Button>
 
@@ -337,7 +340,7 @@ export default function ProfilePage() {
                                             className="flex items-center gap-2 text-emerald-600 font-black text-[11px] uppercase tracking-wider"
                                         >
                                             <CheckCircle2 className="h-4 w-4" />
-                                            Target Preferences Locked
+                                            {txt.territory.success}
                                         </motion.div>
                                     )}
                                 </div>
@@ -347,10 +350,10 @@ export default function ProfilePage() {
                 ) : (
                     <div className="flex flex-col items-center justify-center p-12 text-center bg-muted/10 rounded-3xl border border-dashed border-muted">
                         <User className="h-12 w-12 text-muted-foreground mb-4 opacity-20" />
-                        <h2 className="text-xl font-bold mb-2">Unauthorized Access</h2>
-                        <p className="text-muted-foreground mb-6 text-sm">Please identify yourself to access the tintel agent profile.</p>
+                        <h2 className="text-xl font-bold mb-2">{txt.unauthorized_title}</h2>
+                        <p className="text-muted-foreground mb-6 text-sm">{txt.unauthorized_desc}</p>
                         <Button asChild className="bg-indigo-600 hover:bg-indigo-700 h-11 px-8 rounded-xl font-bold">
-                            <Link href="/login">Identify Agent</Link>
+                            <Link href="/login">{txt.identify_button}</Link>
                         </Button>
                     </div>
                 )}

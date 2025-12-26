@@ -8,8 +8,9 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import Link from 'next/link'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Globe } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { useTranslation } from '@/lib/i18n-context'
 
 function LoginForm() {
     const [email, setEmail] = useState('')
@@ -19,6 +20,11 @@ function LoginForm() {
     const router = useRouter()
     const searchParams = useSearchParams()
     const supabase = createClient()
+    const { t, locale, setLocale } = useTranslation()
+
+    const toggleLanguage = () => {
+        setLocale(locale === 'en' ? 'sv' : 'en');
+    };
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -34,6 +40,9 @@ function LoginForm() {
             setError(authError.message)
             setLoading(false)
         } else if (user) {
+            // Update preferred_language on login if different
+            await supabase.from('profiles').update({ preferred_language: locale }).eq('id', user.id);
+
             const plan = searchParams.get('plan')
             const priceId = searchParams.get('priceId')
 
@@ -62,7 +71,14 @@ function LoginForm() {
     }
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-muted/20 p-4">
+        <div className="flex min-h-screen items-center justify-center bg-muted/20 p-4 relative">
+            <div className="absolute top-4 right-4 z-50">
+                <Button variant="ghost" size="sm" onClick={toggleLanguage} className="uppercase font-bold text-muted-foreground hover:text-foreground">
+                    <Globe className="mr-2 h-4 w-4" />
+                    {locale}
+                </Button>
+            </div>
+
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -75,9 +91,9 @@ function LoginForm() {
                             <div className="h-4 w-4 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 shadow-xl shadow-indigo-500/20 ring-2 ring-white/10" />
                             <span className="font-black text-3xl tracking-tighter">tintel</span>
                         </div>
-                        <CardTitle className="text-2xl font-bold tracking-tight">Welcome back</CardTitle>
+                        <CardTitle className="text-2xl font-bold tracking-tight">{t.auth.login_title}</CardTitle>
                         <CardDescription>
-                            Sign in to your Tintel account
+                            {t.auth.login_subtitle}
                         </CardDescription>
                     </CardHeader>
                     <form onSubmit={handleLogin}>
@@ -88,11 +104,11 @@ function LoginForm() {
                                 </div>
                             )}
                             <div className="grid gap-2">
-                                <Label htmlFor="email">Email</Label>
+                                <Label htmlFor="email">{t.auth.email_label}</Label>
                                 <Input
                                     id="email"
                                     type="email"
-                                    placeholder="name@example.com"
+                                    placeholder={t.auth.email_placeholder}
                                     required
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
@@ -100,7 +116,7 @@ function LoginForm() {
                                 />
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="password">Password</Label>
+                                <Label htmlFor="password">{t.auth.password_label}</Label>
                                 <Input
                                     id="password"
                                     type="password"
@@ -114,15 +130,15 @@ function LoginForm() {
                         <CardFooter className="flex flex-col gap-4">
                             <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-200" disabled={loading}>
                                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                Sign In
+                                {loading ? t.auth.signing_in : t.auth.sign_in}
                             </Button>
                             <p className="text-xs text-center text-muted-foreground">
-                                Don&apos;t have an account?{' '}
+                                {t.auth.no_account}{' '}
                                 <Link
                                     href={`/signup${searchParams.toString() ? `?${searchParams.toString()}` : ''}`}
                                     className="underline underline-offset-4 hover:text-indigo-600 text-foreground transition-colors"
                                 >
-                                    Sign up
+                                    {t.auth.sign_up}
                                 </Link>
                             </p>
                         </CardFooter>

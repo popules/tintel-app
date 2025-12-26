@@ -3,54 +3,57 @@
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-
-const TIERS = [
-    {
-        name: "Starter",
-        price: "0",
-        description: "Perfect for independent recruiters.",
-        features: [
-            "Access to Job Feed",
-            "Basic filtering",
-            "3 Free Unlocks",
-            "Personal Kanban Board"
-        ],
-        cta: "Start Free",
-        href: "/signup",
-        popular: false
-    },
-    {
-        name: "Pro",
-        price: "999",
-        period: "/mo",
-        description: "For agencies scaling up.",
-        features: [
-            "Unlimited Unlocks",
-            "Priority AI Parsing",
-            "Market Intelligence",
-            "Export to CSV"
-        ],
-        cta: "Get Pro",
-        href: "/signup?plan=pro&priceId=price_1SiNAhA7zW1DXhtp0myVyevQ",
-        popular: true
-    },
-    {
-        name: "Enterprise",
-        price: "Custom",
-        description: "For large teams and firms.",
-        features: [
-            "API Access",
-            "White-labeling",
-            "Dedicated Account Manager",
-            "Custom Integrations"
-        ],
-        cta: "Contact Sales",
-        href: "mailto:sales@tintel.se",
-        popular: false
-    }
-];
+import { useTranslation } from "@/lib/i18n-context";
 
 export function Pricing() {
+    const { t } = useTranslation();
+
+    const TIERS = [
+        {
+            name: t.pricing.starter_title,
+            price: "0",
+            description: t.pricing.starter_desc,
+            features: [
+                t.pricing.starter_f1,
+                t.pricing.starter_f2,
+                t.pricing.starter_f3,
+                t.pricing.starter_f4
+            ],
+            cta: t.pricing.cta_free,
+            href: "/signup",
+            popular: false
+        },
+        {
+            name: t.pricing.pro_plan,
+            price: "999",
+            period: "/mo",
+            description: t.pricing.pro_desc,
+            features: [
+                t.pricing.feature_unlimited,
+                t.pricing.feature_ai,
+                t.pricing.feature_export,
+                t.pricing.feature_api
+            ],
+            cta: t.pricing.cta_pro,
+            href: "/signup?plan=pro&priceId=price_1SiNAhA7zW1DXhtp0myVyevQ",
+            popular: true
+        },
+        {
+            name: t.pricing.enterprise_title,
+            price: "Custom",
+            description: t.pricing.enterprise_desc,
+            features: [
+                t.pricing.enterprise_f1,
+                t.pricing.enterprise_f2,
+                t.pricing.enterprise_f3,
+                t.pricing.enterprise_f4
+            ],
+            cta: t.pricing.cta_contact,
+            href: "mailto:sales@tintel.se",
+            popular: false
+        }
+    ];
+
     return (
         <section id="pricing" className="py-24 relative overflow-hidden">
             {/* Background Blob */}
@@ -59,10 +62,10 @@ export function Pricing() {
             <div className="container px-4 md:px-6 mx-auto">
                 <div className="text-center max-w-2xl mx-auto mb-16">
                     <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-4 text-white">
-                        Simple, transparent pricing
+                        {t.pricing.title}
                     </h2>
                     <p className="text-muted-foreground text-lg">
-                        Start for free, upgrade when you close your first deal.
+                        {t.pricing.subtitle}
                     </p>
                 </div>
 
@@ -74,7 +77,7 @@ export function Pricing() {
                         >
                             {tier.popular && (
                                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-indigo-500 text-white text-xs font-bold uppercase tracking-wider">
-                                    Most Popular
+                                    {t.pricing.most_popular}
                                 </div>
                             )}
 

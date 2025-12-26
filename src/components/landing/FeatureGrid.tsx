@@ -4,17 +4,20 @@ import { motion } from "framer-motion";
 import { Sparkles, Zap, Shield, Search, Magnet, FileText } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useTranslation } from "@/lib/i18n-context";
 
 export function FeatureGrid() {
+    const { t } = useTranslation();
+
     return (
-        <section className="py-24 px-6 md:px-8 max-w-7xl mx-auto">
+        <section className="py-24 px-6 md:px-8 max-w-7xl mx-auto" id="features">
             <div className="text-center mb-16 space-y-4">
                 <Badge variant="outline" className="px-4 py-1 border-indigo-500/30 text-indigo-400 bg-indigo-950/10">
                     Why Tintel?
                 </Badge>
                 <h2 className="text-3xl md:text-5xl font-black tracking-tighter">
-                    The Marketplace for <br className="hidden md:block" />
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Hidden Talent</span>
+                    {t.features.title} <br className="hidden md:block" />
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">{t.features.subtitle}</span>
                 </h2>
                 <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                     We removed the forms, the ghosting, and the noise. Just pure matching based on skills and intent.
@@ -34,9 +37,9 @@ export function FeatureGrid() {
                         <div className="h-12 w-12 rounded-xl bg-indigo-500/20 flex items-center justify-center text-indigo-400">
                             <Zap className="h-6 w-6" />
                         </div>
-                        <h3 className="text-2xl font-bold">The Smooth CV™</h3>
+                        <h3 className="text-2xl font-bold">{t.features.card_1_title}</h3>
                         <p className="text-muted-foreground text-lg">
-                            Stop filling out 40-minute application forms. Just drop your PDF resume. Our AI extracts your skills, builds your profile, and matches you to 100+ recruiters instantly.
+                            {t.features.card_1_desc}
                         </p>
                     </div>
 
@@ -68,10 +71,10 @@ export function FeatureGrid() {
                             <div className="h-10 w-10 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-500">
                                 <Magnet className="h-5 w-5" />
                             </div>
-                            <span className="font-bold text-lg">Daily Matcher</span>
+                            <span className="font-bold text-lg">{t.features.card_3_title}</span>
                         </div>
                         <p className="text-muted-foreground text-sm">
-                            Recruiters get a daily digest of "Top 3 Matches" delivered to their inbox. No searching required.
+                            {t.features.card_3_desc}
                         </p>
                     </div>
                 </motion.div>
@@ -87,18 +90,11 @@ export function FeatureGrid() {
                             <div className="h-10 w-10 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500">
                                 <Shield className="h-5 w-5" />
                             </div>
-                            <span className="font-bold text-lg">Verified Stats</span>
+                            <span className="font-bold text-lg">{t.features.card_4_title}</span>
                         </div>
-                        <div className="grid grid-cols-2 gap-4 mt-2">
-                            <div>
-                                <span className="block text-xl font-bold text-white">12k+</span>
-                                <span className="text-xs text-muted-foreground">Active Jobs</span>
-                            </div>
-                            <div>
-                                <span className="block text-xl font-bold text-white">4.8/5</span>
-                                <span className="text-xs text-muted-foreground">User Rating</span>
-                            </div>
-                        </div>
+                        <p className="text-muted-foreground text-sm">
+                            {t.features.card_4_desc}
+                        </p>
                     </div>
                 </motion.div>
 

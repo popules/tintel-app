@@ -12,6 +12,8 @@ import {
     Button,
 } from '@react-email/components';
 import * as React from 'react';
+import { en } from '@/locales/en';
+import { sv } from '@/locales/sv';
 
 interface DailyMatchesEmailProps {
     userName: string;
@@ -21,52 +23,60 @@ interface DailyMatchesEmailProps {
         location: string;
         link: string;
     }[];
+    locale?: 'en' | 'sv';
 }
 
 export const DailyMatchesEmail = ({
     userName,
     matches,
-}) => (
-    <Html>
-        <Head />
-        <Preview>We found {matches.length} new jobs for you on Tintel!</Preview>
-        <Body style={main}>
-            <Container style={container}>
-                <Section style={header}>
-                    <Text style={logo}>tintel</Text>
-                </Section>
-                <Heading style={heading}>Hej {userName}! 👋</Heading>
-                <Text style={paragraph}>
-                    Nu händer det grejer. Vi har hittat <strong>{matches.length} nya jobb</strong> som matchar din profil perfekt.
-                </Text>
+    locale = 'en',
+}: DailyMatchesEmailProps) => {
+    const t = locale === 'sv' ? sv : en;
+    const dict = t.emails.daily_matches;
 
-                <Hr style={hr} />
-
-                {matches.map((job, i) => (
-                    <Section key={i} style={jobSection}>
-                        <Text style={jobTitle}>{job.title}</Text>
-                        <Text style={jobCompany}>{job.company} • {job.location}</Text>
-                        <Button
-                            style={button}
-                            href={job.link}
-                        >
-                            Visa jobb
-                        </Button>
+    return (
+        <Html>
+            <Head />
+            <Preview>{dict.preview.replace('{{count}}', String(matches.length))}</Preview>
+            <Body style={main}>
+                <Container style={container}>
+                    <Section style={header}>
+                        <Text style={logo}>tintel</Text>
                     </Section>
-                ))}
+                    <Heading style={heading}>{dict.greeting.replace('{{name}}', userName)}</Heading>
+                    <Text style={paragraph}>
+                        {dict.body_pre} <strong>{matches.length} {locale === 'sv' ? 'nya jobb' : 'new jobs'}</strong> {dict.body_post}
+                    </Text>
 
-                <Hr style={hr} />
+                    <Hr style={hr} />
 
-                <Text style={footer}>
-                    Du får detta mail för att du har skapat en profil på Tintel.se.
-                    <br />
-                    För att ändra dina notiser, logga in på din dashboard.
-                </Text>
-            </Container>
-        </Body>
-    </Html>
-);
+                    {matches.map((job, i) => (
+                        <Section key={i} style={jobSection}>
+                            <Text style={jobTitle}>{job.title}</Text>
+                            <Text style={jobCompany}>{job.company} • {job.location}</Text>
+                            <Button
+                                style={button}
+                                href={job.link}
+                            >
+                                {dict.button}
+                            </Button>
+                        </Section>
+                    ))}
 
+                    <Hr style={hr} />
+
+                    <Text style={footer}>
+                        {dict.footer_reason}
+                        <br />
+                        {dict.footer_settings}
+                    </Text>
+                </Container>
+            </Body>
+        </Html>
+    );
+};
+
+// Styles
 const main = {
     backgroundColor: '#ffffff',
     fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif',

@@ -4,8 +4,11 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useTranslation } from "@/lib/i18n-context";
 
 export function Hero() {
+    const { t } = useTranslation();
+
     return (
         <section className="relative overflow-hidden pt-32 pb-20 lg:pt-48 lg:pb-32">
             {/* Background Gradients - Optimized for Mobile */}
@@ -25,7 +28,7 @@ export function Hero() {
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
                         <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
                     </span>
-                    Now live in Sweden
+                    {t.hero.badge}
                 </motion.div>
 
                 <motion.h1
@@ -34,8 +37,8 @@ export function Hero() {
                     transition={{ duration: 0.5, delay: 0.1 }}
                     className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tighter mb-6 bg-gradient-to-br from-white via-white to-white/40 bg-clip-text text-transparent"
                 >
-                    The Talent Intelligence <br className="hidden md:block" />
-                    <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">Platform</span>
+                    {t.hero.title_start} <br className="hidden md:block" />
+                    <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">{t.hero.title_end}</span>
                 </motion.h1>
 
                 <motion.p
@@ -44,7 +47,7 @@ export function Hero() {
                     transition={{ duration: 0.5, delay: 0.2 }}
                     className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed"
                 >
-                    Automate your lead gen. Personalize your outreach. Find your future.
+                    {t.hero.subtitle}
                 </motion.p>
 
                 <motion.div
@@ -56,23 +59,23 @@ export function Hero() {
                     <div className="flex flex-col items-center gap-2 group w-full sm:w-auto">
                         <Button size="lg" className="h-12 px-8 text-base bg-white text-black hover:bg-white/90 shadow-xl shadow-white/10 w-full sm:w-auto" asChild>
                             <Link href="/about/recruiters">
-                                I'm Hiring
+                                {t.hero.cta_hiring}
                                 <ArrowRight className="ml-2 h-4 w-4" />
                             </Link>
                         </Button>
-                        <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">Read More</span>
+                        <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">{t.hero.read_more}</span>
                     </div>
 
-                    <span className="text-muted-foreground text-sm font-medium italic px-2 hidden sm:inline">or</span>
+                    <span className="text-muted-foreground text-sm font-medium italic px-2 hidden sm:inline">{t.hero.or}</span>
 
                     <div className="flex flex-col items-center gap-2 group w-full sm:w-auto">
                         <Button size="lg" variant="outline" className="h-12 px-8 text-base border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300 w-full sm:w-auto" asChild>
                             <Link href="/about/candidates">
                                 <CheckCircle2 className="mr-2 h-4 w-4" />
-                                I'm Looking for Work
+                                {t.hero.cta_work}
                             </Link>
                         </Button>
-                        <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">Read More</span>
+                        <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">{t.hero.read_more}</span>
                     </div>
                 </motion.div>
 
@@ -92,7 +95,7 @@ export function Hero() {
                             <div className="w-3 h-3 rounded-full bg-green-500/20" />
                         </div>
                         <div className="flex-1 max-w-xl mx-auto h-6 bg-[#0f111a]/50 rounded-md border border-white/5 flex items-center justify-center text-[10px] text-muted-foreground font-mono truncate px-2">
-                            tintel.se/dashboard
+                            {t.hero.dashboard_url}
                         </div>
                     </div>
 
@@ -127,24 +130,24 @@ export function Hero() {
                             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                                 <div className="bg-[#1a1d2d] border border-white/5 rounded-lg p-3 md:p-4 flex flex-col justify-between h-full">
                                     <div className="flex justify-between items-start mb-2">
-                                        <div className="text-[10px] md:text-xs text-muted-foreground">Market Depth</div>
+                                        <div className="text-[10px] md:text-xs text-muted-foreground">{t.hero.kpi_market}</div>
                                         <div className="text-yellow-500">⚡</div>
                                     </div>
                                     <div className="text-xl md:text-2xl font-bold text-white">49 242</div>
                                 </div>
                                 <div className="bg-[#1a1d2d] border border-white/5 rounded-lg p-3 md:p-4 flex flex-col justify-between h-full">
                                     <div className="flex justify-between items-start mb-2">
-                                        <div className="text-[10px] md:text-xs text-muted-foreground">Openings</div>
+                                        <div className="text-[10px] md:text-xs text-muted-foreground">{t.hero.kpi_openings}</div>
                                         <div className="text-emerald-500/40">📈</div>
                                     </div>
                                     <div className="text-xl md:text-2xl font-bold text-emerald-400">13 962</div>
                                 </div>
                                 <div className="bg-[#1a1d2d] border border-white/5 rounded-lg p-4 hidden lg:flex flex-col justify-between h-full">
-                                    <div className="text-xs text-muted-foreground mb-1">Active Companies</div>
+                                    <div className="text-xs text-muted-foreground mb-1">{t.hero.kpi_companies}</div>
                                     <div className="text-2xl font-bold text-white">514</div>
                                 </div>
                                 <div className="bg-[#1a1d2d] border border-white/5 rounded-lg p-4 hidden lg:flex flex-col justify-between h-full">
-                                    <div className="text-xs text-muted-foreground mb-1">New Leads</div>
+                                    <div className="text-xs text-muted-foreground mb-1">{t.hero.kpi_leads}</div>
                                     <div className="text-2xl font-bold text-white">12</div>
                                 </div>
                             </div>
@@ -164,7 +167,7 @@ export function Hero() {
                                     <div className="bg-[#1e2235] border border-indigo-500/30 rounded-xl p-5 shadow-2xl shadow-indigo-500/10 relative group-hover:-translate-y-1 transition-transform duration-500">
                                         <div className="flex justify-between items-start mb-4">
                                             <div>
-                                                <div className="text-[10px] text-indigo-400 font-bold uppercase tracking-wider mb-1">New</div>
+                                                <div className="text-[10px] text-indigo-400 font-bold uppercase tracking-wider mb-1">{t.hero.card_new}</div>
                                                 <div className="font-bold text-white text-lg leading-tight">Senior Frontend Developer</div>
                                                 <div className="text-sm text-muted-foreground mt-1">Tech Giant AB</div>
                                             </div>
@@ -179,12 +182,12 @@ export function Hero() {
                                                     <div className="text-[10px] text-indigo-300">Engineering Manager</div>
                                                 </div>
                                             </div>
-                                            <div className="bg-green-500/20 text-green-400 text-[10px] px-2 py-0.5 rounded-full font-bold">Direct Contact</div>
+                                            <div className="bg-green-500/20 text-green-400 text-[10px] px-2 py-0.5 rounded-full font-bold">{t.hero.card_direct}</div>
                                         </div>
 
                                         <div className="mt-4 grid grid-cols-2 gap-2">
-                                            <div className="h-9 rounded-md bg-white/5 border border-white/5 flex items-center justify-center text-xs font-medium text-white/50">Save</div>
-                                            <div className="h-9 rounded-md bg-indigo-600 flex items-center justify-center text-xs font-bold text-white shadow-lg shadow-indigo-500/20">Draft Pitch ✨</div>
+                                            <div className="h-9 rounded-md bg-white/5 border border-white/5 flex items-center justify-center text-xs font-medium text-white/50">{t.hero.card_save}</div>
+                                            <div className="h-9 rounded-md bg-indigo-600 flex items-center justify-center text-xs font-bold text-white shadow-lg shadow-indigo-500/20">{t.hero.card_draft}</div>
                                         </div>
                                     </div>
 

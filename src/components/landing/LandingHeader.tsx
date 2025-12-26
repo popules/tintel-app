@@ -2,13 +2,19 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Globe } from "lucide-react";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useTranslation } from "@/lib/i18n-context";
 
 export function LandingHeader() {
     const [scrolled, setScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const { t, locale, setLocale } = useTranslation();
+
+    const toggleLanguage = () => {
+        setLocale(locale === 'en' ? 'sv' : 'en');
+    };
 
     useEffect(() => {
         const handleScroll = () => {
@@ -30,28 +36,37 @@ export function LandingHeader() {
 
                 {/* Desktop Navigation */}
                 <nav className="hidden md:flex items-center gap-8">
-                    <Link href="#features" className="text-sm font-medium text-muted-foreground hover:text-white transition-colors">Features</Link>
-                    <Link href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-white transition-colors">Pricing</Link>
-                    <Link href="/about" className="text-sm font-medium text-muted-foreground hover:text-white transition-colors">About</Link>
+                    <Link href="#features" className="text-sm font-medium text-muted-foreground hover:text-white transition-colors">{t.nav.features}</Link>
+                    <Link href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-white transition-colors">{t.nav.pricing}</Link>
+                    <button onClick={toggleLanguage} className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-white transition-colors uppercase">
+                        <Globe className="h-3 w-3" />
+                        {locale}
+                    </button>
                 </nav>
 
                 {/* Desktop Buttons */}
                 <div className="hidden md:flex items-center gap-3">
                     <Button asChild size="sm" variant="ghost" className="text-white hover:text-white hover:bg-white/10 font-medium h-9 px-4">
-                        <Link href="/candidate/login">For Candidates</Link>
+                        <Link href="/candidate/login">{t.nav.for_candidates}</Link>
                     </Button>
                     <Button asChild size="sm" className="bg-white text-black hover:bg-white/90 font-bold h-9 px-4 shadow-lg shadow-white/5 transition-all hover:scale-105 active:scale-95">
-                        <Link href="/login">For Companies</Link>
+                        <Link href="/login">{t.nav.for_recruiters}</Link>
                     </Button>
                 </div>
 
                 {/* Mobile Menu Toggle */}
-                <button
-                    className="md:hidden z-50 p-2 text-white relative"
-                    onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                >
-                    {mobileMenuOpen ? <X /> : <Menu />}
-                </button>
+                <div className="md:hidden flex items-center gap-4">
+                    <button onClick={toggleLanguage} className="text-sm font-bold text-white uppercase flex items-center gap-1">
+                        <Globe className="h-3 w-3" />
+                        {locale}
+                    </button>
+                    <button
+                        className="z-50 p-2 text-white relative"
+                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                    >
+                        {mobileMenuOpen ? <X /> : <Menu />}
+                    </button>
+                </div>
             </div>
 
             {/* Mobile Menu Overlay */}
@@ -65,19 +80,18 @@ export function LandingHeader() {
                         className="fixed inset-0 pt-24 pb-10 px-6 z-40 bg-[#0f111a] md:hidden flex flex-col gap-6"
                     >
                         <nav className="flex flex-col gap-6">
-                            <Link href="#features" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium text-muted-foreground hover:text-white transition-colors">Features</Link>
-                            <Link href="#pricing" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium text-muted-foreground hover:text-white transition-colors">Pricing</Link>
-                            <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium text-muted-foreground hover:text-white transition-colors">About</Link>
+                            <Link href="#features" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium text-muted-foreground hover:text-white transition-colors">{t.nav.features}</Link>
+                            <Link href="#pricing" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium text-muted-foreground hover:text-white transition-colors">{t.nav.pricing}</Link>
                         </nav>
 
                         <div className="h-px bg-white/10 w-full" />
 
                         <div className="flex flex-col gap-4">
                             <Button asChild size="lg" variant="secondary" className="w-full font-semibold justify-start bg-white/10 hover:bg-white/20 text-white">
-                                <Link href="/candidate/login">For Candidates</Link>
+                                <Link href="/candidate/login">{t.nav.for_candidates}</Link>
                             </Button>
                             <Button asChild size="lg" className="w-full bg-white text-black hover:bg-white/90 font-bold justify-start">
-                                <Link href="/login">For Companies</Link>
+                                <Link href="/login">{t.nav.for_recruiters}</Link>
                             </Button>
                         </div>
                     </motion.div>

@@ -7,6 +7,7 @@ import { JobCard } from "@/components/dashboard/JobCard";
 import { motion } from "framer-motion";
 import { Loader2, Kanban, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "@/lib/i18n-context";
 
 interface SavedJob {
     id: number;
@@ -19,18 +20,24 @@ interface SavedJob {
     pitch?: string;
 }
 
-const COLUMNS = [
-    { id: 'new', label: 'New Leads', color: 'bg-blue-500/10 border-blue-500/20 text-blue-500' },
-    { id: 'contacted', label: 'Contacted', color: 'bg-yellow-500/10 border-yellow-500/20 text-yellow-500' },
-    { id: 'meeting', label: 'Meeting Booked', color: 'bg-purple-500/10 border-purple-500/20 text-purple-500' },
-    { id: 'closed', label: 'Closed Deal', color: 'bg-green-500/10 border-green-500/20 text-green-500' },
-];
+function LocalizedBadge({ children, className }: { children: React.ReactNode, className?: string }) {
+    return <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${className}`}>{children}</span>;
+}
 
 export default function SavedJobsPage() {
+    const { t } = useTranslation();
+    const txt = t.pipeline.recruiter;
     const [jobs, setJobs] = useState<SavedJob[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const supabase = createClient();
+
+    const COLUMNS = [
+        { id: 'new', label: txt.columns.new, color: 'bg-blue-500/10 border-blue-500/20 text-blue-500' },
+        { id: 'contacted', label: txt.columns.contacted, color: 'bg-yellow-500/10 border-yellow-500/20 text-yellow-500' },
+        { id: 'meeting', label: txt.columns.meeting, color: 'bg-purple-500/10 border-purple-500/20 text-purple-500' },
+        { id: 'closed', label: txt.columns.closed, color: 'bg-green-500/10 border-green-500/20 text-green-500' },
+    ];
 
     const fetchSavedJobs = async () => {
         setLoading(true);
@@ -78,9 +85,9 @@ export default function SavedJobsPage() {
                         <div>
                             <h2 className="text-2xl font-bold tracking-tight flex items-center gap-2">
                                 <Kanban className="h-6 w-6 text-indigo-500" />
-                                My Pipeline
+                                {txt.title}
                             </h2>
-                            <p className="text-muted-foreground text-sm">Manage your recruitment process.</p>
+                            <p className="text-muted-foreground text-sm">{txt.subtitle}</p>
                         </div>
                     </div>
 
@@ -96,9 +103,9 @@ export default function SavedJobsPage() {
                                     <div key={column.id} className="flex flex-col gap-4 h-full min-h-[500px] rounded-xl bg-muted/30 p-4 border border-border/50">
                                         <div className={`flex items-center justify-between p-3 rounded-lg border ${column.color} backdrop-blur-sm`}>
                                             <span className="font-semibold text-sm uppercase tracking-wider">{column.label}</span>
-                                            <Badge className="bg-background/50 text-foreground border-0">
+                                            <LocalizedBadge className="bg-background/50 text-foreground border-0">
                                                 {columnJobs.length}
-                                            </Badge>
+                                            </LocalizedBadge>
                                         </div>
 
                                         <div className="flex flex-col gap-3 flex-1 overflow-y-auto max-h-[calc(100vh-250px)]">
@@ -122,7 +129,7 @@ export default function SavedJobsPage() {
                                                                             handleMoveStatus(item, c.id);
                                                                         }}
                                                                         className={`w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold border transition-colors ${c.color} bg-background hover:brightness-110`}
-                                                                        title={`Move to ${c.label}`}
+                                                                        title={`${txt.move_to_label} ${c.label}`}
                                                                     >
                                                                         {c.label[0]}
                                                                     </button>
@@ -134,7 +141,7 @@ export default function SavedJobsPage() {
                                             })}
                                             {columnJobs.length === 0 && (
                                                 <div className="h-32 rounded-lg border-2 border-dashed border-muted flex items-center justify-center text-muted-foreground text-xs">
-                                                    Empty Stage
+                                                    {txt.empty}
                                                 </div>
                                             )}
                                         </div>
@@ -147,8 +154,4 @@ export default function SavedJobsPage() {
             </main>
         </div>
     );
-}
-
-function Badge({ children, className }: { children: React.ReactNode, className?: string }) {
-    return <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${className}`}>{children}</span>;
 }

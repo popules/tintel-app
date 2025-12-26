@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { motion } from "framer-motion"
 import { Users, Building, TrendingUp, Zap, Loader2 } from "lucide-react"
 import Link from "next/link"
+import { useTranslation } from "@/lib/i18n-context"
 
 const container = {
     hidden: { opacity: 0 },
@@ -22,6 +23,7 @@ const item = {
 export function StatsRow() {
     const [data, setData] = useState<any>(null)
     const [loading, setLoading] = useState(true)
+    const { t } = useTranslation()
 
     useEffect(() => {
         fetch('/api/stats')
@@ -38,36 +40,36 @@ export function StatsRow() {
 
     const stats = [
         {
-            title: "Market Depth",
+            title: t.dashboard.stats_market,
             value: loading ? "..." : (data?.totalJobs?.toLocaleString() || "0"),
             icon: Zap,
             color: "text-amber-500",
             bg: "bg-amber-500/10",
-            label: "Total analyzed"
+            label: t.dashboard.stats_market
         },
         {
-            title: "Active Openings",
+            title: t.dashboard.stats_openings,
             value: loading ? "..." : (data?.activeJobs?.toLocaleString() || "0"),
             icon: TrendingUp,
             color: "text-emerald-500",
             bg: "bg-emerald-500/10",
-            label: "Last 30 days"
+            label: t.dashboard.stats_openings
         },
         {
-            title: "Active Companies",
+            title: t.dashboard.stats_companies,
             value: loading ? "..." : (data?.activeCompanies?.toLocaleString() || "0"),
             icon: Building,
             color: "text-indigo-500",
             bg: "bg-indigo-500/10",
-            label: "Unique entities"
+            label: t.dashboard.stats_companies
         },
         {
-            title: "New Leads",
+            title: t.dashboard.stats_new,
             value: loading ? "..." : data?.newLeads || "0",
             icon: Users,
             color: "text-rose-500",
             bg: "bg-rose-500/10",
-            label: "Personalized"
+            label: t.dashboard.stats_new
         },
     ]
 
@@ -80,7 +82,7 @@ export function StatsRow() {
         >
             {stats.map((stat, i) => (
                 <motion.div key={i} variants={item}>
-                    <Link href={stat.title === 'Active Companies' ? '/companies' : (stat.title === 'Market Depth' ? '/analytics' : '#')}>
+                    <Link href={stat.title === t.dashboard.stats_companies ? '/companies' : (stat.title === t.dashboard.stats_market ? '/analytics' : '#')}>
                         <Card className="border-0 shadow-sm bg-card/50 backdrop-blur-sm hover:bg-card/80 transition-all cursor-pointer group overflow-hidden border border-white/5 active:scale-[0.98]">
                             <div className="h-1 w-full bg-gradient-to-r from-transparent via-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
