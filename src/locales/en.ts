@@ -290,6 +290,23 @@ export const en = {
         card_direct: "Direct Contact",
         card_save: "Save",
         card_draft: "Draft Pitch ✨",
+        mockup: {
+            active_jobs: "Active Jobs",
+            find_next: "Find your next client or career move.",
+            matches: "100 matches",
+            new_badge: "NEW",
+            role_frontend: "Senior Frontend Developer",
+            role_product: "Product Designer",
+            role_backend: "Backend Engineer",
+            tech_giant: "Tech Giant AB",
+            creative_agency: "Creative Agency",
+            fintech_corp: "Fintech Corp",
+            direct_contact: "Direct Contact",
+            save: "Save",
+            create_pitch: "Create Pitch ✨",
+            full_time: "FULL-TIME",
+            remote: "REMOTE"
+        }
     },
     features: {
         title: "Stop Applying.",
