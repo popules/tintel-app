@@ -12,8 +12,12 @@ import { Loader2, User, MapPin, Briefcase, Edit, Eye, TrendingUp, Sparkles, Sear
 import Link from "next/link";
 import { CandidateCard } from "@/components/dashboard/CandidateCard";
 import { motion } from "framer-motion";
+import { useTranslation } from "@/lib/i18n-context";
 
 export default function CandidateDashboardPage() {
+    const { t } = useTranslation();
+    const txt = t.candidate_dashboard;
+
     const [candidate, setCandidate] = useState<any>(null);
     const [recentApps, setRecentApps] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -116,27 +120,27 @@ export default function CandidateDashboardPage() {
 
                 <div className="mx-auto max-w-2xl text-center relative z-10">
                     <h1 className="text-4xl font-black tracking-tight text-white sm:text-6xl mb-6">
-                        Find your next <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">career move</span>
+                        {txt.hero_title} <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">{txt.hero_highlight}</span>
                     </h1>
                     <p className="text-lg leading-8 text-gray-400 mb-8">
-                        Search thousands of active jobs or let the opportunities come to you.
+                        {txt.hero_subtitle}
                     </p>
                     <form onSubmit={handleSearch} className="flex gap-2 max-w-md mx-auto">
                         <div className="relative flex-1">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                             <Input
-                                placeholder="Job title, company, or keyword..."
+                                placeholder={txt.search_placeholder}
                                 className="pl-10 h-12 text-base bg-white/10 border-white/20 text-white placeholder:text-gray-500 focus:bg-white/20 transition-all rounded-xl"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
                         </div>
                         <Button size="lg" className="h-12 px-8 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl shadow-lg shadow-indigo-500/20">
-                            Search
+                            {txt.search_button}
                         </Button>
                     </form>
                     <div className="mt-6 flex justify-center gap-4 text-sm text-gray-500">
-                        <span>Popular:</span>
+                        <span>{txt.popular}</span>
                         <Link href="/candidate/jobs?q=Project+Manager" className="hover:text-indigo-400 transition-colors">Project Manager</Link>
                         <Link href="/candidate/jobs?q=Developer" className="hover:text-indigo-400 transition-colors">Developer</Link>
                         <Link href="/candidate/jobs?q=Sales" className="hover:text-indigo-400 transition-colors">Sales</Link>
@@ -149,10 +153,10 @@ export default function CandidateDashboardPage() {
                 {/* 2. My Pipeline Snapshot */}
                 <section>
                     <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-2xl font-bold tracking-tight">Recent Activity</h2>
+                        <h2 className="text-2xl font-bold tracking-tight">{txt.recent_activity}</h2>
                         <Button variant="ghost" asChild className="text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 dark:hover:bg-indigo-950/30">
                             <Link href="/candidate/my-jobs">
-                                Go to Pipeline <ArrowRight className="ml-2 h-4 w-4" />
+                                {txt.go_to_pipeline} <ArrowRight className="ml-2 h-4 w-4" />
                             </Link>
                         </Button>
                     </div>
@@ -176,7 +180,7 @@ export default function CandidateDashboardPage() {
                                             <CardDescription className="line-clamp-1">{app.company_name}</CardDescription>
                                         </CardHeader>
                                         <CardFooter className="text-xs text-muted-foreground pt-0">
-                                            Saved on {new Date(app.created_at).toLocaleDateString()}
+                                            {txt.saved_on} {new Date(app.created_at).toLocaleDateString()}
                                         </CardFooter>
                                     </Card>
                                 </Link>
@@ -186,12 +190,12 @@ export default function CandidateDashboardPage() {
                         <Card className="border-dashed shadow-none bg-muted/30">
                             <CardContent className="flex flex-col items-center justify-center py-12 text-center">
                                 <Briefcase className="h-12 w-12 text-muted-foreground/30 mb-4" />
-                                <h3 className="font-semibold text-lg text-muted-foreground">No jobs tracked yet</h3>
+                                <h3 className="font-semibold text-lg text-muted-foreground">{txt.no_jobs_title}</h3>
                                 <p className="text-sm text-muted-foreground/70 max-w-sm mt-1 mb-6">
-                                    Start browsing jobs and track the ones you like to see them here.
+                                    {txt.no_jobs_desc}
                                 </p>
                                 <Button asChild variant="outline">
-                                    <Link href="/candidate/jobs">Find Jobs</Link>
+                                    <Link href="/candidate/jobs">{txt.find_jobs}</Link>
                                 </Button>
                             </CardContent>
                         </Card>
@@ -208,16 +212,16 @@ export default function CandidateDashboardPage() {
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
                                 <User className="h-5 w-5 text-indigo-500" />
-                                My Profile Status
+                                {txt.profile_status}
                             </CardTitle>
-                            <CardDescription>Control your visibility</CardDescription>
+                            <CardDescription>{txt.control_visibility}</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
                             <div className="flex items-center justify-between bg-muted/40 p-3 rounded-xl border">
                                 <div className="space-y-0.5">
-                                    <span className="text-sm font-medium block">Open to Work</span>
+                                    <span className="text-sm font-medium block">{txt.open_to_work}</span>
                                     <span className="text-xs text-muted-foreground block">
-                                        {isOpen ? "Visible to recruiters" : "Hidden from search"}
+                                        {isOpen ? txt.visible : txt.hidden}
                                     </span>
                                 </div>
                                 <Switch
@@ -230,12 +234,12 @@ export default function CandidateDashboardPage() {
                             <div className="space-y-2">
                                 <Button asChild className="w-full justify-between" variant="outline">
                                     <Link href="/candidate/onboarding">
-                                        Edit Profile <Edit className="h-4 w-4" />
+                                        {txt.edit_profile} <Edit className="h-4 w-4" />
                                     </Link>
                                 </Button>
                                 <Button asChild className="w-full justify-between" variant="ghost">
                                     <Link href="/candidate/cv">
-                                        View Public CV <ExternalLink className="h-4 w-4" />
+                                        {txt.view_cv} <ExternalLink className="h-4 w-4" />
                                     </Link>
                                 </Button>
                             </div>
@@ -247,7 +251,7 @@ export default function CandidateDashboardPage() {
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
                                 <TrendingUp className="h-5 w-5 text-emerald-500" />
-                                Performance
+                                {txt.performance}
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-6">
@@ -257,8 +261,8 @@ export default function CandidateDashboardPage() {
                                         <Eye className="h-5 w-5" />
                                     </div>
                                     <div>
-                                        <p className="text-sm font-medium">Profile Views</p>
-                                        <p className="text-xs text-muted-foreground">Last 30 days</p>
+                                        <p className="text-sm font-medium">{txt.profile_views}</p>
+                                        <p className="text-xs text-muted-foreground">{txt.last_30}</p>
                                     </div>
                                 </div>
                                 <span className="text-2xl font-bold">12</span>
@@ -269,8 +273,8 @@ export default function CandidateDashboardPage() {
                                         <Sparkles className="h-5 w-5" />
                                     </div>
                                     <div>
-                                        <p className="text-sm font-medium">Search Hits</p>
-                                        <p className="text-xs text-muted-foreground">Matched keywords</p>
+                                        <p className="text-sm font-medium">{txt.search_hits}</p>
+                                        <p className="text-xs text-muted-foreground">{txt.matched_keywords}</p>
                                     </div>
                                 </div>
                                 <span className="text-2xl font-bold">48</span>
@@ -284,7 +288,7 @@ export default function CandidateDashboardPage() {
                             <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl opacity-20 group-hover:opacity-40 blur transition duration-500" />
                             <div className="relative">
                                 <div className="absolute top-2 right-2 z-10 w-full flex justify-end px-2">
-                                    <Badge className="bg-black/70 backdrop-blur text-white border-0 shadow-lg">Recruiter Preview</Badge>
+                                    <Badge className="bg-black/70 backdrop-blur text-white border-0 shadow-lg">{txt.recruiter_preview}</Badge>
                                 </div>
                                 {/* Scaled down card */}
                                 <div className="transform scale-[0.85] origin-top -mb-16 pointer-events-none select-none">

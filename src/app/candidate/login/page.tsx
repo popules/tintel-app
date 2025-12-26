@@ -10,8 +10,12 @@ import { Label } from '@/components/ui/label'
 import Link from 'next/link'
 import { Loader2 } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { useTranslation } from '@/lib/i18n-context'
 
 export default function CandidateLoginPage() {
+    const { t } = useTranslation()
+    const txt = t.candidate_login
+
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [loading, setLoading] = useState(false)
@@ -38,7 +42,7 @@ export default function CandidateLoginPage() {
             const role = user?.user_metadata?.role;
 
             if (role !== 'candidate') {
-                setError("This account is not a candidate account.");
+                setError(txt.error_role);
                 await supabase.auth.signOut(); // Force logout
                 setLoading(false);
             } else {
@@ -62,9 +66,9 @@ export default function CandidateLoginPage() {
                             <div className="h-4 w-4 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 shadow-xl shadow-indigo-500/20 ring-2 ring-white/10" />
                             <span className="font-black text-3xl tracking-tighter">tintel</span>
                         </div>
-                        <CardTitle className="text-2xl font-bold tracking-tight">Welcome back</CardTitle>
+                        <CardTitle className="text-2xl font-bold tracking-tight">{txt.welcome}</CardTitle>
                         <CardDescription>
-                            Sign in to your Candidate account
+                            {txt.subtitle}
                         </CardDescription>
                     </CardHeader>
                     <form onSubmit={handleLogin}>
@@ -75,7 +79,7 @@ export default function CandidateLoginPage() {
                                 </div>
                             )}
                             <div className="grid gap-2">
-                                <Label htmlFor="email">Email</Label>
+                                <Label htmlFor="email">{txt.email_label}</Label>
                                 <Input
                                     id="email"
                                     type="email"
@@ -87,7 +91,7 @@ export default function CandidateLoginPage() {
                                 />
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="password">Password</Label>
+                                <Label htmlFor="password">{txt.password_label}</Label>
                                 <Input
                                     id="password"
                                     type="password"
@@ -101,12 +105,12 @@ export default function CandidateLoginPage() {
                         <CardFooter className="flex flex-col gap-4">
                             <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-200" disabled={loading}>
                                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                Sign In
+                                {txt.sign_in}
                             </Button>
                             <p className="text-xs text-center text-muted-foreground">
-                                Don&apos;t have an account?{' '}
+                                {txt.no_account}{' '}
                                 <Link href="/candidate/signup" className="underline underline-offset-4 hover:text-indigo-600 text-foreground transition-colors">
-                                    Sign up
+                                    {txt.sign_up}
                                 </Link>
                             </p>
                         </CardFooter>

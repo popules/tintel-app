@@ -42,6 +42,8 @@ export function FilterSidebar({
 }: FilterSidebarProps) {
     const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
     const { t } = useTranslation()
+    const txt = t.dashboard_filters;
+    const dashTxt = t.dashboard;
 
     const toggleCounty = (county: string) => {
         const isSelected = selectedCounties.includes(county);
@@ -58,9 +60,9 @@ export function FilterSidebar({
                     <span className="bg-indigo-500/10 text-indigo-500 p-1.5 rounded-lg">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" /></svg>
                     </span>
-                    {t.dashboard.filter_title}
+                    {dashTxt.filter_title}
                 </h3>
-                <p className="text-xs text-muted-foreground pl-1">{t.dashboard.filter_clear}</p>
+                <p className="text-xs text-muted-foreground pl-1">{dashTxt.filter_clear}</p>
             </div>
 
             {/* Search Mode Toggle (Jobs vs People) - Conditionally Rendered */}
@@ -71,14 +73,14 @@ export function FilterSidebar({
                         className={`flex items-center justify-center gap-2 py-2 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all ${searchMode === 'jobs' ? 'bg-background text-indigo-600 shadow-sm ring-1 ring-black/5' : 'text-muted-foreground hover:text-foreground'}`}
                     >
                         <Briefcase className="h-3 w-3" />
-                        {t.dashboard.jobs}
+                        {dashTxt.jobs}
                     </button>
                     <button
                         onClick={() => setSearchMode('people')}
                         className={`flex items-center justify-center gap-2 py-2 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all ${searchMode === 'people' ? 'bg-background text-indigo-600 shadow-sm ring-1 ring-black/5' : 'text-muted-foreground hover:text-foreground'}`}
                     >
                         <Users className="h-3 w-3" />
-                        {t.dashboard.candidates}
+                        {dashTxt.candidates}
                     </button>
                 </div>
             )}
@@ -89,21 +91,21 @@ export function FilterSidebar({
                     className={`flex-1 flex items-center justify-center gap-2 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all ${viewMode === 'list' ? 'bg-background text-indigo-600 shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
                 >
                     <List className="h-3 w-3" />
-                    List
+                    {txt.list}
                 </button>
                 <button
                     onClick={() => setViewMode('map')}
                     className={`flex-1 flex items-center justify-center gap-2 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all ${viewMode === 'map' ? 'bg-background text-indigo-600 shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
                 >
                     <Radar className="h-3 w-3" />
-                    Map
+                    {txt.map}
                 </button>
             </div>
 
             <div className="space-y-5 flex-1 flex flex-col min-h-0">
                 {/* Location Section */}
                 <div className="space-y-3 shrink-0 flex flex-col min-h-0">
-                    <Label className="text-[10px] font-black uppercase tracking-wider text-muted-foreground/70 pl-1">Target Counties</Label>
+                    <Label className="text-[10px] font-black uppercase tracking-wider text-muted-foreground/70 pl-1">{txt.target_counties}</Label>
 
                     <div className="flex-1 min-h-[160px] border rounded-xl bg-muted/20 overflow-hidden relative">
                         <AnimatePresence mode="wait">
@@ -168,10 +170,10 @@ export function FilterSidebar({
 
                     <Select value={selectedCity || "all"} onValueChange={(v) => setSelectedCity(v === "all" ? null : v)} disabled={selectedCounties.length === 0}>
                         <SelectTrigger className="h-9 bg-muted/40 border-muted-foreground/20 focus:ring-indigo-500/20 transition-all hover:bg-muted/60 hover:border-indigo-500/30 text-xs">
-                            <SelectValue placeholder="Filter by City" />
+                            <SelectValue placeholder={txt.filter_city} />
                         </SelectTrigger>
                         <SelectContent className="max-h-[300px]">
-                            <SelectItem value="all">All Cities</SelectItem>
+                            <SelectItem value="all">{txt.all_cities}</SelectItem>
                             {cities.map(c => (
                                 <SelectItem key={c} value={c}>{c}</SelectItem>
                             ))}
@@ -181,7 +183,7 @@ export function FilterSidebar({
 
                 {/* Categories Section (Scrollable) */}
                 <div className="flex flex-col flex-1 min-h-0 gap-3">
-                    <Label className="text-[10px] font-black uppercase tracking-wider text-muted-foreground/70 pl-1">Categories</Label>
+                    <Label className="text-[10px] font-black uppercase tracking-wider text-muted-foreground/70 pl-1">{txt.categories}</Label>
 
                     <div className="flex-1 min-h-0 border rounded-xl bg-muted/20 overflow-hidden">
                         <ScrollArea className="h-full w-full">

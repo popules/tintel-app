@@ -288,6 +288,13 @@ export const sv = {
         rights: "Alla rättigheter förbehållna.",
         privacy: "Integritetspolicy",
         terms: "Användarvillkor",
+        product: "Produkt",
+        pricing: "Priser",
+        changelog: "Ändringslogg",
+        company: "Företag",
+        about: "Om oss",
+        contact: "Kontakt",
+        tagline: "Talangplattformen för modern rekrytering. Byggd i Göteborg."
     },
     profile: {
         title: "Agentprofil",
@@ -345,5 +352,69 @@ export const sv = {
             empty: "Tomt Stadie",
             move_to_label: "Flytta till"
         }
+    },
+    company_page: {
+        active_leads: "Aktiva Leads",
+        open_positions: "öppna positioner just nu",
+        market_history: "Marknadshistorik",
+        past_roles: "tidigare roller analyserade",
+        recruitment_dna: "Rekryterings-DNA",
+        hiring_focus: "Historiskt fokus baserat på",
+        about: "Om",
+        currently_hiring: "Anställer Just Nu",
+        monitoring_history: "Bevakningshistorik",
+        monitor_button: "Bevaka Bolag",
+        monitoring: "Bevakar",
+        syncing: "Synkroniserar...",
+        pipeline_title: "Rekryteringspipeline",
+        clear_filter: "Rensa filter",
+        no_active_jobs: "Inga aktiva jobb hittades i",
+        historical_ad: "Historisk Annons",
+        insufficient_data: "Otillräcklig data för DNA-kartläggning."
+    },
+    candidate_dashboard: {
+        hero_title: "Hitta ditt nästa",
+        hero_highlight: "karriärsteg",
+        hero_subtitle: "Sök bland tusentals aktiva jobb eller låt möjligheterna komma till dig.",
+        search_placeholder: "Yrkestitel, företag eller nyckelord...",
+        search_button: "Sök",
+        popular: "Populärt:",
+        recent_activity: "Senaste Aktivitet",
+        go_to_pipeline: "Gå till Pipeline",
+        saved_on: "Sparad den",
+        no_jobs_title: "Inga jobb spårade än",
+        no_jobs_desc: "Börja bläddra bland jobb och spåra de du gillar för att se dem här.",
+        find_jobs: "Hitta Jobb",
+        profile_status: "Min Profilstatus",
+        control_visibility: "Kontrollera din synlighet",
+        open_to_work: "Öppen för jobb",
+        visible: "Synlig för rekryterare",
+        hidden: "Dold från sökningar",
+        edit_profile: "Redigera Profil",
+        view_cv: "Visa Publikt CV",
+        performance: "Prestation",
+        profile_views: "Profilvisningar",
+        last_30: "Senaste 30 dagarna",
+        search_hits: "Sökträffar",
+        matched_keywords: "Matchade nyckelord",
+        recruiter_preview: "Rekryterarvy"
+    },
+    candidate_login: {
+        welcome: "Välkommen tillbaka",
+        subtitle: "Logga in på ditt kandidatkonto",
+        email_label: "E-post",
+        password_label: "Lösenord",
+        sign_in: "Logga In",
+        no_account: "Har du inget konto?",
+        sign_up: "Registrera dig",
+        error_role: "Detta konto är inte ett kandidatkonto."
+    },
+    dashboard_filters: {
+        target_counties: "Målregioner",
+        categories: "Kategorier",
+        filter_city: "Filtrera på Stad",
+        all_cities: "Alla Städer",
+        list: "Lista",
+        map: "Karta"
     }
 };

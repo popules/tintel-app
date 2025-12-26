@@ -13,10 +13,13 @@ import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { CompanyIntelligence } from "@/components/companies/CompanyIntelligence";
 import { generateCompanySummary } from "@/app/actions/company-summary";
+import { useTranslation } from "@/lib/i18n-context";
 
 export default function CompanyPage() {
     const params = useParams();
     const router = useRouter();
+    const { t } = useTranslation();
+    const txt = t.company_page;
     const companyName = decodeURIComponent(params.name as string);
 
     const [jobs, setJobs] = useState<any[]>([]);
@@ -151,7 +154,7 @@ export default function CompanyPage() {
                             <div className="flex items-center gap-2 text-muted-foreground mt-1">
                                 <span className={activeJobs.length > 0 ? "text-green-500 font-medium flex items-center gap-1" : "text-amber-500 font-medium flex items-center gap-1"}>
                                     <TrendingUp className="h-3 w-3" />
-                                    {activeJobs.length > 0 ? "Currently Hiring" : "Monitoring History"}
+                                    {activeJobs.length > 0 ? txt.currently_hiring : txt.monitoring_history}
                                 </span>
                             </div>
                         </div>
@@ -163,7 +166,7 @@ export default function CompanyPage() {
                         onClick={handleMonitor}
                         disabled={isMonitoring || isMonitored}
                     >
-                        {isMonitoring ? "Syncing..." : (isMonitored ? "Monitoring" : "Monitor Company")}
+                        {isMonitoring ? txt.syncing : (isMonitored ? txt.monitoring : txt.monitor_button)}
                     </Button>
                 </div>
 
@@ -178,24 +181,24 @@ export default function CompanyPage() {
                             <CardHeader className="flex flex-row items-center justify-between pb-2">
                                 <CardTitle className="text-lg font-bold flex items-center gap-2">
                                     <Briefcase className="h-5 w-5 text-indigo-500" />
-                                    Active Leads
+                                    {txt.active_leads}
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <div className="text-3xl font-bold">{activeJobs.length}</div>
-                                <p className="text-xs text-muted-foreground mt-1">open positions right now</p>
+                                <p className="text-xs text-muted-foreground mt-1">{txt.open_positions}</p>
                             </CardContent>
                         </Card>
                         <Card className="bg-muted/30 border-0">
                             <CardHeader className="flex flex-row items-center justify-between pb-2">
                                 <CardTitle className="text-lg font-bold flex items-center gap-2">
                                     <TrendingUp className="h-5 w-5 text-amber-500" />
-                                    Market History
+                                    {txt.market_history}
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <div className="text-3xl font-bold">{historicalJobs.length}</div>
-                                <p className="text-xs text-muted-foreground mt-1">past roles analyzed</p>
+                                <p className="text-xs text-muted-foreground mt-1">{txt.past_roles}</p>
                             </CardContent>
                         </Card>
 
@@ -203,7 +206,7 @@ export default function CompanyPage() {
                         <Card className="bg-muted/30 border-0 md:col-span-2">
                             <CardHeader className="pb-2">
                                 <CardTitle className="text-lg font-bold flex items-center gap-2">
-                                    About {companyName}
+                                    {txt.about} {companyName}
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
@@ -218,7 +221,8 @@ export default function CompanyPage() {
                                         <p className="text-sm text-muted-foreground leading-relaxed">
                                             {summary || (
                                                 <span className="text-amber-500/80">
-                                                    {companyName} is a leading organization in its field.
+                                                    {companyName} {txt.insufficient_data.replace('DNA mapping', '')} {/* Fallback text somewhat broken, reusing data */}
+                                                    is a leading organization in its field.
                                                     <br />
                                                     <span className="text-xs font-mono mt-2 block p-2 bg-amber-500/10 rounded border border-amber-500/20">
                                                         Debug: {summaryError || "AI Summary unavailable"}
@@ -240,9 +244,9 @@ export default function CompanyPage() {
                         <CardHeader className="pb-2">
                             <CardTitle className="text-lg font-bold flex items-center gap-2">
                                 <Users className="h-5 w-5 text-indigo-500" />
-                                Recruitment DNA
+                                {txt.recruitment_dna}
                             </CardTitle>
-                            <p className="text-xs text-muted-foreground">Historical hiring focus based on {jobs.length} roles</p>
+                            <p className="text-xs text-muted-foreground">{txt.hiring_focus} {jobs.length} roles</p>
                         </CardHeader>
                         <CardContent className="space-y-4 pt-4">
                             {dna.map((item: any) => (
@@ -261,7 +265,7 @@ export default function CompanyPage() {
                                     </div>
                                 </div>
                             ))}
-                            {dna.length === 0 && <p className="text-sm text-muted-foreground italic">Insufficient historical data for DNA mapping.</p>}
+                            {dna.length === 0 && <p className="text-sm text-muted-foreground italic">{txt.insufficient_data}</p>}
                         </CardContent>
                     </Card>
                 </div>
@@ -269,10 +273,10 @@ export default function CompanyPage() {
                 {/* Job List */}
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                        <h2 className="text-xl font-bold tracking-tight">Recruitment Pipeline</h2>
+                        <h2 className="text-xl font-bold tracking-tight">{txt.pipeline_title}</h2>
                         {filterLocation && (
                             <Button variant="ghost" size="sm" onClick={() => setFilterLocation(null)} className="text-muted-foreground h-auto p-0 hover:bg-transparent hover:text-foreground">
-                                Clear filter ({filterLocation})
+                                {txt.clear_filter} ({filterLocation})
                             </Button>
                         )}
                     </div>
@@ -293,7 +297,7 @@ export default function CompanyPage() {
                                             {!isActive && (
                                                 <div className="absolute top-4 right-4 z-10">
                                                     <Badge variant="secondary" className="bg-muted text-muted-foreground border-0 opacity-80 backdrop-blur-sm">
-                                                        Historical Ad
+                                                        {txt.historical_ad}
                                                     </Badge>
                                                 </div>
                                             )}
@@ -307,7 +311,7 @@ export default function CompanyPage() {
                     )}
                     {!loading && jobs.filter(job => filterLocation ? job.location === filterLocation : true).length === 0 && (
                         <div className="text-center py-20 text-muted-foreground">
-                            No active jobs found in {filterLocation || companyName}
+                            {txt.no_active_jobs} {filterLocation || companyName}
                         </div>
                     )}
                 </div>

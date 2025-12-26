@@ -289,6 +289,13 @@ export const en = {
         rights: "All rights reserved.",
         privacy: "Privacy Policy",
         terms: "Terms of Service",
+        product: "Product",
+        pricing: "Pricing",
+        changelog: "Changelog",
+        company: "Company",
+        about: "About",
+        contact: "Contact",
+        tagline: "The talent intelligence platform for modern recruitment. Built in Gothenburg."
     },
     profile: {
         title: "Agent Profile",
@@ -346,5 +353,69 @@ export const en = {
             empty: "Empty Stage",
             move_to_label: "Move to"
         }
+    },
+    company_page: {
+        active_leads: "Active Leads",
+        open_positions: "open positions right now",
+        market_history: "Market History",
+        past_roles: "past roles analyzed",
+        recruitment_dna: "Recruitment DNA",
+        hiring_focus: "Historical hiring focus based on",
+        about: "About",
+        currently_hiring: "Currently Hiring",
+        monitoring_history: "Monitoring History",
+        monitor_button: "Monitor Company",
+        monitoring: "Monitoring",
+        syncing: "Syncing...",
+        pipeline_title: "Recruitment Pipeline",
+        clear_filter: "Clear filter",
+        no_active_jobs: "No active jobs found in",
+        historical_ad: "Historical Ad",
+        insufficient_data: "Insufficient historical data for DNA mapping."
+    },
+    candidate_dashboard: {
+        hero_title: "Find your next",
+        hero_highlight: "career move",
+        hero_subtitle: "Search thousands of active jobs or let the opportunities come to you.",
+        search_placeholder: "Job title, company, or keyword...",
+        search_button: "Search",
+        popular: "Popular:",
+        recent_activity: "Recent Activity",
+        go_to_pipeline: "Go to Pipeline",
+        saved_on: "Saved on",
+        no_jobs_title: "No jobs tracked yet",
+        no_jobs_desc: "Start browsing jobs and track the ones you like to see them here.",
+        find_jobs: "Find Jobs",
+        profile_status: "My Profile Status",
+        control_visibility: "Control your visibility",
+        open_to_work: "Open to Work",
+        visible: "Visible to recruiters",
+        hidden: "Hidden from search",
+        edit_profile: "Edit Profile",
+        view_cv: "View Public CV",
+        performance: "Performance",
+        profile_views: "Profile Views",
+        last_30: "Last 30 days",
+        search_hits: "Search Hits",
+        matched_keywords: "Matched keywords",
+        recruiter_preview: "Recruiter Preview"
+    },
+    candidate_login: {
+        welcome: "Welcome back",
+        subtitle: "Sign in to your Candidate account",
+        email_label: "Email",
+        password_label: "Password",
+        sign_in: "Sign In",
+        no_account: "Don't have an account?",
+        sign_up: "Sign up",
+        error_role: "This account is not a candidate account."
+    },
+    dashboard_filters: {
+        target_counties: "Target Counties",
+        categories: "Categories",
+        filter_city: "Filter by City",
+        all_cities: "All Cities",
+        list: "List",
+        map: "Map"
     }
 };
