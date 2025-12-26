@@ -268,6 +268,21 @@ export const sv = {
             rights_li_3: "Dataportabilitet: Ta med dig din data.",
             contact_text: "Integritetsfrågor? Maila oss direkt på privacy@tintel.se så hjälper vi dig.",
             updated: "Senast uppdaterad: 26 december 2025"
+        },
+        contact: {
+            badge: "Kontakta oss",
+            title: "Vi hör gärna från dig.",
+            subtitle: "Oavsett om du har frågor om funktioner, priser eller bara vill säga hej så är vi redo att svara.",
+            email_label: "Mejla oss direkt",
+            email_value: "hello@tintel.se",
+            social_label: "Följ oss",
+            form_name: "Namn",
+            form_email: "E-post",
+            form_message: "Meddelande",
+            form_submit: "Skicka meddelande",
+            success_title: "Meddelande skickat!",
+            success_desc: "Vi återkommer till dig inom kort.",
+            back_home: "Tillbaka till startsidan"
         }
     },
     hero: {

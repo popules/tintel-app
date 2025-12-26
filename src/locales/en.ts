@@ -270,6 +270,21 @@ export const en = {
             rights_li_4: "Portability: Receive your data in a structured format.",
             contact_text: "To exercise these rights, contact our Data Protection Officer at privacy@tintel.se.",
             updated: "Last updated: December 26, 2025"
+        },
+        contact: {
+            badge: "Get in touch",
+            title: "We'd love to hear from you.",
+            subtitle: "Whether you have a question about features, pricing, or just want to say hello, we're ready to answer all your questions.",
+            email_label: "Email us directly",
+            email_value: "hello@tintel.se",
+            social_label: "Follow us",
+            form_name: "Name",
+            form_email: "Email",
+            form_message: "Message",
+            form_submit: "Send Message",
+            success_title: "Message Sent!",
+            success_desc: "We'll be back in touch with you shortly.",
+            back_home: "Back to Home"
         }
     },
     hero: {

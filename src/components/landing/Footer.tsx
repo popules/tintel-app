@@ -52,7 +52,7 @@ export function Footer() {
                 <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
                     <p className="text-xs text-muted-foreground">
                         {/* © 2025 Tintel AB. All rights reserved. */}
-                        © 2025 Tintel AB. {txt.rights}
+                        © 2025 Tintel. {txt.rights}
                     </p>
                     <div className="flex gap-4">
                         {/* Socials placeholder */}
