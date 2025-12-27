@@ -3,11 +3,13 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { MapPin, Building2, ExternalLink, CalendarDays, Briefcase, Bookmark, ChevronRight, Heart, UserSearch, Loader2, Check, Wand2, FileText, X } from "lucide-react"
+import { MapPin, Building2, ExternalLink, CalendarDays, Briefcase, Bookmark, ChevronRight, Heart, UserSearch, Loader2, Check, Wand2, FileText, X, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
 import { createClient } from "@/lib/supabase/client"
 import { useTranslation } from "@/lib/i18n-context"
+import { estimateSalary } from "@/app/actions/salary"
+import { toast } from "sonner"
 
 interface JobPost {
     id: string
@@ -174,6 +176,52 @@ export function JobCard({ job, index, initialSaved = false, mode = 'recruiter' }
 
     const [pitch, setPitch] = useState<string | null>(null)
     const [generatingPitch, setGeneratingPitch] = useState(false)
+    const [estimatingSalary, setEstimatingSalary] = useState(false)
+    const [localSalary, setLocalSalary] = useState<{ min: number; max: number; currency: string } | null>(null)
+
+    const handleEstimateSalary = async (e: React.MouseEvent) => {
+        e.preventDefault()
+        e.stopPropagation()
+        setEstimatingSalary(true)
+
+        try {
+            // Ensure we have a description
+            let description = adConfig?.description;
+            if (!description) {
+                const res = await fetch(`/api/scrape-job?url=${encodeURIComponent(job.webbplatsurl)}`)
+                const data = await res.json()
+                description = data.description;
+                if (description) setAdConfig({ description });
+            }
+
+            if (!description) {
+                toast.error("Could not find job description to analyze.");
+                return;
+            }
+
+            const estimate = await estimateSalary(description, job.title, job.location);
+            if (estimate) {
+                setLocalSalary({ min: estimate.min, max: estimate.max, currency: estimate.currency });
+                toast.success("AI Salary Estimate generated!");
+
+                // Optional: Save it back to DB so others see it too
+                await supabase.from('job_posts').update({
+                    salary_min: estimate.min,
+                    salary_max: estimate.max,
+                    salary_currency: estimate.currency,
+                    salary_period: estimate.period
+                }).eq('id', job.id);
+
+            } else {
+                toast.error("AI couldn't estimate salary for this role.");
+            }
+        } catch (err) {
+            console.error(err);
+            toast.error("Estimation failed.");
+        } finally {
+            setEstimatingSalary(false)
+        }
+    }
 
     const handleGeneratePitch = async (e: React.MouseEvent) => {
         e.preventDefault()
@@ -491,6 +539,31 @@ export function JobCard({ job, index, initialSaved = false, mode = 'recruiter' }
                                         <span className="text-xs text-muted-foreground">{job.location}</span>
                                     </div>
                                     <DialogTitle className="text-xl">{job.title}</DialogTitle>
+
+                                    {/* On-Demand Salary Badge / Button */}
+                                    <div className="mt-2">
+                                        {(job.salary_min || localSalary) ? (
+                                            <Badge variant="outline" className="px-2 py-1 bg-emerald-500/10 text-emerald-500 border-emerald-500/20 flex items-center gap-2 w-fit">
+                                                <Sparkles className="h-3 w-3 animate-pulse" />
+                                                AI Estimated: {(job.salary_min || localSalary?.min)?.toLocaleString()} - {(job.salary_max || localSalary?.max)?.toLocaleString()} {job.salary_currency || localSalary?.currency || 'SEK'}
+                                            </Badge>
+                                        ) : (
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                className="h-8 border-indigo-500/30 text-indigo-500 hover:bg-indigo-500/10 text-[10px] uppercase font-bold tracking-widest"
+                                                onClick={handleEstimateSalary}
+                                                disabled={estimatingSalary}
+                                            >
+                                                {estimatingSalary ? (
+                                                    <Loader2 className="h-3 w-3 animate-spin mr-2" />
+                                                ) : (
+                                                    <Sparkles className="h-3 w-3 mr-2" />
+                                                )}
+                                                {estimatingSalary ? "Analyzing..." : "Reveal AI Salary Estimate"}
+                                            </Button>
+                                        )}
+                                    </div>
                                 </DialogHeader>
                                 <ScrollArea className="h-[60vh] w-full mt-4 rounded-md bg-muted/30 border p-4">
                                     <div className="text-sm leading-relaxed whitespace-pre-wrap font-sans pr-4">

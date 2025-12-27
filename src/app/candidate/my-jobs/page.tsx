@@ -1,60 +1,134 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
-import { Loader2, Briefcase, ChevronRight, X, ExternalLink, MessageSquare, CheckCircle2, Clock, Ban, GripVertical } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Loader2, Briefcase, ExternalLink, GripVertical, Search } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { updateApplicationStatus } from "@/app/actions/application";
 import { toast } from "sonner";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useTranslation } from "@/lib/i18n-context";
+
+// DND Kit Imports
+import {
+    DndContext,
+    DragOverlay,
+    closestCorners,
+    KeyboardSensor,
+    PointerSensor,
+    useSensor,
+    useSensors,
+    DragStartEvent,
+    DragOverEvent,
+    DragEndEvent,
+    defaultDropAnimationSideEffects,
+} from "@dnd-kit/core";
+import {
+    arrayMove,
+    SortableContext,
+    sortableKeyboardCoordinates,
+    verticalListSortingStrategy,
+    useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 type Application = {
     id: string;
     job_title: string;
     company_name: string;
-    status: 'saved' | 'applied' | 'interview' | 'offer' | 'rejected' | 'ghosted';
+    status: string;
     job_url: string;
     job_data: any;
     notes: string;
     created_at: string;
 };
 
+// --- Sortable Item Component ---
+function SortableCard({ app, statusColor }: { app: Application, statusColor: string }) {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging
+    } = useSortable({ id: app.id, data: { type: 'card', app } });
+
+    const style = {
+        transform: CSS.Translate.toString(transform),
+        transition,
+        opacity: isDragging ? 0.3 : 1,
+    };
+
+    return (
+        <div ref={setNodeRef} style={style} {...attributes} {...listeners} className="touch-none">
+            <motion.div
+                layoutId={app.id}
+                className="group relative bg-black/40 hover:bg-zinc-900 border border-white/10 hover:border-indigo-500/30 rounded-lg p-3 shadow-sm transition-all"
+            >
+                <div className="flex justify-between items-start mb-2">
+                    <h4 className="font-semibold text-sm line-clamp-2 leading-tight" title={app.job_title}>
+                        {app.job_title}
+                    </h4>
+                    <GripVertical className="h-3 w-3 text-zinc-700 group-hover:text-zinc-500 shrink-0 mt-1" />
+                </div>
+
+                <div className="text-xs text-muted-foreground mb-3 font-medium">
+                    {app.company_name}
+                </div>
+
+                <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/5">
+                    <span className="text-[10px] text-zinc-500">
+                        {new Date(app.created_at).toLocaleDateString()}
+                    </span>
+                    <a href={app.job_url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
+                        <Button size="icon" variant="ghost" className="h-6 w-6 rounded-full hover:text-white hover:bg-white/10">
+                            <ExternalLink className="h-3 w-3" />
+                        </Button>
+                    </a>
+                </div>
+            </motion.div>
+        </div>
+    );
+}
+
+// --- Main Page ---
 export default function MyJobsPage() {
     const { t } = useTranslation();
     const txt = t.pipeline.candidate;
 
     const [applications, setApplications] = useState<Application[]>([]);
+    const [activeId, setActiveId] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const supabase = createClient();
     const router = useRouter();
 
-    const COLUMNS = [
+    const COLUMNS = useMemo(() => [
         { id: 'saved', title: txt.columns.saved, color: 'bg-zinc-500/10 text-zinc-400 border-zinc-500/20' },
         { id: 'applied', title: txt.columns.applied, color: 'bg-blue-500/10 text-blue-500 border-blue-500/20' },
         { id: 'interview', title: txt.columns.interview, color: 'bg-amber-500/10 text-amber-500 border-amber-500/20' },
         { id: 'offer', title: txt.columns.offer, color: 'bg-green-500/10 text-green-500 border-green-500/20' },
         { id: 'rejected', title: txt.columns.rejected, color: 'bg-red-500/10 text-red-500 border-red-500/20' }
-    ];
+    ], [txt]);
+
+    // Sensors for DND
+    const sensors = useSensors(
+        useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+        useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+    );
 
     useEffect(() => {
         const fetchApps = async () => {
             const { data: { user } } = await supabase.auth.getUser();
-            if (!user) {
-                router.push("/candidate/login");
-                return;
-            }
+            if (!user) { router.push("/candidate/login"); return; }
 
-            const { data, error } = await supabase
+            const { data } = await supabase
                 .from('applications')
                 .select('*')
-                .eq('candidate_id', user.id)
-                .order('created_at', { ascending: false });
+                .eq('candidate_id', user.id);
 
             if (data) setApplications(data as Application[]);
             setLoading(false);
@@ -62,20 +136,52 @@ export default function MyJobsPage() {
         fetchApps();
     }, [router, supabase]);
 
-    const handleStatusChange = async (appId: string, newStatus: string) => {
-        // Optimistic update
-        const oldApps = [...applications];
-        setApplications(apps => apps.map(app =>
-            app.id === appId ? { ...app, status: newStatus as any } : app
-        ));
+    const handleDragStart = (event: DragStartEvent) => {
+        setActiveId(event.active.id as string);
+    };
 
-        const result = await updateApplicationStatus(appId, newStatus);
+    const handleDragOver = (event: DragOverEvent) => {
+        const { active, over } = event;
+        if (!over) return;
 
-        if (result.success) {
-            toast.success(`Moved to ${newStatus}`);
+        const activeId = active.id as string;
+        const overId = over.id as string;
+
+        const activeApp = applications.find(a => a.id === activeId);
+        if (!activeApp) return;
+
+        // If hovering over a column id
+        const isOverAColumn = COLUMNS.some(col => col.id === overId);
+
+        if (isOverAColumn && activeApp.status !== overId) {
+            setApplications(apps => apps.map(app =>
+                app.id === activeId ? { ...app, status: overId } : app
+            ));
         } else {
-            setApplications(oldApps); // Revert
-            toast.error("Failed to update status");
+            // Over another card
+            const overApp = applications.find(a => a.id === overId);
+            if (overApp && activeApp.status !== overApp.status) {
+                setApplications(apps => apps.map(app =>
+                    app.id === activeId ? { ...app, status: overApp.status } : app
+                ));
+            }
+        }
+    };
+
+    const handleDragEnd = async (event: DragEndEvent) => {
+        const { active, over } = event;
+        setActiveId(null);
+
+        if (!over) return;
+
+        const activeApp = applications.find(a => a.id === active.id);
+        if (activeApp) {
+            const result = await updateApplicationStatus(activeApp.id, activeApp.status);
+            if (result.success) {
+                toast.success(`Updated to ${activeApp.status}`);
+            } else {
+                toast.error("Failed to sync change");
+            }
         }
     };
 
@@ -86,6 +192,8 @@ export default function MyJobsPage() {
             </div>
         );
     }
+
+    const activeApp = activeId ? applications.find(a => a.id === activeId) : null;
 
     return (
         <div className="min-h-screen bg-[#050505] text-white p-4 md:p-8">
@@ -103,78 +211,52 @@ export default function MyJobsPage() {
                     </Button>
                 </div>
 
-                {/* Kanban Board */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 overflow-x-auto pb-8">
-                    {COLUMNS.map(col => (
-                        <div key={col.id} className="flex flex-col h-full min-h-[500px] bg-zinc-900/30 rounded-xl border border-white/5 p-4 space-y-4">
+                <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCorners}
+                    onDragStart={handleDragStart}
+                    onDragOver={handleDragOver}
+                    onDragEnd={handleDragEnd}
+                >
+                    <div className="grid grid-cols-1 md:grid-cols-5 gap-4 overflow-x-auto pb-8 min-w-[1000px]">
+                        {COLUMNS.map(col => (
+                            <div key={col.id} id={col.id} className="flex flex-col h-full min-h-[500px] bg-zinc-900/30 rounded-xl border border-white/5 p-4 space-y-4">
+                                <div className={`flex items-center justify-between px-3 py-2 rounded-lg border ${col.color}`}>
+                                    <h3 className="font-bold text-xs uppercase tracking-wide">{col.title}</h3>
+                                    <Badge variant="outline" className="text-xs opacity-50 font-mono border-white/10">
+                                        {applications.filter(a => a.status === col.id).length}
+                                    </Badge>
+                                </div>
 
-                            {/* Column Header */}
-                            <div className={`flex items-center justify-between px-3 py-2 rounded-lg border ${col.color}`}>
-                                <h3 className="font-bold text-sm uppercase tracking-wide">{col.title}</h3>
-                                <span className="text-xs font-mono opacity-70">
-                                    {applications.filter(a => a.status === col.id).length}
-                                </span>
-                            </div>
-
-                            {/* Droppable Area / List */}
-                            <div className="space-y-3 flex-1">
-                                {applications.filter(a => a.status === col.id).map(app => (
-                                    <motion.div
-                                        key={app.id}
-                                        layoutId={app.id}
-                                        initial={{ opacity: 0, scale: 0.95 }}
-                                        animate={{ opacity: 1, scale: 1 }}
-                                        className="group relative bg-black/40 hover:bg-zinc-900 border border-white/10 hover:border-indigo-500/30 rounded-lg p-3 shadow-sm transition-all"
-                                    >
-                                        <div className="flex justify-between items-start mb-2">
-                                            <h4 className="font-semibold text-sm line-clamp-2 leading-tight" title={app.job_title}>
-                                                {app.job_title}
-                                            </h4>
-                                        </div>
-
-                                        <div className="text-xs text-muted-foreground mb-3 font-medium">
-                                            {app.company_name}
-                                        </div>
-
-                                        <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/5">
-                                            <span className="text-[10px] text-zinc-500">
-                                                {new Date(app.created_at).toLocaleDateString()}
-                                            </span>
-
-                                            <div className="flex gap-1">
-                                                <a href={app.job_url} target="_blank" rel="noopener noreferrer">
-                                                    <Button size="icon" variant="ghost" className="h-6 w-6 rounded-full hover:text-white hover:bg-white/10">
-                                                        <ExternalLink className="h-3 w-3" />
-                                                    </Button>
-                                                </a>
-
-                                                {/* Move Dropdown */}
-                                                <Select onValueChange={(val) => handleStatusChange(app.id, val)}>
-                                                    <SelectTrigger className="h-6 w-6 p-0 border-0 bg-transparent hover:bg-white/10 data-[state=open]:bg-white/10 [&>svg]:hidden flex justify-center items-center rounded-full">
-                                                        <GripVertical className="h-3 w-3 text-muted-foreground" />
-                                                    </SelectTrigger>
-                                                    <SelectContent align="end">
-                                                        {COLUMNS.map(c => (
-                                                            <SelectItem key={c.id} value={c.id} disabled={c.id === app.status}>
-                                                                {txt.move_to} {c.title}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
+                                <SortableContext items={applications.filter(a => a.status === col.id).map(a => a.id)} strategy={verticalListSortingStrategy}>
+                                    <div className="space-y-3 flex-1">
+                                        {applications.filter(a => a.status === col.id).map(app => (
+                                            <SortableCard key={app.id} app={app} statusColor={col.color} />
+                                        ))}
+                                        {applications.filter(a => a.status === col.id).length === 0 && (
+                                            <div className="h-24 flex items-center justify-center border-2 border-dashed border-white/5 rounded-lg text-muted-foreground/10 text-[10px] uppercase font-bold tracking-widest">
+                                                {txt.empty}
                                             </div>
-                                        </div>
-                                    </motion.div>
-                                ))}
-
-                                {applications.filter(a => a.status === col.id).length === 0 && (
-                                    <div className="h-24 flex items-center justify-center border-2 border-dashed border-white/5 rounded-lg text-muted-foreground/30 text-xs">
-                                        {txt.empty}
+                                        )}
                                     </div>
-                                )}
+                                </SortableContext>
                             </div>
-                        </div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
+
+                    <DragOverlay dropAnimation={{
+                        sideEffects: defaultDropAnimationSideEffects({
+                            styles: { active: { opacity: '0.5' } },
+                        }),
+                    }}>
+                        {activeApp ? (
+                            <div className="bg-zinc-900 border border-indigo-500/50 rounded-lg p-3 shadow-2xl rotate-2">
+                                <h4 className="font-semibold text-sm line-clamp-1">{activeApp.job_title}</h4>
+                                <p className="text-xs text-muted-foreground">{activeApp.company_name}</p>
+                            </div>
+                        ) : null}
+                    </DragOverlay>
+                </DndContext>
             </div>
         </div>
     );
