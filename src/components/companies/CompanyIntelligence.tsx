@@ -3,6 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrendingUp } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { useTranslation } from "@/lib/i18n-context";
 
 interface CompanyIntelligenceProps {
     companyName: string;
@@ -10,6 +11,7 @@ interface CompanyIntelligenceProps {
 }
 
 export function CompanyIntelligence({ companyName, jobs }: CompanyIntelligenceProps) {
+    const { t } = useTranslation();
 
     // 1. Calculate Real Hiring Velocity
     // Group jobs by Month-Year
@@ -57,9 +59,9 @@ export function CompanyIntelligence({ companyName, jobs }: CompanyIntelligencePr
                     <div className="space-y-1">
                         <CardTitle className="text-lg font-bold flex items-center gap-2">
                             <TrendingUp className="h-5 w-5 text-emerald-500" />
-                            Hiring Velocity
+                            {t.company_intelligence.hiring_velocity}
                         </CardTitle>
-                        <p className="text-xs text-muted-foreground">Job posting volume over time</p>
+                        <p className="text-xs text-muted-foreground">{t.company_intelligence.volume_over_time}</p>
                     </div>
                 </CardHeader>
                 <CardContent className="h-[250px] w-full pt-4">

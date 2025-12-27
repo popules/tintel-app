@@ -108,7 +108,8 @@ export const en = {
         draft_pitch: "Draft Pitch",
         regenerate_pitch: "Regenerate Pitch",
         find_lead: "Find Lead",
-        view_ad: "View Job Ad",
+        view_ad: "Quick View",
+        visit_site: "Go to Job Site",
         apply: "Apply on Site",
         visit_save: "Visit & Save",
         close: "Close",
@@ -556,5 +557,42 @@ export const en = {
             price_sub: "/ month",
             button: "Upgrade to Pro"
         }
-    }
+    },
+    companies_page: {
+        title: "Market Intelligence",
+        description: "Comparative benchmarking across Scandinavia's top hiring entities.",
+        location: "Location:",
+        vertical: "Vertical:",
+        range_30d: "Live (30d)",
+        range_q4: "Q4 2024",
+        range_q3: "Q3 2024",
+        range_2024: "Year 2024",
+        total_ads: "Total Ads",
+        lead_domain: "Lead Domain",
+        focus: "Focus",
+        growth: "Growth"
+    },
+    company_intelligence: {
+        hiring_velocity: "Hiring Velocity",
+        volume_over_time: "Job posting volume over time",
+        about: "About",
+        active_leads: "Active Leads",
+        open_positions: "Open positions right now",
+        market_history: "Market History",
+        past_roles: "Past roles analyzed",
+        recruitment_dna: "Recruitment DNA",
+        hiring_focus: "Historical focus based on",
+        roles: "roles",
+        insufficient_data: "Insufficient data for DNA mapping.",
+        currently_hiring: "Hiring Now",
+        monitoring_history: "Monitoring History",
+        syncing: "Syncing...",
+        monitoring: "Monitoring",
+        monitor_button: "Monitor Company",
+        pipeline_title: "Recruitment Pipeline",
+        clear_filter: "Clear filter",
+        no_active_jobs: "No active jobs found for",
+        historical_ad: "Historical Ad"
+    },
+
 };

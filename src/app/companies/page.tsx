@@ -9,6 +9,7 @@ import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { useTranslation } from "@/lib/i18n-context";
 
 export default function CompaniesPage() {
     const [companies, setCompanies] = useState<any[]>([]);
@@ -19,6 +20,7 @@ export default function CompaniesPage() {
     const [location, setLocation] = useState("All");
     const [prefLoaded, setPrefLoaded] = useState(false);
     const supabase = createClient();
+    const { t } = useTranslation();
 
     // 1. Fetch user preference for default location
     useEffect(() => {
@@ -86,10 +88,10 @@ export default function CompaniesPage() {
     ];
 
     const ranges = [
-        { id: "30d", label: "Live (30d)" },
-        { id: "Q4", label: "Q4 2024" },
-        { id: "Q3", label: "Q3 2024" },
-        { id: "2024", label: "Year 2024" }
+        { id: "30d", label: t.companies_page.range_30d },
+        { id: "Q4", label: t.companies_page.range_q4 },
+        { id: "Q3", label: t.companies_page.range_q3 },
+        { id: "2024", label: t.companies_page.range_2024 }
     ];
 
     const filteredCompanies = companies.filter(c =>
@@ -103,8 +105,8 @@ export default function CompaniesPage() {
             <main className="container mx-auto p-4 md:p-8 space-y-8">
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                     <div>
-                        <h1 className="text-4xl font-black tracking-tighter mb-2">Market Intelligence</h1>
-                        <p className="text-muted-foreground">Comparative benchmarking across Scandinavia's top hiring entities.</p>
+                        <h1 className="text-4xl font-black tracking-tighter mb-2">{t.companies_page.title}</h1>
+                        <p className="text-muted-foreground">{t.companies_page.description}</p>
                     </div>
                 </div>
 
@@ -125,7 +127,7 @@ export default function CompaniesPage() {
                         <div className="h-8 w-px bg-muted hidden lg:block" />
 
                         <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide">
-                            <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest whitespace-nowrap">Location:</span>
+                            <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest whitespace-nowrap">{t.companies_page.location}</span>
                             <div className="flex gap-2">
                                 {Array.from(new Set([...locations, location])).map((loc) => (
                                     <button
@@ -143,7 +145,7 @@ export default function CompaniesPage() {
                     <div className="h-px w-full bg-muted/50" />
 
                     <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide">
-                        <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest whitespace-nowrap">Vertical:</span>
+                        <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest whitespace-nowrap">{t.companies_page.vertical}</span>
                         <div className="flex gap-2">
                             {categories.map((cat) => (
                                 <button
@@ -179,7 +181,7 @@ export default function CompaniesPage() {
                                                 </div>
                                                 <div className="text-right">
                                                     <div className="text-lg font-black tracking-tight">{company.volume}</div>
-                                                    <div className="text-[10px] text-muted-foreground font-bold uppercase tracking-tighter">Total Ads</div>
+                                                    <div className="text-[10px] text-muted-foreground font-bold uppercase tracking-tighter">{t.companies_page.total_ads}</div>
                                                 </div>
                                             </div>
 
@@ -189,7 +191,7 @@ export default function CompaniesPage() {
 
                                             <div className="space-y-3">
                                                 <div className="flex flex-col gap-1">
-                                                    <div className="text-[10px] text-muted-foreground uppercase font-black">Lead Domain</div>
+                                                    <div className="text-[10px] text-muted-foreground uppercase font-black">{t.companies_page.lead_domain}</div>
                                                     <div className="text-xs font-semibold truncate max-w-full text-indigo-600/80 bg-indigo-500/5 p-1 px-2 rounded-md border border-indigo-500/10">
                                                         {company.topCategory}
                                                     </div>
@@ -198,7 +200,7 @@ export default function CompaniesPage() {
                                                 <div className="flex items-center justify-between text-xs pt-2 border-t border-muted/50">
                                                     <div className="flex items-center gap-1 text-muted-foreground">
                                                         <Users className="h-3 w-3" />
-                                                        <span>{Math.round((company.topCategoryVolume / company.volume) * 100)}% Focus</span>
+                                                        <span>{Math.round((company.topCategoryVolume / company.volume) * 100)}% {t.companies_page.focus}</span>
                                                     </div>
                                                     <div className="text-emerald-500 font-bold flex items-center gap-0.5">
                                                         <TrendingUp className="h-3 w-3" />

@@ -102,7 +102,8 @@ export const sv = {
         draft_pitch: "Skapa Pitch",
         regenerate_pitch: "Regenerera Pitch",
         find_lead: "Hitta Lead",
-        view_ad: "Visa Jobbansökan",
+        view_ad: "Snabbvisning",
+        visit_site: "Besök Jobbsidan",
         apply: "Ansök på sidan",
         visit_save: "Besök & Spara",
         close: "Stäng",
@@ -547,5 +548,42 @@ export const sv = {
             price_sub: "/ månad",
             button: "Uppgradera till Pro"
         }
-    }
+    },
+    companies_page: {
+        title: "Marknadsanalys",
+        description: "Jämförande benchmarking av Skandinaviens ledande arbetsgivare.",
+        location: "Plats:",
+        vertical: "Bransch:",
+        range_30d: "Live (30d)",
+        range_q4: "Q4 2024",
+        range_q3: "Q3 2024",
+        range_2024: "Helår 2024",
+        total_ads: "Antal Annonser",
+        lead_domain: "Fokusområde",
+        focus: "Fokus",
+        growth: "Tillväxt"
+    },
+    company_intelligence: {
+        hiring_velocity: "Rekryteringstakt",
+        volume_over_time: "Annonsvolym över tid",
+        about: "Om",
+        active_leads: "Aktiva Leads",
+        open_positions: "Öppna positioner just nu",
+        market_history: "Marknadshistorik",
+        past_roles: "Tidigare roller analyserade",
+        recruitment_dna: "Rekryterings-DNA",
+        hiring_focus: "Historiskt fokus baserat på",
+        roles: "roller",
+        insufficient_data: "Otillräcklig data för DNA-kartläggning.",
+        currently_hiring: "Anställer Just Nu",
+        monitoring_history: "Bevakning Historik",
+        syncing: "Synkar...",
+        monitoring: "Bevakar Bolag",
+        monitor_button: "Bevaka Bolag",
+        pipeline_title: "Rekryteringspipeline",
+        clear_filter: "Rensa filter",
+        no_active_jobs: "Inga aktiva jobb hittades för",
+        historical_ad: "Historisk Annons"
+    },
+
 };

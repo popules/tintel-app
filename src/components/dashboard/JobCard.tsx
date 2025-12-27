@@ -557,8 +557,7 @@ export function JobCard({ job, index, initialSaved = false, mode = 'recruiter' }
                                         }}
                                     >
                                         <ExternalLink className="mr-2 h-4 w-4" />
-                                        {/* Using hardcoded text or existing translation key if suitable */}
-                                        {(t.job_card as any)?.visit_site || "Besök Jobbsidan"}
+                                        {t.job_card.visit_site}
                                     </Button>
                                 </div>
                             </div>

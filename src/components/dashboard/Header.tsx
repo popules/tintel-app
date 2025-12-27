@@ -29,8 +29,9 @@ export function Header({ searchTerm = "", setSearchTerm = () => { } }: HeaderPro
     const [user, setUser] = useState<any>(null)
     const [profile, setProfile] = useState<any>(null)
     const supabase = createClient()
+
     const router = useRouter()
-    const { t } = useTranslation()
+    const { t, locale, setLocale } = useTranslation()
 
     const [notifications, setNotifications] = useState<any[]>([])
     const [unreadCount, setUnreadCount] = useState(0)
@@ -174,6 +175,17 @@ export function Header({ searchTerm = "", setSearchTerm = () => { } }: HeaderPro
             </div>
 
             <div className="flex items-center gap-2 md:gap-4">
+                {/* Language Switcher */}
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    className="hidden md:flex text-xl p-2 hover:bg-muted/50 rounded-full h-10 w-10 items-center justify-center transition-transform active:scale-95"
+                    onClick={() => setLocale(locale === 'en' ? 'sv' : 'en')}
+                    title={locale === 'en' ? "Switch to Swedish" : "Switch to English"}
+                >
+                    {locale === 'en' ? '🇬🇧' : '🇸🇪'}
+                </Button>
+
                 {user ? (
                     <>
                         <div className="hidden md:flex flex-col items-end mr-2">

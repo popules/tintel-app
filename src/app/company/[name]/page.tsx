@@ -21,7 +21,7 @@ export default function CompanyPage() {
     const params = useParams();
     const router = useRouter();
     const { t } = useTranslation();
-    const txt = t.company_page;
+    const txt = t.company_intelligence;
     const companyName = decodeURIComponent(params.name as string);
 
     const [jobs, setJobs] = useState<any[]>([]);
@@ -30,6 +30,7 @@ export default function CompanyPage() {
     const [searchTerm, setSearchTerm] = useState("");
     const [isMonitored, setIsMonitored] = useState(false);
     const [isMonitoring, setIsMonitoring] = useState(false);
+    const [userRole, setUserRole] = useState<string | null>(null);
     const supabase = createClient();
 
     const handleMonitor = async () => {
@@ -65,6 +66,14 @@ export default function CompanyPage() {
             setLoading(false);
         };
 
+        const fetchUserRole = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                const { data } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+                if (data) setUserRole(data.role);
+            }
+        };
+
         const checkStatus = async () => {
             if (companyName) {
                 const isMonitored = await checkMonitorStatus(companyName);
@@ -75,6 +84,7 @@ export default function CompanyPage() {
         if (companyName) {
             fetchCompanyJobs();
             checkStatus();
+            fetchUserRole();
         }
     }, [companyName, supabase]);
 
@@ -248,7 +258,7 @@ export default function CompanyPage() {
                                 <Users className="h-5 w-5 text-indigo-500" />
                                 {txt.recruitment_dna}
                             </CardTitle>
-                            <p className="text-xs text-muted-foreground">{txt.hiring_focus} {jobs.length} roles</p>
+                            <p className="text-xs text-muted-foreground">{txt.hiring_focus} {jobs.length} {txt.roles}</p>
                         </CardHeader>
                         <CardContent className="space-y-4 pt-4">
                             {dna.map((item: any) => (
@@ -304,7 +314,11 @@ export default function CompanyPage() {
                                                 </div>
                                             )}
                                             <div className={!isActive ? "opacity-75 grayscale-[0.5] transition-all group-hover:grayscale-0 group-hover:opacity-100" : ""}>
-                                                <JobCard job={job} index={i} />
+                                                <JobCard
+                                                    job={job}
+                                                    index={i}
+                                                    mode={userRole === 'candidate' ? 'candidate' : 'recruiter'}
+                                                />
                                             </div>
                                         </div>
                                     );

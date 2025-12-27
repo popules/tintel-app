@@ -62,7 +62,7 @@ export function FilterSidebar({
                     </span>
                     {dashTxt.filter_title}
                 </h3>
-                <p className="text-xs text-muted-foreground pl-1">{dashTxt.filter_clear}</p>
+
             </div>
 
             {/* Search Mode Toggle (Jobs vs People) - Conditionally Rendered */}
