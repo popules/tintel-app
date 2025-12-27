@@ -10,11 +10,11 @@
     },
     {
       "path": "/api/cron/refresh-intelligence",
-      "schedule": "0 */6 * * *"
+      "schedule": "0 5 * * *"
     },
     {
       "path": "/api/cron/salary-backfill",
-      "schedule": "0 * * * *"
+      "schedule": "0 2 * * *"
     }
   ]
 }
