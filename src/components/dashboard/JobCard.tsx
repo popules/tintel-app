@@ -293,331 +293,234 @@ export function JobCard({ job, index, initialSaved = false, mode = 'recruiter' }
     }
 
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.05, duration: 0.3 }}
-        >
-            <Card className="group relative overflow-hidden border-0 bg-gradient-to-br from-card to-card/50 shadow-sm hover:shadow-2xl hover:shadow-indigo-500/10 transition-all duration-300 hover:-translate-y-1 ring-1 ring-border/50 hover:ring-indigo-500/30">
+        <>
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05, duration: 0.3 }}
+            >
+                <Card className="group relative overflow-hidden border-0 bg-gradient-to-br from-card to-card/50 shadow-sm hover:shadow-2xl hover:shadow-indigo-500/10 transition-all duration-300 hover:-translate-y-1 ring-1 ring-border/50 hover:ring-indigo-500/30">
 
-                {/* Glow Effects */}
-                <div className="absolute top-0 right-0 -mr-16 -mt-16 h-32 w-32 rounded-full bg-indigo-500/10 blur-3xl transition-all group-hover:bg-indigo-500/20" />
-                <div className="absolute bottom-0 left-0 -ml-16 -mb-16 h-32 w-32 rounded-full bg-purple-500/10 blur-3xl transition-all group-hover:bg-purple-500/20" />
+                    {/* Glow Effects */}
+                    <div className="absolute top-0 right-0 -mr-16 -mt-16 h-32 w-32 rounded-full bg-indigo-500/10 blur-3xl transition-all group-hover:bg-indigo-500/20" />
+                    <div className="absolute bottom-0 left-0 -ml-16 -mb-16 h-32 w-32 rounded-full bg-purple-500/10 blur-3xl transition-all group-hover:bg-purple-500/20" />
 
-                <CardHeader className="pb-3 z-10 relative">
-                    <div className="flex justify-between items-start gap-4">
-                        <div className="space-y-1.5 flex-1">
-                            <div className="flex items-center gap-2">
-                                {isRecent && (
-                                    <Badge variant="secondary" className="px-1.5 h-5 text-[10px] font-semibold bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300 border-0">
-                                        {t.job_card.new}
-                                    </Badge>
+                    <CardHeader className="pb-3 z-10 relative">
+                        <div className="flex justify-between items-start gap-4">
+                            <div className="space-y-1.5 flex-1">
+                                <div className="flex items-center gap-2">
+                                    {isRecent && (
+                                        <Badge variant="secondary" className="px-1.5 h-5 text-[10px] font-semibold bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300 border-0">
+                                            {t.job_card.new}
+                                        </Badge>
+                                    )}
+                                    <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground/70">
+                                        {t.job_card.full_time}
+                                    </span>
+                                </div>
+
+                                {/* Salary Estimate Badge */}
+                                {(job.salary_min && job.salary_max) && (
+                                    <div className="flex items-center gap-1.5 mt-1">
+                                        <Badge variant="outline" className="px-1.5 h-5 text-[10px] bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-800 flex items-center gap-1">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                            {job.salary_min.toLocaleString()} - {job.salary_max.toLocaleString()} {job.salary_currency}
+                                        </Badge>
+                                    </div>
                                 )}
-                                <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground/70">
-                                    {t.job_card.full_time}
-                                </span>
+
+                                <CardTitle className="text-lg font-bold tracking-tight text-foreground/90 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-2 leading-tight">
+                                    {job.title}
+                                </CardTitle>
                             </div>
-
-                            {/* Salary Estimate Badge */}
-                            {(job.salary_min && job.salary_max) && (
-                                <div className="flex items-center gap-1.5 mt-1">
-                                    <Badge variant="outline" className="px-1.5 h-5 text-[10px] bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-800 flex items-center gap-1">
-                                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                        {job.salary_min.toLocaleString()} - {job.salary_max.toLocaleString()} {job.salary_currency}
-                                    </Badge>
-                                </div>
-                            )}
-
-                            <CardTitle className="text-lg font-bold tracking-tight text-foreground/90 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-2 leading-tight">
-                                {job.title}
-                            </CardTitle>
-                        </div>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 -mr-2 text-muted-foreground hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 rounded-full"
-                            onClick={handleSaveToggle}
-                            disabled={loading}
-                        >
-                            <Heart className={`h-4 w-4 transition-colors ${saved ? "fill-red-500 text-red-500" : ""}`} />
-                        </Button>
-                    </div>
-                </CardHeader>
-
-                <CardContent className="pb-4 z-10 relative">
-                    <div className="flex flex-col gap-2.5">
-                        <div className="flex items-center gap-2 text-sm font-medium text-foreground/80">
-                            <div className="p-1 rounded bg-muted text-muted-foreground">
-                                <Building2 className="h-3.5 w-3.5" />
-                            </div>
-                            <a
-                                href={`/company/${encodeURIComponent(job.company)}`}
-                                className="hover:text-indigo-600 hover:underline transition-colors cursor-pointer"
-                                title={`View all jobs at ${job.company}`}
-                            >
-                                {job.company}
-                            </a>
-                        </div>
-
-                        {mode === 'candidate' && (
                             <Button
-                                className="w-full mt-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg shadow-indigo-500/20 border border-indigo-500/50"
-                                onClick={async () => {
-                                    toast.loading("Connecting to The Oracle...");
-                                    const result = await startOracleSession(job.id);
-                                    toast.dismiss();
-
-                                    if (result.success) {
-                                        setOracleSessionId(result.sessionId);
-                                        // Context is actually fetched inside the component now via db, 
-                                        // but for immediate UI we can pass a dummy or refetch. 
-                                        // Ideally startOracleSession returns context. 
-                                        // For now, let's just show it.
-                                        // NOTE: backend startOracleSession implementation logic has changed to return just sessionId. 
-                                        // We will pass the job data we have as partial context to avoid delay, 
-                                        // or better, fetch it in OracleInterface. 
-                                        // Let's rely on OracleInterface fetching or pass job props.
-                                        // Update: OracleInterface expects marketContext prop.
-                                        // Let's pass the job data we have here as a fallback until I update the backend to return it.
-
-                                        setOracleContext({
-                                            salary_min: job.salary_min,
-                                            salary_max: job.salary_max,
-                                            salary_currency: job.salary_currency,
-                                            signal_label: "Analyzing...",
-                                            hiring_velocity: 0
-                                        });
-                                        setShowOracle(true);
-                                    } else {
-                                        toast.error("Oracle unavailable: " + result.error);
-                                    }
-                                }}
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 -mr-2 text-muted-foreground hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 rounded-full"
+                                onClick={handleSaveToggle}
+                                disabled={loading}
                             >
-                                <BrainCircuit className="w-4 h-4 mr-2" />
-                                Consult The Oracle
+                                <Heart className={`h-4 w-4 transition-colors ${saved ? "fill-red-500 text-red-500" : ""}`} />
                             </Button>
-                        )}
-
-                        <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-muted-foreground">
-                            <div className="flex items-center gap-1.5">
-                                <MapPin className="h-3 w-3" />
-                                {job.location || t.job_card.remote_unknown}
-                            </div>
-                            <div className="flex items-center gap-1.5">
-                                <CalendarDays className="h-3 w-3" />
-                                {new Date(job.created_at).toLocaleDateString()}
-                            </div>
                         </div>
+                    </CardHeader>
 
-                        {/* Enriched Lead Data Prototype */}
-                        {lead && (
-                            <motion.div
-                                initial={{ opacity: 0, height: 0 }}
-                                animate={{ opacity: 1, height: 'auto' }}
-                                className="mt-4 p-3 bg-muted/50 rounded-lg flex items-center justify-between"
-                            >
-                                <div className="flex items-center gap-3">
-                                    <div className="h-10 w-10 rounded-full bg-background border flex items-center justify-center overflow-hidden">
-                                        <img src={lead.avatar} alt={lead.name} className="h-full w-full object-cover" />
-                                    </div>
-                                    <div>
-                                        <p className="text-sm font-semibold">{lead.name}</p>
-                                        <p className="text-xs text-muted-foreground">{lead.role}</p>
-                                        {lead.email ? (
-                                            <a href={`mailto:${lead.email}`} className="text-xs text-blue-500 hover:underline block">{lead.email}</a>
-                                        ) : (
-                                            <span className="text-xs text-amber-600 block">{t.job_card.indirect_contact}</span>
-                                        )}
-                                    </div>
+                    <CardContent className="pb-4 z-10 relative">
+                        <div className="flex flex-col gap-2.5">
+                            <div className="flex items-center gap-2 text-sm font-medium text-foreground/80">
+                                <div className="p-1 rounded bg-muted text-muted-foreground">
+                                    <Building2 className="h-3.5 w-3.5" />
                                 </div>
-                                <div className="flex items-center gap-1 text-xs font-medium text-green-600 bg-green-100 px-2 py-1 rounded-full">
-                                    <Check className="h-3 w-3" />
-                                    {lead.email ? t.job_card.direct_contact : t.job_card.company_identified}
-                                </div>
-                            </motion.div>
-                        )}
-                    </div>
-                </CardContent>
-
-                <CardFooter className="pt-2 pb-4 z-10 relative gap-2 flex-col">
-                    {mode === 'recruiter' ? (
-                        <>
-                            {!lead ? (
-                                <div className="grid grid-cols-2 gap-2 w-full">
-                                    <Button
-                                        className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-md shadow-indigo-500/20 border-0"
-                                        onClick={handleEnrich}
-                                        disabled={enriching}
-                                    >
-                                        {enriching ? (
-                                            <Loader2 className="h-4 w-4 animate-spin" />
-                                        ) : (
-                                            <>
-                                                <UserSearch className="mr-2 h-4 w-4" />
-                                                {t.job_card.find_lead}
-                                            </>
-                                        )}
-                                    </Button>
-                                    <Button
-                                        variant="outline"
-                                        className="w-full border-indigo-500/20 text-indigo-600 hover:bg-indigo-50"
-                                        onClick={handleGeneratePitch}
-                                        disabled={generatingPitch}
-                                    >
-                                        {generatingPitch ? (
-                                            <Loader2 className="h-4 w-4 animate-spin" />
-                                        ) : (
-                                            <>
-                                                <Wand2 className="mr-2 h-4 w-4" />
-                                                {t.job_card.draft_pitch}
-                                            </>
-                                        )}
-                                    </Button>
-                                </div>
-                            ) : (
-                                <div className="w-full space-y-2">
-                                    <Button variant="outline" className="w-full border-green-500/30 text-green-600 hover:bg-green-500/10 hover:text-green-700 bg-green-500/5 cursor-default">
-                                        <Check className="mr-2 h-4 w-4" />
-                                        {t.job_card.saved}
-                                    </Button>
-                                    <Button
-                                        variant="outline"
-                                        className="w-full border-indigo-500/20 text-indigo-600 hover:bg-indigo-50"
-                                        onClick={handleGeneratePitch}
-                                        disabled={generatingPitch}
-                                    >
-                                        {generatingPitch ? (
-                                            <Loader2 className="h-4 w-4 animate-spin" />
-                                        ) : (
-                                            <>
-                                                <Wand2 className="mr-2 h-4 w-4" />
-                                                {pitch ? t.job_card.regenerate_pitch : t.job_card.draft_pitch}
-                                            </>
-                                        )}
-                                    </Button>
-                                </div>
-                            )}
-
-                            {pitch && (
-                                <motion.div
-                                    initial={{ opacity: 0, height: 0 }}
-                                    animate={{ opacity: 1, height: 'auto' }}
-                                    className="mt-2 w-full"
+                                <a
+                                    href={`/company/${encodeURIComponent(job.company)}`}
+                                    className="hover:text-indigo-600 hover:underline transition-colors cursor-pointer"
+                                    title={`View all jobs at ${job.company}`}
                                 >
-                                    <div className="relative rounded-md border bg-muted/50 p-3 text-xs font-mono text-muted-foreground whitespace-pre-wrap">
-                                        {pitch}
-                                        <Button size="sm" variant="ghost" className="absolute top-1 right-1 h-6 w-6 p-0" onClick={() => { navigator.clipboard.writeText(pitch) }}>
-                                            <Check className="h-3 w-3" />
-                                        </Button>
-                                    </div>
-                                </motion.div>
-                            )}
-                        </>
-                    ) : (
-                        // CANDIDATE VIEW
-                        <div className="w-full">
-                            <Button
-                                className="w-full bg-white text-black hover:bg-gray-200 border border-input shadow-sm mb-2"
-                                onClick={async () => {
-                                    // TRACK APPLICATION
-                                    try {
-                                        const { trackApplication } = await import("@/app/actions/application");
-                                        await trackApplication({
-                                            id: job.id,
-                                            title: job.title,
-                                            company: job.company,
-                                            url: job.webbplatsurl,
-                                            location: job.location,
-                                            created_at: job.created_at,
-                                            description: adConfig?.description
-                                        });
-                                        // Open Original
-                                        window.open(job.webbplatsurl, '_blank');
-                                    } catch (err) {
-                                        console.error("Tracking failed", err);
-                                        window.open(job.webbplatsurl, '_blank');
-                                    }
-                                }}
-                            >
-                                {t.job_card.apply}
-                                <ExternalLink className="mr-2 h-4 w-4" />
-                                {t.job_card.visit_save}
-                            </Button>
-                        </div>
-                    )}
+                                    {job.company}
+                                </a>
+                            </div>
 
-                    <div className="flex gap-2 w-full">
-                        <Dialog open={viewingAd} onOpenChange={setViewingAd}>
-                            <DialogTrigger asChild>
+                            {mode === 'candidate' && (
                                 <Button
-                                    variant="ghost"
-                                    className="w-full text-muted-foreground hover:text-foreground"
-                                    onClick={async (e) => {
-                                        // If we already have the description, just open
-                                        if (adConfig?.description) return;
+                                    className="w-full mt-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg shadow-indigo-500/20 border border-indigo-500/50"
+                                    onClick={async () => {
+                                        toast.loading("Connecting to The Oracle...");
+                                        const result = await startOracleSession(job.id);
+                                        toast.dismiss();
 
-                                        // Otherwise, scrape it first
-                                        e.preventDefault();
-                                        setLoading(true); // Reuse loading state or add new one
-                                        try {
-                                            const res = await fetch(`/api/scrape-job?url=${encodeURIComponent(job.webbplatsurl)}`)
-                                            const data = await res.json()
-                                            setAdConfig({ description: data.description || "No description available." })
-                                            setViewingAd(true)
-                                        } catch (err) {
-                                            // Fallback to external if scrape fails
-                                            window.open(job.webbplatsurl, '_blank')
-                                        } finally {
-                                            setLoading(false)
+                                        if (result.success) {
+                                            setOracleSessionId(result.sessionId);
+                                            // Context is actually fetched inside the component now via db, 
+                                            // but for immediate UI we can pass a dummy or refetch. 
+                                            // Ideally startOracleSession returns context. 
+                                            // For now, let's just show it.
+                                            // NOTE: backend startOracleSession implementation logic has changed to return just sessionId. 
+                                            // We will pass the job data we have as partial context to avoid delay, 
+                                            // or better, fetch it in OracleInterface. 
+                                            // Let's rely on OracleInterface fetching or pass job props.
+                                            // Update: OracleInterface expects marketContext prop.
+                                            // Let's pass the job data we have here as a fallback until I update the backend to return it.
+
+                                            setOracleContext({
+                                                salary_min: job.salary_min,
+                                                salary_max: job.salary_max,
+                                                salary_currency: job.salary_currency,
+                                                signal_label: "Analyzing...",
+                                                hiring_velocity: 0
+                                            });
+                                            setShowOracle(true);
+                                        } else {
+                                            toast.error("Oracle unavailable: " + result.error);
                                         }
                                     }}
                                 >
-                                    <span className="mr-2">{t.job_card.view_ad}</span>
-                                    {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <FileText className="h-3.5 w-3.5 opacity-50" />}
+                                    <BrainCircuit className="w-4 h-4 mr-2" />
+                                    Consult The Oracle
                                 </Button>
-                            </DialogTrigger>
-                            <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col">
-                                <DialogHeader>
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <Badge variant="outline" className="w-fit">{job.company}</Badge>
-                                        <span className="text-xs text-muted-foreground">{job.location}</span>
-                                    </div>
-                                    <DialogTitle className="text-xl">{job.title}</DialogTitle>
+                            )}
 
-                                    {/* On-Demand Salary Badge / Button */}
-                                    <div className="mt-2">
-                                        {(job.salary_min || localSalary) ? (
-                                            <Badge variant="outline" className="px-2 py-1 bg-emerald-500/10 text-emerald-500 border-emerald-500/20 flex items-center gap-2 w-fit">
-                                                <Sparkles className="h-3 w-3 animate-pulse" />
-                                                AI Estimated: {(job.salary_min || localSalary?.min)?.toLocaleString()} - {(job.salary_max || localSalary?.max)?.toLocaleString()} {job.salary_currency || localSalary?.currency || 'SEK'}
-                                            </Badge>
-                                        ) : (
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                className="h-8 border-indigo-500/30 text-indigo-500 hover:bg-indigo-500/10 text-[10px] uppercase font-bold tracking-widest"
-                                                onClick={handleEstimateSalary}
-                                                disabled={estimatingSalary}
-                                            >
-                                                {estimatingSalary ? (
-                                                    <Loader2 className="h-3 w-3 animate-spin mr-2" />
-                                                ) : (
-                                                    <Sparkles className="h-3 w-3 mr-2" />
-                                                )}
-                                                {estimatingSalary ? "Analyzing..." : "Reveal AI Salary Estimate"}
+                            <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-muted-foreground">
+                                <div className="flex items-center gap-1.5">
+                                    <MapPin className="h-3 w-3" />
+                                    {job.location || t.job_card.remote_unknown}
+                                </div>
+                                <div className="flex items-center gap-1.5">
+                                    <CalendarDays className="h-3 w-3" />
+                                    {new Date(job.created_at).toLocaleDateString()}
+                                </div>
+                            </div>
+
+                            {/* Enriched Lead Data Prototype */}
+                            {lead && (
+                                <motion.div
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: 'auto' }}
+                                    className="mt-4 p-3 bg-muted/50 rounded-lg flex items-center justify-between"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className="h-10 w-10 rounded-full bg-background border flex items-center justify-center overflow-hidden">
+                                            <img src={lead.avatar} alt={lead.name} className="h-full w-full object-cover" />
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-semibold">{lead.name}</p>
+                                            <p className="text-xs text-muted-foreground">{lead.role}</p>
+                                            {lead.email ? (
+                                                <a href={`mailto:${lead.email}`} className="text-xs text-blue-500 hover:underline block">{lead.email}</a>
+                                            ) : (
+                                                <span className="text-xs text-amber-600 block">{t.job_card.indirect_contact}</span>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-1 text-xs font-medium text-green-600 bg-green-100 px-2 py-1 rounded-full">
+                                        <Check className="h-3 w-3" />
+                                        {lead.email ? t.job_card.direct_contact : t.job_card.company_identified}
+                                    </div>
+                                </motion.div>
+                            )}
+                        </div>
+                    </CardContent>
+
+                    <CardFooter className="pt-2 pb-4 z-10 relative gap-2 flex-col">
+                        {mode === 'recruiter' ? (
+                            <>
+                                {!lead ? (
+                                    <div className="grid grid-cols-2 gap-2 w-full">
+                                        <Button
+                                            className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-md shadow-indigo-500/20 border-0"
+                                            onClick={handleEnrich}
+                                            disabled={enriching}
+                                        >
+                                            {enriching ? (
+                                                <Loader2 className="h-4 w-4 animate-spin" />
+                                            ) : (
+                                                <>
+                                                    <UserSearch className="mr-2 h-4 w-4" />
+                                                    {t.job_card.find_lead}
+                                                </>
+                                            )}
+                                        </Button>
+                                        <Button
+                                            variant="outline"
+                                            className="w-full border-indigo-500/20 text-indigo-600 hover:bg-indigo-50"
+                                            onClick={handleGeneratePitch}
+                                            disabled={generatingPitch}
+                                        >
+                                            {generatingPitch ? (
+                                                <Loader2 className="h-4 w-4 animate-spin" />
+                                            ) : (
+                                                <>
+                                                    <Wand2 className="mr-2 h-4 w-4" />
+                                                    {t.job_card.draft_pitch}
+                                                </>
+                                            )}
+                                        </Button>
+                                    </div>
+                                ) : (
+                                    <div className="w-full space-y-2">
+                                        <Button variant="outline" className="w-full border-green-500/30 text-green-600 hover:bg-green-500/10 hover:text-green-700 bg-green-500/5 cursor-default">
+                                            <Check className="mr-2 h-4 w-4" />
+                                            {t.job_card.saved}
+                                        </Button>
+                                        <Button
+                                            variant="outline"
+                                            className="w-full border-indigo-500/20 text-indigo-600 hover:bg-indigo-50"
+                                            onClick={handleGeneratePitch}
+                                            disabled={generatingPitch}
+                                        >
+                                            {generatingPitch ? (
+                                                <Loader2 className="h-4 w-4 animate-spin" />
+                                            ) : (
+                                                <>
+                                                    <Wand2 className="mr-2 h-4 w-4" />
+                                                    {pitch ? t.job_card.regenerate_pitch : t.job_card.draft_pitch}
+                                                </>
+                                            )}
+                                        </Button>
+                                    </div>
+                                )}
+
+                                {pitch && (
+                                    <motion.div
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: 'auto' }}
+                                        className="mt-2 w-full"
+                                    >
+                                        <div className="relative rounded-md border bg-muted/50 p-3 text-xs font-mono text-muted-foreground whitespace-pre-wrap">
+                                            {pitch}
+                                            <Button size="sm" variant="ghost" className="absolute top-1 right-1 h-6 w-6 p-0" onClick={() => { navigator.clipboard.writeText(pitch) }}>
+                                                <Check className="h-3 w-3" />
                                             </Button>
-                                        )}
-                                    </div>
-                                </DialogHeader>
-                                <ScrollArea className="h-[60vh] w-full mt-4 rounded-md bg-muted/30 border p-4">
-                                    <div className="text-sm leading-relaxed whitespace-pre-wrap font-sans pr-4">
-                                        {adConfig?.description}
-                                    </div>
-                                </ScrollArea>
-                                <div className="mt-4 flex justify-end gap-2">
-                                    <Button variant="outline" onClick={() => setViewingAd(false)}>{t.job_card.close}</Button>
-                                    <Button onClick={async () => {
-                                        // TRACK APPLICATION (Magic Click)
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </>
+                        ) : (
+                            // CANDIDATE VIEW
+                            <div className="w-full">
+                                <Button
+                                    className="w-full bg-white text-black hover:bg-gray-200 border border-input shadow-sm mb-2"
+                                    onClick={async () => {
+                                        // TRACK APPLICATION
                                         try {
                                             const { trackApplication } = await import("@/app/actions/application");
                                             await trackApplication({
@@ -626,33 +529,131 @@ export function JobCard({ job, index, initialSaved = false, mode = 'recruiter' }
                                                 company: job.company,
                                                 url: job.webbplatsurl,
                                                 location: job.location,
-                                                created_at: job.created_at, // Add this to type def in action if needed, or omit
+                                                created_at: job.created_at,
                                                 description: adConfig?.description
                                             });
+                                            // Open Original
+                                            window.open(job.webbplatsurl, '_blank');
                                         } catch (err) {
                                             console.error("Tracking failed", err);
+                                            window.open(job.webbplatsurl, '_blank');
                                         }
-                                        // Open Original
-                                        window.open(job.webbplatsurl, '_blank');
-                                    }}>
-                                        {t.job_card.visit_save} <ExternalLink className="ml-2 h-4 w-4" />
+                                    }}
+                                >
+                                    {t.job_card.apply}
+                                    <ExternalLink className="mr-2 h-4 w-4" />
+                                    {t.job_card.visit_save}
+                                </Button>
+                            </div>
+                        )}
+
+                        <div className="flex gap-2 w-full">
+                            <Dialog open={viewingAd} onOpenChange={setViewingAd}>
+                                <DialogTrigger asChild>
+                                    <Button
+                                        variant="ghost"
+                                        className="w-full text-muted-foreground hover:text-foreground"
+                                        onClick={async (e) => {
+                                            // If we already have the description, just open
+                                            if (adConfig?.description) return;
+
+                                            // Otherwise, scrape it first
+                                            e.preventDefault();
+                                            setLoading(true); // Reuse loading state or add new one
+                                            try {
+                                                const res = await fetch(`/api/scrape-job?url=${encodeURIComponent(job.webbplatsurl)}`)
+                                                const data = await res.json()
+                                                setAdConfig({ description: data.description || "No description available." })
+                                                setViewingAd(true)
+                                            } catch (err) {
+                                                // Fallback to external if scrape fails
+                                                window.open(job.webbplatsurl, '_blank')
+                                            } finally {
+                                                setLoading(false)
+                                            }
+                                        }}
+                                    >
+                                        <span className="mr-2">{t.job_card.view_ad}</span>
+                                        {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <FileText className="h-3.5 w-3.5 opacity-50" />}
                                     </Button>
-                                </div>
-                            </DialogContent>
-                        </Dialog>
-                    </div>
-                </CardFooter>
-            </Card>
-        </motion.div >
-        {
-        showOracle && oracleSessionId && oracleContext && (
-            <OracleInterface
-                sessionId={oracleSessionId!}
-                marketContext={oracleContext}
-                onClose={() => setShowOracle(false)}
-            />
-        )
-    }
-    </>
+                                </DialogTrigger>
+                                <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col">
+                                    <DialogHeader>
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <Badge variant="outline" className="w-fit">{job.company}</Badge>
+                                            <span className="text-xs text-muted-foreground">{job.location}</span>
+                                        </div>
+                                        <DialogTitle className="text-xl">{job.title}</DialogTitle>
+
+                                        {/* On-Demand Salary Badge / Button */}
+                                        <div className="mt-2">
+                                            {(job.salary_min || localSalary) ? (
+                                                <Badge variant="outline" className="px-2 py-1 bg-emerald-500/10 text-emerald-500 border-emerald-500/20 flex items-center gap-2 w-fit">
+                                                    <Sparkles className="h-3 w-3 animate-pulse" />
+                                                    AI Estimated: {(job.salary_min || localSalary?.min)?.toLocaleString()} - {(job.salary_max || localSalary?.max)?.toLocaleString()} {job.salary_currency || localSalary?.currency || 'SEK'}
+                                                </Badge>
+                                            ) : (
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="h-8 border-indigo-500/30 text-indigo-500 hover:bg-indigo-500/10 text-[10px] uppercase font-bold tracking-widest"
+                                                    onClick={handleEstimateSalary}
+                                                    disabled={estimatingSalary}
+                                                >
+                                                    {estimatingSalary ? (
+                                                        <Loader2 className="h-3 w-3 animate-spin mr-2" />
+                                                    ) : (
+                                                        <Sparkles className="h-3 w-3 mr-2" />
+                                                    )}
+                                                    {estimatingSalary ? "Analyzing..." : "Reveal AI Salary Estimate"}
+                                                </Button>
+                                            )}
+                                        </div>
+                                    </DialogHeader>
+                                    <ScrollArea className="h-[60vh] w-full mt-4 rounded-md bg-muted/30 border p-4">
+                                        <div className="text-sm leading-relaxed whitespace-pre-wrap font-sans pr-4">
+                                            {adConfig?.description}
+                                        </div>
+                                    </ScrollArea>
+                                    <div className="mt-4 flex justify-end gap-2">
+                                        <Button variant="outline" onClick={() => setViewingAd(false)}>{t.job_card.close}</Button>
+                                        <Button onClick={async () => {
+                                            // TRACK APPLICATION (Magic Click)
+                                            try {
+                                                const { trackApplication } = await import("@/app/actions/application");
+                                                await trackApplication({
+                                                    id: job.id,
+                                                    title: job.title,
+                                                    company: job.company,
+                                                    url: job.webbplatsurl,
+                                                    location: job.location,
+                                                    created_at: job.created_at, // Add this to type def in action if needed, or omit
+                                                    description: adConfig?.description
+                                                });
+                                            } catch (err) {
+                                                console.error("Tracking failed", err);
+                                            }
+                                            // Open Original
+                                            window.open(job.webbplatsurl, '_blank');
+                                        }}>
+                                            {t.job_card.visit_save} <ExternalLink className="ml-2 h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                </DialogContent>
+                            </Dialog>
+                        </div>
+                    </CardFooter>
+                </Card>
+            </motion.div >
+            {
+                showOracle && oracleSessionId && oracleContext && (
+                    <OracleInterface
+                        sessionId={oracleSessionId!}
+                        marketContext={oracleContext}
+                        onClose={() => setShowOracle(false)}
+                    />
+                )
+            }
+        </>
     )
 }
