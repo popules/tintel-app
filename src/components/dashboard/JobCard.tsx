@@ -235,7 +235,20 @@ export function JobCard({ job, index, initialSaved = false, mode = 'recruiter' }
         setConsulting(true)
 
         try {
-            const result = await startOracleSession(job.id)
+            // Check if we have description, if not, try to get it
+            let Desc = adConfig?.description || "";
+            if (!Desc || Desc.length < 50) {
+                // Try to scrape (silent fail if error)
+                try {
+                    const res = await fetch(`/api/scrape-job?url=${encodeURIComponent(job.webbplatsurl)}`)
+                    const data = await res.json()
+                    Desc = data.description;
+                } catch (e) {
+                    console.warn("Auto-scrape for Oracle failed", e);
+                }
+            }
+
+            const result = await startOracleSession(job.id, Desc)
             if (result.success) {
                 setOracleSessionId(result.sessionId)
                 setOracleContext(result.marketContext)
@@ -580,7 +593,7 @@ export function JobCard({ job, index, initialSaved = false, mode = 'recruiter' }
                                     >
                                         <ExternalLink className="mr-2 h-4 w-4" />
                                         {/* Using hardcoded text or existing translation key if suitable */}
-                                        {t.job_card?.visit_site || "Visit Job Site"}
+                                        {(t.job_card as any)?.visit_site || "Visit Job Site"}
                                     </Button>
                                 </div>
                             </div>
@@ -631,22 +644,7 @@ export function JobCard({ job, index, initialSaved = false, mode = 'recruiter' }
                                                     <Sparkles className="h-3 w-3 animate-pulse" />
                                                     AI Estimated: {(job.salary_min || localSalary?.min)?.toLocaleString()} - {(job.salary_max || localSalary?.max)?.toLocaleString()} {job.salary_currency || localSalary?.currency || 'SEK'}
                                                 </Badge>
-                                            ) : (
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    className="h-8 border-indigo-500/30 text-indigo-500 hover:bg-indigo-500/10 text-[10px] uppercase font-bold tracking-widest"
-                                                    onClick={handleEstimateSalary}
-                                                    disabled={estimatingSalary}
-                                                >
-                                                    {estimatingSalary ? (
-                                                        <Loader2 className="h-3 w-3 animate-spin mr-2" />
-                                                    ) : (
-                                                        <Sparkles className="h-3 w-3 mr-2" />
-                                                    )}
-                                                    {estimatingSalary ? "Analyzing..." : "Reveal AI Salary Estimate"}
-                                                </Button>
-                                            )}
+                                            ) : null}
                                         </div>
                                     </DialogHeader>
                                     <ScrollArea className="h-[60vh] w-full mt-4 rounded-md bg-muted/30 border p-4">

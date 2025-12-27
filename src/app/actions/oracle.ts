@@ -8,7 +8,7 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
 
-export async function startOracleSession(jobId: string) {
+export async function startOracleSession(jobId: string, clientDescription?: string) {
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -38,11 +38,18 @@ export async function startOracleSession(jobId: string) {
 
         if (!salaryMin || !salaryMax) {
             console.log("Oracle: Salary missing, estimating on the fly...");
-            const estimate = await estimateSalary(job.description || "", job.title || "", job.location || "");
-            if (estimate) {
-                salaryMin = estimate.min;
-                salaryMax = estimate.max;
-                salaryCurrency = estimate.currency;
+            // Use client description if DB description is missing/short
+            const textToAnalyze = (job.description && job.description.length > 50) ? job.description : (clientDescription || "");
+
+            if (textToAnalyze && textToAnalyze.length > 50) {
+                const estimate = await estimateSalary(textToAnalyze, job.title || "", job.location || "");
+                if (estimate) {
+                    salaryMin = estimate.min;
+                    salaryMax = estimate.max;
+                    salaryCurrency = estimate.currency;
+                }
+            } else {
+                console.warn("Oracle: No description available for salary estimation.");
             }
         }
 
