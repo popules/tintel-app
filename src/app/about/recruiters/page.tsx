@@ -3,7 +3,7 @@
 import { LandingHeader } from "@/components/landing/LandingHeader";
 import { Footer } from "@/components/landing/Footer";
 import { motion } from "framer-motion";
-import { Search, BarChart3, LockKeyhole, ArrowRight } from "lucide-react";
+import { Search, LockKeyhole, ArrowRight, Sparkles, Users, Radar, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useTranslation } from "@/lib/i18n-context";
@@ -63,7 +63,7 @@ export default function RecruiterAboutPage() {
                     </div>
 
                     {/* Features Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-32">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-32">
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
@@ -76,7 +76,7 @@ export default function RecruiterAboutPage() {
                             </div>
                             <h3 className="text-xl font-bold mb-3">{txt.cards.card_1_title}</h3>
                             <p className="text-muted-foreground leading-relaxed">
-                                {txt.cards.card_1_desc.split('*')[0]} <i>{txt.cards.card_1_desc.split('*')[1]}</i> {txt.cards.card_1_desc.split('*')[2]}
+                                {txt.cards.card_1_desc}
                             </p>
                         </motion.div>
 
@@ -104,7 +104,7 @@ export default function RecruiterAboutPage() {
                             className="p-8 rounded-3xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
                         >
                             <div className="h-12 w-12 rounded-2xl bg-purple-500/20 flex items-center justify-center text-purple-400 mb-6">
-                                <BarChart3 className="h-6 w-6" />
+                                <Sparkles className="h-6 w-6" />
                             </div>
                             <h3 className="text-xl font-bold mb-3">{txt.cards.card_3_title}</h3>
                             <p className="text-muted-foreground leading-relaxed">
@@ -117,14 +117,46 @@ export default function RecruiterAboutPage() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.4 }}
-                            className="p-8 rounded-3xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors border-l-4 border-l-emerald-500"
+                            className="p-8 rounded-3xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
                         >
                             <div className="h-12 w-12 rounded-2xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 mb-6">
-                                <Search className="h-6 w-6" />
+                                <Users className="h-6 w-6" />
                             </div>
-                            <h3 className="text-xl font-bold mb-3 text-emerald-400">{txt.cards.card_4_title}</h3>
+                            <h3 className="text-xl font-bold mb-3">{txt.cards.card_4_title}</h3>
                             <p className="text-muted-foreground leading-relaxed">
                                 {txt.cards.card_4_desc}
+                            </p>
+                        </motion.div>
+
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.5 }}
+                            className="p-8 rounded-3xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+                        >
+                            <div className="h-12 w-12 rounded-2xl bg-orange-500/20 flex items-center justify-center text-orange-400 mb-6">
+                                <Radar className="h-6 w-6" />
+                            </div>
+                            <h3 className="text-xl font-bold mb-3">{txt.cards.card_5_title}</h3>
+                            <p className="text-muted-foreground leading-relaxed">
+                                {txt.cards.card_5_desc}
+                            </p>
+                        </motion.div>
+
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.6 }}
+                            className="p-8 rounded-3xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+                        >
+                            <div className="h-12 w-12 rounded-2xl bg-cyan-500/20 flex items-center justify-center text-cyan-400 mb-6">
+                                <Bell className="h-6 w-6" />
+                            </div>
+                            <h3 className="text-xl font-bold mb-3">{txt.cards.card_6_title}</h3>
+                            <p className="text-muted-foreground leading-relaxed">
+                                {txt.cards.card_6_desc}
                             </p>
                         </motion.div>
                     </div>

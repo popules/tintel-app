@@ -82,7 +82,7 @@ export function StatsRow() {
         >
             {stats.map((stat, i) => (
                 <motion.div key={i} variants={item}>
-                    <Link href={stat.title === t.dashboard.stats_companies ? '/companies' : (stat.title === t.dashboard.stats_market ? '/analytics' : '#')}>
+                    <Link href={stat.title === t.dashboard.stats_companies ? '/companies' : '#'}>
                         <Card className="border-0 shadow-sm bg-card/50 backdrop-blur-sm hover:bg-card/80 transition-all cursor-pointer group overflow-hidden border border-white/5 active:scale-[0.98]">
                             <div className="h-1 w-full bg-gradient-to-r from-transparent via-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

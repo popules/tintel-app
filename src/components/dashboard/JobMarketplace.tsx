@@ -175,15 +175,47 @@ export function JobMarketplace({ mode }: JobMarketplaceProps) {
                 }
             }
 
-            // 2. Fetch Filter Metadata
-            const { data: catData } = await supabase.from("job_categories").select("broader_name");
-            if (catData) setCategories([...new Set(catData.map((c) => c.broader_name))].sort());
+            // 2. Fetch Filter Metadata (Optimized with RPC)
+            // Function to fetch unique categories
+            const fetchCategories = async () => {
+                let cats: string[] = [];
+                const { data: rpcData, error: rpcError } = await supabase.rpc('get_active_job_categories');
+                if (!rpcError && rpcData) {
+                    cats = rpcData.map((c: any) => c.category);
+                } else {
+                    // Fallback
+                    const { data } = await supabase.from("job_categories").select("broader_name");
+                    if (data) cats = data.map((c) => c.broader_name);
+                }
+                setCategories([...new Set(cats)].sort());
+            };
+            fetchCategories();
 
-            const { data: locData } = await supabase.from("job_posts").select("county, location");
-            if (locData) {
-                const uniqueLocations = Array.from(new Map(locData.map(item => [`${item.county}-${item.location}`, item])).values());
-                setLocations(uniqueLocations.filter(l => l.county && l.location));
-            }
+            // Function to fetch unique locations
+            const fetchLocations = async () => {
+                let locs: LocationData[] = [];
+                const { data: rpcData, error: rpcError } = await supabase.rpc('get_active_job_locations');
+
+                if (!rpcError && rpcData) {
+                    locs = rpcData;
+                } else {
+                    // Fallback to basic fetch (with higher limit to catch more cities)
+                    console.warn("RPC get_active_job_locations failed or missing, using fallback.", rpcError);
+                    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+                    const { data } = await supabase
+                        .from("job_posts")
+                        .select("county, location")
+                        .gt("created_at", thirtyDaysAgo)
+                        .limit(5000); // 5x default limit
+
+                    if (data) {
+                        const uniqueLocations = Array.from(new Map(data.map(item => [`${item.county}-${item.location}`, item])).values());
+                        locs = uniqueLocations.filter(l => l.county && l.location);
+                    }
+                }
+                setLocations(locs);
+            };
+            fetchLocations();
 
             setPrefLoaded(true);
         };

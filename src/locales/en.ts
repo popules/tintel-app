@@ -8,6 +8,7 @@ export const en = {
         pricing: "Pricing",
         dashboard: "Dashboard",
         logout: "Log out",
+        profile: "My Profile"
     },
     landing: {
         trust_badge: "Used by recruiting teams at",
@@ -41,6 +42,7 @@ export const en = {
         new_badge: "New",
         search_results: "Results",
         market_intel: "Market Intelligence",
+        my_pipeline: "My Pipeline",
     },
     dashboard: {
         dashboard: "Dashboard",
@@ -86,6 +88,11 @@ export const en = {
         opportunity: "Opportunity",
         view_details: "View Details",
         hiring_surge: "hiring surge",
+        status: {
+            applied: "Applied",
+            saved: "Saved",
+            viewed: "Viewed"
+        }
     },
     job_card: {
         new: "NEW",
@@ -104,6 +111,9 @@ export const en = {
         indirect_contact: "Indirect contact only",
         direct_contact: "Direct Contact",
         company_identified: "Company Identified",
+        status_applied: "Applied",
+        status_saved: "Saved",
+        status_viewed: "Viewed"
     },
     candidate_card: {
         unspecified: "Unspecified Role",
@@ -113,7 +123,7 @@ export const en = {
         available: "Available",
         preview: "Preview",
         blur_text: "This candidate represents a strong match for roles in this sector. Unlock full profile to view detailed biography, work history, availability and contact information.",
-        view_cv: "View CV",
+        view_cv: "View Profile",
         contact: "Contact",
         unlock: "Unlock Profile (1 Credit)",
         unlocking: "Unlocking...",
@@ -144,7 +154,7 @@ export const en = {
         about: {
             mission_badge: "Our Mission",
             mission_title: "Intelligence for main street.",
-            mission_desc: "We are democratizing access to enterprise-grade recruitment intelligence. Tintel gives independent recruiters and small teams the same AI superpowers as the tech giants.",
+            mission_desc: "Our mission is to make recruitment more human through smarter technology. We give both recruiters and candidates the tools to find the right fit instantly.",
             gbg_badge: "Designed in Gothenburg",
             gbg_coords: "Coordinates: 57.7089° N, 11.9746° E",
             gbg_title: "Built in Gothenburg.",
@@ -450,7 +460,7 @@ export const en = {
         visible: "Visible to recruiters",
         hidden: "Hidden from search",
         edit_profile: "Edit Profile",
-        view_cv: "View Public CV",
+        view_cv: "View Public Profile",
         performance: "Performance",
         profile_views: "Profile Views",
         last_30: "Last 30 days",
@@ -469,7 +479,7 @@ export const en = {
         error_role: "This account is not a candidate account."
     },
     dashboard_filters: {
-        target_counties: "Target Counties",
+        target_counties: "Regions",
         categories: "Categories",
         filter_city: "Filter by City",
         all_cities: "All Cities",
@@ -490,7 +500,11 @@ export const en = {
             card_3_title: "AI Personalization",
             card_3_desc: "Our AI analyzes the job ad and company news to draft hyper-personalized outreach emails that get replies.",
             card_4_title: "Active Talent Marketplace",
-            card_4_desc: "Need to fill a role instantly? Access our curated database of pre-vetted candidates who are ready to move."
+            card_4_desc: "Need to fill a role instantly? Access our curated database of pre-vetted candidates with verified skills.",
+            card_5_title: "Market Radar",
+            card_5_desc: "See where talent is moving. Our real-time data shows which companies are hiring and which are bleeding talent.",
+            card_6_title: "Automated Monitoring",
+            card_6_desc: "Create watches on sectors or specific companies and get signals instantly when they show buying intent."
         }
     },
     about_candidates: {
@@ -498,14 +512,43 @@ export const en = {
         title_1: "Get noticed.",
         title_2: "Not lost.",
         subtitle: "Stop sending applications into the void. Build your profile once, and let the top companies in Sweden come to you.",
-        cta: "Build my Smooth CV",
+        cta: "Create my Smart Profile",
         cards: {
-            card_1_title: "AI-Optimized Profile",
-            card_1_desc: "Our AI turns your messy CV into a standardized, beautiful 'Smooth CV' that recruiters love to read.",
-            card_2_title: "Passive Visibility",
-            card_2_desc: "Set your status to 'Open to Work' and appear in search results for verified recruiters, without applying.",
-            card_3_title: "You're in Control",
-            card_3_desc: "Toggle your visibility instantly. Hide from your current employer (coming soon) and control who sees your data."
+            card_1_title: "Smart Tintel Profile",
+            card_1_desc: "Upload your old CV and let our AI transform it into a structured, searchable 'Smart Profile' that automatically matches with hidden jobs.",
+            card_2_title: "Aggregated Search",
+            card_2_desc: "Stop monitoring 20 different sites. We gather Sweden's entire job market in one place, searchable with a click.",
+            card_3_title: "Automatic Insights",
+            card_3_desc: "Get unique market data on every job ad. See salary estimates, growth rates, and hiring history before you apply.",
+            card_4_title: "Heart the Right Stuff",
+            card_4_desc: "Save interesting ads to your pipeline or 'Heart' them to train the algorithm on what you like.",
+            card_5_title: "Passive Visibility",
+            card_5_desc: "Set your status to 'Open to Work' and appear in search results for verified recruiters, completely anonymously if you wish.",
+            card_6_title: "You're in Control",
+            card_6_desc: "Your data is yours. You decide who sees what and can hide your profile from your current employer."
+        }
+    },
+    upgrade_modal: {
+        refill: {
+            title: "Refill Credits",
+            desc: "Need a quick boost? Get 50 more messages to chat with the Oracle about salary, competition, and career moves.",
+            feature_1: "50 Oracle Messages",
+            feature_2: "Valid forever (no expiry)",
+            feature_3: "One-time payment",
+            price: "25 SEK",
+            price_sub: "/ once",
+            button: "Buy 50 Credits"
+        },
+        pro: {
+            title: "Job Hunter Pro",
+            desc: "Serious about your next move? Unlock recurring credits and premium features to maximize your chances.",
+            badge: "MOST POPULAR",
+            feature_1: "500 Credits / month",
+            feature_2: "Top priority response time",
+            feature_3: "Premium 'Pro' Badge",
+            price: "59 SEK",
+            price_sub: "/ month",
+            button: "Upgrade to Pro"
         }
     }
 };

@@ -41,6 +41,7 @@ export const sv = {
         new_badge: "Nytt",
         search_results: "Resultat",
         market_intel: "Marknadsintelligens",
+        my_pipeline: "Min Pipeline",
     },
     dashboard: {
         dashboard: "Översikt",
@@ -104,6 +105,9 @@ export const sv = {
         indirect_contact: "Endast indirekt kontakt",
         direct_contact: "Direktkontakt",
         company_identified: "Företag Identifierat",
+        status_applied: "Sökt",
+        status_saved: "Sparad",
+        status_viewed: "Visad"
     },
     candidate_card: {
         unspecified: "Ospecificerad Roll",
@@ -113,7 +117,7 @@ export const sv = {
         available: "Tillgänglig",
         preview: "Förhandsvisning",
         blur_text: "Denna kandidat matchar starkt för roller inom denna sektor. Lås upp profilen för att se detaljerad biografi, anställningshistorik, tillgänglighet och kontaktuppgifter.",
-        view_cv: "Visa CV",
+        view_cv: "Visa Profil",
         contact: "Kontakta",
         unlock: "Lås upp profil (1 Kredit)",
         unlocking: "Låser upp...",
@@ -144,7 +148,7 @@ export const sv = {
         about: {
             mission_badge: "Vårt Uppdrag",
             mission_title: "Intelligens för alla.",
-            mission_desc: "Vi demokratiserar tillgången till rekryteringsintelligens i världsklass. Tintel ger fristående rekryterare och små team samma AI-superkrafter som tech-jättarna.",
+            mission_desc: "Vårt uppdrag är att göra rekrytering mänskligare genom smartare teknologi. Vi ger både rekryterare och kandidater verktygen för att hitta rätt direkt.",
             gbg_badge: "Designad i Göteborg",
             gbg_coords: "Koordinater: 57.7089° N, 11.9746° Ö",
             gbg_title: "Byggt i Göteborg.",
@@ -272,7 +276,7 @@ export const sv = {
         },
         contact: {
             badge: "Kontakta oss",
-            title: "Vi hör gärna från dig.",
+            title: "Hör gärna av dig.",
             subtitle: "Oavsett om du har frågor om funktioner, priser eller bara vill säga hej så är vi redo att svara.",
             email_label: "Mejla oss direkt",
             email_value: "hello@tintel.se",
@@ -447,7 +451,7 @@ export const sv = {
         visible: "Synlig för rekryterare",
         hidden: "Dold från sökningar",
         edit_profile: "Redigera Profil",
-        view_cv: "Visa Publikt CV",
+        view_cv: "Visa Publik Profil",
         performance: "Prestation",
         profile_views: "Profilvisningar",
         last_30: "Senaste 30 dagarna",
@@ -466,7 +470,7 @@ export const sv = {
         error_role: "Detta konto är inte ett kandidatkonto."
     },
     dashboard_filters: {
-        target_counties: "Målregioner",
+        target_counties: "Regioner",
         categories: "Kategorier",
         filter_city: "Filtrera på Stad",
         all_cities: "Alla Städer",
@@ -487,7 +491,11 @@ export const sv = {
             card_3_title: "AI Personifiering",
             card_3_desc: "Vår AI analyserar jobbannonser och företagsnyheter för att skapa hyper-personifierade mail som får svar.",
             card_4_title: "Aktiv Talangmarknad",
-            card_4_desc: "Behöver du fylla en roll direkt? Få tillgång till vår databas av redo-att-flytta kandidater."
+            card_4_desc: "Behöver du fylla en roll direkt? Få tillgång till vår databas av redo-att-flytta kandidater med verifierad kompetens.",
+            card_5_title: "Marknadsradar",
+            card_5_desc: "Se var kompetensen flyttar sig. Vår realtidsdata visar vilka bolag som anställer och vilka som blöder talang.",
+            card_6_title: "Automatiserad Bevakning",
+            card_6_desc: "Skapa bevakningar på sektorer eller specifika bolag och få signaler direkt när de visar köpsignaler."
         }
     },
     about_candidates: {
@@ -495,14 +503,43 @@ export const sv = {
         title_1: "Bli sedd.",
         title_2: "Inte bortglömd.",
         subtitle: "Sluta skicka ansökningar ut i tomma intet. Bygg din profil en gång och låt Sveriges toppbolag komma till dig.",
-        cta: "Skapa mitt Smooth CV",
+        cta: "Skapa min Smart Profil",
         cards: {
-            card_1_title: "AI-Optimerad Profil",
-            card_1_desc: "Vår AI omvandlar ditt röriga CV till ett standardiserat, vackert 'Smooth CV' som rekryterare älskar att läsa.",
-            card_2_title: "Passiv Synlighet",
-            card_2_desc: "Sätt din status till 'Öppen för nya möjligheter' och dyk upp i sökresultat för verifierade rekryterare, utan att behöva ansöka.",
-            card_3_title: "Du har kontrollen",
-            card_3_desc: "Styr din synlighet direkt. Dölj dig för din nuvarande arbetsgivare (kommer snart) och kontrollera vem som ser din data."
+            card_1_title: "Smart Tintel-Profil",
+            card_1_desc: "Ladda upp ditt gamla CV och låt vår AI transformera det till en strukturerad, sökbar 'Smart Profil' som matchas automatiskt mot dolda jobb.",
+            card_2_title: "Aggregerat Jobbsök",
+            card_2_desc: "Sluta bevaka 20 olika sajter. Vi samlar hela Sveriges arbetsmarknad på ett ställe, sökbart med ett klick.",
+            card_3_title: "Automatiska Insikter",
+            card_3_desc: "Få unika marknadsdata direkt i jobbannonsen. Se löneestimat, tillväxttakt och anställningshistorik innan du söker.",
+            card_4_title: "Hjärtat på Rätt Ställe",
+            card_4_desc: "Spara intressanta annonser till din pipeline eller 'Hjärta' dem för att träna algoritmen på vad du gillar.",
+            card_5_title: "Passiv Synlighet",
+            card_5_desc: "Sätt din status till 'Öppen för nya möjligheter' och dyk upp i sökresultat för verifierade rekryterare, helt anonymt om du vill.",
+            card_6_title: "Du har kontrollen",
+            card_6_desc: "Din data är din. Du bestämmer vem som ser vad och kan dölja din profil för nuvarande arbetsgivare."
+        }
+    },
+    upgrade_modal: {
+        refill: {
+            title: "Fyll på Krediter",
+            desc: "Behöver du en snabb boost? Få 50 nya meddelanden för att diskutera lön, konkurrens och karriärdrag med Oraklet.",
+            feature_1: "50 Orakel-meddelanden",
+            feature_2: "Giltiga för evigt (inget utgångsdatum)",
+            feature_3: "Engångsbetalning",
+            price: "25 SEK",
+            price_sub: "/ gång",
+            button: "Köp 50 Krediter"
+        },
+        pro: {
+            title: "Job Hunter Pro",
+            desc: "Seriös med din karriär? Lås upp återkommande krediter och premiumfunktioner för att maximera dina chanser.",
+            badge: "MEST POPULÄR",
+            feature_1: "500 Krediter / månad",
+            feature_2: "Högsta prioritet (svarstid)",
+            feature_3: "Premium 'Pro' Badge",
+            price: "59 SEK",
+            price_sub: "/ månad",
+            button: "Uppgradera till Pro"
         }
     }
 };

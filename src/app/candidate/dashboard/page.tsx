@@ -207,7 +207,7 @@ export default function CandidateDashboardPage() {
                                                     ${app.status === 'saved' ? 'bg-zinc-100 text-zinc-600' :
                                                         app.status === 'applied' ? 'bg-blue-100 text-blue-600' : 'bg-green-100 text-green-600'}
                                                 `}>
-                                                    {app.status}
+                                                    {(t.dashboard.status as any)?.[`status_${app.status}`] || app.status}
                                                 </Badge>
                                                 <ExternalLink className="h-4 w-4 text-muted-foreground group-hover:text-indigo-500 transition-colors" />
                                             </div>

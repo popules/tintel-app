@@ -3,7 +3,7 @@
 import { LandingHeader } from "@/components/landing/LandingHeader";
 import { Footer } from "@/components/landing/Footer";
 import { motion } from "framer-motion";
-import { Sparkles, Eye, ShieldCheck, ArrowRight } from "lucide-react";
+import { Sparkles, Eye, ShieldCheck, ArrowRight, Heart, Ghost, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useTranslation } from "@/lib/i18n-context";
@@ -109,6 +109,54 @@ export default function CandidateAboutPage() {
                             <h3 className="text-xl font-bold mb-3">{txt.cards.card_3_title}</h3>
                             <p className="text-muted-foreground leading-relaxed">
                                 {txt.cards.card_3_desc}
+                            </p>
+                        </motion.div>
+
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.4 }}
+                            className="p-8 rounded-3xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+                        >
+                            <div className="h-12 w-12 rounded-2xl bg-pink-500/20 flex items-center justify-center text-pink-400 mb-6">
+                                <Heart className="h-6 w-6" />
+                            </div>
+                            <h3 className="text-xl font-bold mb-3">{txt.cards.card_4_title}</h3>
+                            <p className="text-muted-foreground leading-relaxed">
+                                {txt.cards.card_4_desc}
+                            </p>
+                        </motion.div>
+
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.5 }}
+                            className="p-8 rounded-3xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+                        >
+                            <div className="h-12 w-12 rounded-2xl bg-yellow-500/20 flex items-center justify-center text-yellow-400 mb-6">
+                                <Ghost className="h-6 w-6" />
+                            </div>
+                            <h3 className="text-xl font-bold mb-3">{txt.cards.card_5_title}</h3>
+                            <p className="text-muted-foreground leading-relaxed">
+                                {txt.cards.card_5_desc}
+                            </p>
+                        </motion.div>
+
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.6 }}
+                            className="p-8 rounded-3xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+                        >
+                            <div className="h-12 w-12 rounded-2xl bg-indigo-500/20 flex items-center justify-center text-indigo-400 mb-6">
+                                <Lock className="h-6 w-6" />
+                            </div>
+                            <h3 className="text-xl font-bold mb-3">{txt.cards.card_6_title}</h3>
+                            <p className="text-muted-foreground leading-relaxed">
+                                {txt.cards.card_6_desc}
                             </p>
                         </motion.div>
                     </div>

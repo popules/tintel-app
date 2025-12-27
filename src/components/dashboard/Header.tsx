@@ -179,7 +179,7 @@ export function Header({ searchTerm = "", setSearchTerm = () => { } }: HeaderPro
                         <div className="hidden md:flex flex-col items-end mr-2">
                             <span className="text-xs font-semibold text-foreground">{profile?.full_name || user.email}</span>
                             <span className="text-[10px] text-indigo-500 font-bold uppercase tracking-wider">
-                                {profile?.role === 'candidate' ? 'Candidate' : (profile?.membership_tier === 'admin' || user.email === 'antonaberg@gmail.com' ? 'Admin / Partner' : 'Partner Access')}
+                                {profile?.role === 'candidate' ? (t.header as any).candidate || 'Kandidat' : (profile?.membership_tier === 'admin' || user.email === 'antonaberg@gmail.com' ? 'Admin / Partner' : 'Partner Access')}
                             </span>
                         </div>
                         <DropdownMenu>
@@ -256,13 +256,39 @@ export function Header({ searchTerm = "", setSearchTerm = () => { } }: HeaderPro
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-56">
                                 <DropdownMenuLabel>{t.header.my_account}</DropdownMenuLabel>
+
+                                <DropdownMenuItem className="cursor-pointer" asChild>
+                                    <Link href={profile?.role === 'candidate' ? "/candidate/dashboard" : "/profile"} className="flex items-center w-full">
+                                        <LayoutDashboard className="mr-2 h-4 w-4" />
+                                        <span>{profile?.role === 'candidate' ? (t.nav as any).profile : t.dashboard.dashboard}</span>
+                                    </Link>
+                                </DropdownMenuItem>
+
+                                <DropdownMenuSeparator />
+
                                 <DropdownMenuItem className="cursor-pointer" asChild>
                                     <Link href={profile?.role === 'candidate' ? "/candidate/my-jobs" : "/saved"} className="flex items-center w-full">
                                         <Kanban className="mr-2 h-4 w-4" />
-                                        <span>{profile?.role === 'candidate' ? "My Pipeline" : t.dashboard.saved}</span>
+                                        <span>{profile?.role === 'candidate' ? (t.header as any).my_pipeline : t.dashboard.saved}</span>
                                     </Link>
                                 </DropdownMenuItem>
+
+                                {profile?.role === 'candidate' && (
+                                    <>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem className="cursor-pointer" asChild>
+                                            <Link href="/candidate/billing" className="flex items-center w-full">
+                                                <div className="mr-2 h-4 w-4 flex items-center justify-center">
+                                                    <span className="text-xs font-bold">💎</span>
+                                                </div>
+                                                <span>{t.dashboard.billing}</span>
+                                            </Link>
+                                        </DropdownMenuItem>
+                                    </>
+                                )}
+
                                 <DropdownMenuSeparator />
+
                                 {profile?.role === 'admin' && (
                                     <>
                                         <DropdownMenuItem className="cursor-pointer font-bold text-indigo-500 focus:text-indigo-600" asChild>
@@ -274,13 +300,7 @@ export function Header({ searchTerm = "", setSearchTerm = () => { } }: HeaderPro
                                         <DropdownMenuSeparator />
                                     </>
                                 )}
-                                <DropdownMenuItem className="cursor-pointer" asChild>
-                                    <Link href={profile?.role === 'candidate' ? "/candidate/dashboard" : "/profile"} className="flex items-center w-full">
-                                        <LayoutDashboard className="mr-2 h-4 w-4" />
-                                        <span>{t.dashboard.dashboard}</span>
-                                    </Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
+
                                 <DropdownMenuItem onClick={handleSignOut} className="text-red-500 cursor-pointer focus:text-red-500">
                                     <LogOut className="mr-2 h-4 w-4" />
                                     <span>{t.nav.logout}</span>
@@ -299,6 +319,6 @@ export function Header({ searchTerm = "", setSearchTerm = () => { } }: HeaderPro
                     </div>
                 )}
             </div>
-        </header>
+        </header >
     )
 }
