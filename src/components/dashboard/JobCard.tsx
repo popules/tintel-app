@@ -183,6 +183,7 @@ export function JobCard({ job, index, initialSaved = false, mode = 'recruiter' }
     const [showOracle, setShowOracle] = useState(false)
     const [oracleSessionId, setOracleSessionId] = useState<string | null>(null)
     const [oracleContext, setOracleContext] = useState<any>(null)
+    const [oracleCredits, setOracleCredits] = useState<number>(0)
     const [consulting, setConsulting] = useState(false)
 
     const handleEstimateSalary = async (e: React.MouseEvent) => {
@@ -252,6 +253,7 @@ export function JobCard({ job, index, initialSaved = false, mode = 'recruiter' }
             if (result.success) {
                 setOracleSessionId(result.sessionId)
                 setOracleContext(result.marketContext)
+                setOracleCredits(result.credits || 0)
                 setShowOracle(true)
             } else {
                 toast.error("The Oracle is currently silent. Please try again.")
@@ -527,7 +529,7 @@ export function JobCard({ job, index, initialSaved = false, mode = 'recruiter' }
                                         ) : (
                                             <BrainCircuit className="mr-2 h-4 w-4" />
                                         )}
-                                        Consult The Oracle
+                                        Fråga Tintel Oracle
                                     </Button>
 
                                     <Button
@@ -556,7 +558,7 @@ export function JobCard({ job, index, initialSaved = false, mode = 'recruiter' }
                                     >
                                         <ExternalLink className="mr-2 h-4 w-4" />
                                         {/* Using hardcoded text or existing translation key if suitable */}
-                                        {(t.job_card as any)?.visit_site || "Visit Job Site"}
+                                        {(t.job_card as any)?.visit_site || "Besök Jobbsidan"}
                                     </Button>
                                 </div>
                             </div>
@@ -650,6 +652,7 @@ export function JobCard({ job, index, initialSaved = false, mode = 'recruiter' }
                     <OracleInterface
                         sessionId={oracleSessionId!}
                         marketContext={oracleContext}
+                        initialCredits={oracleCredits}
                         onClose={() => setShowOracle(false)}
                     />
                 )

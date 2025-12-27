@@ -1,25 +1,39 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Send, Sparkles, BrainCircuit, X, Lock } from "lucide-react";
+import { Send, Sparkles, BrainCircuit, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { chatWithOracle } from "@/app/actions/oracle";
 import { useTranslation } from "@/lib/i18n-context";
+import { UpgradeModal } from "@/components/payment/UpgradeModal";
 
 interface OracleInterfaceProps {
     sessionId: string;
     marketContext: any;
+    initialCredits?: number;
     onClose: () => void;
 }
 
-export function OracleInterface({ sessionId, marketContext, onClose }: OracleInterfaceProps) {
+const translateSignal = (label: string) => {
+    const map: Record<string, string> = {
+        "Aggressive Hirer": "Aggressiv Rekrytering",
+        "Active Hirer": "Aktiv Rekrytering",
+        "Leaker": "Personalbortfall",
+        "Neutral": "Neutral",
+        "Stable": "Stabil"
+    };
+    return map[label] || label;
+};
+
+export function OracleInterface({ sessionId, marketContext, initialCredits = 0, onClose }: OracleInterfaceProps) {
     const { t } = useTranslation();
     const [messages, setMessages] = useState<any[]>([]);
     const [input, setInput] = useState("");
     const [loading, setLoading] = useState(false);
+    const [credits, setCredits] = useState(initialCredits);
+    const [showUpgrade, setShowUpgrade] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
 
     // Initial Greeting
@@ -29,7 +43,7 @@ export function OracleInterface({ sessionId, marketContext, onClose }: OracleInt
             content: `Hej. Jag är Oraklet. Jag har analyserat marknadsdatan för denna roll.
             
 Löneestimat: ${marketContext.salary_min || '?'} - ${marketContext.salary_max || '?'} ${marketContext.salary_currency || 'SEK'}
-Rekryteringssignal: ${marketContext.signal_label} (${marketContext.hiring_velocity > 0 ? '+' : ''}${Math.round(marketContext.hiring_velocity * 100)}% aktivitet)
+Rekryteringssignal: ${translateSignal(marketContext.signal_label)} (${marketContext.hiring_velocity > 0 ? '+' : ''}${Math.round(marketContext.hiring_velocity * 100)}% aktivitet)
 
 Jag är här för att maximera dina chanser. Berätta, vad gör dig till den anomali marknaden behöver?`
         }]);
@@ -37,6 +51,12 @@ Jag är här för att maximera dina chanser. Berätta, vad gör dig till den ano
 
     const handleSend = async () => {
         if (!input.trim()) return;
+
+        // Optimistic check (though server is authority)
+        if (credits <= 0) {
+            setShowUpgrade(true);
+            return;
+        }
 
         const userMsg = input;
         setInput("");
@@ -48,6 +68,13 @@ Jag är här för att maximera dina chanser. Berätta, vad gör dig till den ano
         setLoading(false);
         if (result.success) {
             setMessages(prev => [...prev, { role: 'assistant', content: result.message }]);
+            setCredits(prev => Math.max(0, prev - 1)); // Decrement locally
+        } else if (result.error === 'insufficient_credits') {
+            setShowUpgrade(true);
+            setMessages(prev => [...prev, {
+                role: 'assistant',
+                content: "⚠️ Slut på krediter. Vänligen fyll på för att fortsätta."
+            }]);
         }
     };
 
@@ -69,7 +96,7 @@ Jag är här för att maximera dina chanser. Berätta, vad gör dig till den ano
                 <div className="w-64 bg-slate-900/50 p-6 border-r border-indigo-500/20 hidden md:block">
                     <div className="flex items-center gap-2 text-indigo-400 mb-8">
                         <BrainCircuit className="w-6 h-6" />
-                        <span className="font-bold tracking-wider">THE ORACLE</span>
+                        <span className="font-bold tracking-wider">TINTEL ORACLE</span>
                     </div>
 
                     <div className="space-y-6">
@@ -85,7 +112,7 @@ Jag är här för att maximera dina chanser. Berätta, vad gör dig till den ano
                             <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-1">Konkurrens</p>
                             <div className="flex items-center gap-2">
                                 <span className={`inline-block w-2 h-2 rounded-full ${marketContext.hiring_velocity > 0 ? 'bg-emerald-500' : 'bg-slate-500'}`} />
-                                <p className="text-sm font-medium text-slate-200">{marketContext.signal_label}</p>
+                                <p className="text-sm font-medium text-slate-200">{translateSignal(marketContext.signal_label)}</p>
                             </div>
                         </div>
 
@@ -102,9 +129,22 @@ Jag är här för att maximera dina chanser. Berätta, vad gör dig till den ano
                     {/* Header */}
                     <div className="h-14 border-b border-indigo-500/10 flex items-center justify-between px-6">
                         <span className="text-xs font-mono text-indigo-500/60 animate-pulse">● DIREKTANSLUTNING</span>
-                        <Button variant="ghost" size="icon" onClick={onClose} className="rounded-full hover:bg-slate-800 text-slate-400">
-                            <X className="w-4 h-4" />
-                        </Button>
+
+                        <div className="flex items-center gap-2">
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setShowUpgrade(true)}
+                                className={`h-8 text-xs font-medium border ${credits > 0 ? 'border-indigo-500/20 text-indigo-400' : 'border-red-500/50 text-red-500 bg-red-500/10'}`}
+                            >
+                                <Sparkles className="w-3 h-3 mr-1.5" />
+                                {credits} Krediter {credits === 0 && "(Fyll på)"}
+                            </Button>
+
+                            <Button variant="ghost" size="icon" onClick={onClose} className="rounded-full hover:bg-slate-800 text-slate-400">
+                                <X className="w-4 h-4" />
+                            </Button>
+                        </div>
                     </div>
 
                     {/* Messages */}
@@ -152,6 +192,8 @@ Jag är här för att maximera dina chanser. Berätta, vad gör dig till den ano
                     </div>
                 </div>
             </motion.div>
+
+            <UpgradeModal open={showUpgrade} onClose={() => setShowUpgrade(false)} />
         </div>
     );
 }

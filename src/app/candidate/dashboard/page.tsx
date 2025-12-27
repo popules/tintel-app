@@ -14,6 +14,8 @@ import { CandidateCard } from "@/components/dashboard/CandidateCard";
 import { motion } from "framer-motion";
 import { useTranslation } from "@/lib/i18n-context";
 import { CandidateMatchmaker } from "@/components/dashboard/CandidateMatchmaker";
+import { UpgradeModal } from "@/components/payment/UpgradeModal";
+import { LogOut } from "lucide-react";
 
 export default function CandidateDashboardPage() {
     const { t } = useTranslation();
@@ -25,6 +27,8 @@ export default function CandidateDashboardPage() {
     const [isOpen, setIsOpen] = useState(false);
     const [updatingStatus, setUpdatingStatus] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
+    const [credits, setCredits] = useState(0);
+    const [showUpgrade, setShowUpgrade] = useState(false);
     const supabase = createClient();
     const router = useRouter();
 
@@ -52,6 +56,7 @@ export default function CandidateDashboardPage() {
             if (profile) {
                 setCandidate(profile);
                 setIsOpen(profile.is_open);
+                setCredits(profile.oracle_credits || 0);
             } else {
                 router.push("/candidate/onboarding");
                 return;
@@ -116,6 +121,25 @@ export default function CandidateDashboardPage() {
 
             {/* 1. Hero / Search Section */}
             <div className="relative overflow-hidden bg-slate-950 px-6 py-16 md:py-24 lg:px-8 border-b border-white/5">
+                <div className="absolute top-6 right-6 z-20 flex items-center gap-3">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowUpgrade(true)}
+                        className="bg-white/5 hover:bg-white/10 border-white/10 text-white backdrop-blur-md"
+                    >
+                        <Sparkles className="h-3.5 w-3.5 mr-2 text-indigo-400" />
+                        {credits} {(t as any).oracle?.credits || "Credits"}
+                    </Button>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={async () => { await supabase.auth.signOut(); router.push('/') }}
+                        className="text-white/50 hover:text-white hover:bg-white/10"
+                    >
+                        <LogOut className="h-4 w-4" />
+                    </Button>
+                </div>
                 <div className="absolute top-0 right-0 -mr-16 -mt-16 h-64 w-64 rounded-full bg-indigo-500/10 blur-3xl" />
                 <div className="absolute bottom-0 left-0 -ml-16 -mb-16 h-64 w-64 rounded-full bg-purple-500/10 blur-3xl" />
 
@@ -311,6 +335,8 @@ export default function CandidateDashboardPage() {
 
                 </section>
             </div>
+
+            <UpgradeModal open={showUpgrade} onClose={() => setShowUpgrade(false)} />
         </div>
     );
 }

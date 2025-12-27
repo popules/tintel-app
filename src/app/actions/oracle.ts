@@ -78,7 +78,11 @@ export async function startOracleSession(jobId: string, clientDescription?: stri
 
         if (createError) throw createError;
 
-        return { success: true, sessionId: session.id, marketContext: marketSnapshot };
+        // Fetch current credits
+        const { data: candidate } = await supabase.from('candidates').select('oracle_credits').eq('id', user.id).single();
+        const credits = candidate?.oracle_credits || 0;
+
+        return { success: true, sessionId: session.id, marketContext: marketSnapshot, credits };
 
     } catch (err: any) {
         console.error("Start Oracle Error:", err);
@@ -91,6 +95,12 @@ export async function chatWithOracle(sessionId: string, userMessage: string) {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) return { success: false, error: "Unauthorized" };
+
+    // Check Credits
+    const { data: candidate } = await supabase.from('candidates').select('oracle_credits').eq('id', user.id).single();
+    if (!candidate || (candidate.oracle_credits || 0) <= 0) {
+        return { success: false, error: "insufficient_credits" };
+    }
 
     try {
         // 1. Fetch Session & Context
@@ -132,7 +142,7 @@ Start by acknowledging their input and asking the next relevant question.
 
         // 4. Call OpenAI
         const completion = await openai.chat.completions.create({
-            model: "gpt-4o",
+            model: "gpt-4o-mini",
             messages: [
                 { role: "system", content: systemPrompt },
                 ...newHistory.map((m: any) => ({ role: m.role, content: m.content }))
@@ -148,6 +158,9 @@ Start by acknowledging their input and asking the next relevant question.
             .from('oracle_sessions')
             .update({ chat_history: finalHistory })
             .eq('id', sessionId);
+
+        // Deduct Credit (only on success)
+        await supabase.rpc('increment_credits', { user_id: user.id, amount: -1 });
 
         return { success: true, message: aiResponse };
 
