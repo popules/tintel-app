@@ -183,6 +183,7 @@ export function JobCard({ job, index, initialSaved = false, mode = 'recruiter' }
     const [showOracle, setShowOracle] = useState(false)
     const [oracleSessionId, setOracleSessionId] = useState<string | null>(null)
     const [oracleContext, setOracleContext] = useState<any>(null)
+    const [consulting, setConsulting] = useState(false)
 
     const handleEstimateSalary = async (e: React.MouseEvent) => {
         e.preventDefault()
@@ -225,6 +226,28 @@ export function JobCard({ job, index, initialSaved = false, mode = 'recruiter' }
             toast.error("Estimation failed.");
         } finally {
             setEstimatingSalary(false)
+        }
+    }
+
+    const handleConsultOracle = async (e: React.MouseEvent) => {
+        e.preventDefault()
+        e.stopPropagation()
+        setConsulting(true)
+
+        try {
+            const result = await startOracleSession(job.id)
+            if (result.success) {
+                setOracleSessionId(result.sessionId)
+                setOracleContext(result.marketContext)
+                setShowOracle(true)
+            } else {
+                toast.error("The Oracle is currently silent. Please try again.")
+            }
+        } catch (err) {
+            console.error(err)
+            toast.error("Connection to Oracle failed.")
+        } finally {
+            setConsulting(false)
         }
     }
 
@@ -517,33 +540,49 @@ export function JobCard({ job, index, initialSaved = false, mode = 'recruiter' }
                         ) : (
                             // CANDIDATE VIEW
                             <div className="w-full">
-                                <Button
-                                    className="w-full bg-white text-black hover:bg-gray-200 border border-input shadow-sm mb-2"
-                                    onClick={async () => {
-                                        // TRACK APPLICATION
-                                        try {
-                                            const { trackApplication } = await import("@/app/actions/application");
-                                            await trackApplication({
-                                                id: job.id,
-                                                title: job.title,
-                                                company: job.company,
-                                                url: job.webbplatsurl,
-                                                location: job.location,
-                                                created_at: job.created_at,
-                                                description: adConfig?.description
-                                            });
-                                            // Open Original
-                                            window.open(job.webbplatsurl, '_blank');
-                                        } catch (err) {
-                                            console.error("Tracking failed", err);
-                                            window.open(job.webbplatsurl, '_blank');
-                                        }
-                                    }}
-                                >
-                                    {t.job_card.apply}
-                                    <ExternalLink className="mr-2 h-4 w-4" />
-                                    {t.job_card.visit_save}
-                                </Button>
+                                <div className="w-full space-y-2">
+                                    <Button
+                                        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white border-0 shadow-lg shadow-indigo-500/20"
+                                        onClick={handleConsultOracle}
+                                        disabled={consulting}
+                                    >
+                                        {consulting ? (
+                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        ) : (
+                                            <BrainCircuit className="mr-2 h-4 w-4" />
+                                        )}
+                                        Consult The Oracle
+                                    </Button>
+
+                                    <Button
+                                        variant="outline"
+                                        className="w-full border-input hover:bg-accent"
+                                        onClick={async () => {
+                                            // TRACK APPLICATION
+                                            try {
+                                                const { trackApplication } = await import("@/app/actions/application");
+                                                await trackApplication({
+                                                    id: job.id,
+                                                    title: job.title,
+                                                    company: job.company,
+                                                    url: job.webbplatsurl,
+                                                    location: job.location,
+                                                    created_at: job.created_at,
+                                                    description: adConfig?.description
+                                                });
+                                                // Open Original
+                                                window.open(job.webbplatsurl, '_blank');
+                                            } catch (err) {
+                                                console.error("Tracking failed", err);
+                                                window.open(job.webbplatsurl, '_blank');
+                                            }
+                                        }}
+                                    >
+                                        <ExternalLink className="mr-2 h-4 w-4" />
+                                        {/* Using hardcoded text or existing translation key if suitable */}
+                                        {t.job_card?.visit_site || "Visit Job Site"}
+                                    </Button>
+                                </div>
                             </div>
                         )}
 

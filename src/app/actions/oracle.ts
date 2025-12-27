@@ -1,6 +1,7 @@
 'use server'
 
 import { createClient } from "@/lib/supabase/server";
+import { estimateSalary } from "@/app/actions/salary";
 import OpenAI from "openai";
 
 const openai = new OpenAI({
@@ -30,11 +31,26 @@ export async function startOracleSession(jobId: string) {
             .eq('company_name', job.company)
             .single();
 
+        // 2.5 Estimate Salary if Missing
+        let salaryMin = job.salary_min;
+        let salaryMax = job.salary_max;
+        let salaryCurrency = job.salary_currency;
+
+        if (!salaryMin || !salaryMax) {
+            console.log("Oracle: Salary missing, estimating on the fly...");
+            const estimate = await estimateSalary(job.description || "", job.title || "", job.location || "");
+            if (estimate) {
+                salaryMin = estimate.min;
+                salaryMax = estimate.max;
+                salaryCurrency = estimate.currency;
+            }
+        }
+
         // 3. Prepare Market Context Snapshot
         const marketSnapshot = {
-            salary_min: job.salary_min,
-            salary_max: job.salary_max,
-            salary_currency: job.salary_currency,
+            salary_min: salaryMin,
+            salary_max: salaryMax,
+            salary_currency: salaryCurrency,
             hiring_velocity: signal?.hiring_velocity_score || 0,
             signal_label: signal?.signal_label || "Neutral",
             broad_category: job.broad_category,
@@ -55,7 +71,7 @@ export async function startOracleSession(jobId: string) {
 
         if (createError) throw createError;
 
-        return { success: true, sessionId: session.id };
+        return { success: true, sessionId: session.id, marketContext: marketSnapshot };
 
     } catch (err: any) {
         console.error("Start Oracle Error:", err);

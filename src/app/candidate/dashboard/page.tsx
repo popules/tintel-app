@@ -126,19 +126,26 @@ export default function CandidateDashboardPage() {
                     <p className="text-lg leading-8 text-gray-400 mb-8">
                         {txt.hero_subtitle}
                     </p>
-                    <form onSubmit={handleSearch} className="flex gap-2 max-w-md mx-auto">
+                    <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-2 max-w-xl mx-auto">
                         <div className="relative flex-1">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                             <Input
                                 placeholder={txt.search_placeholder}
-                                className="pl-10 h-12 text-base bg-white/10 border-white/20 text-white placeholder:text-gray-500 focus:bg-white/20 transition-all rounded-xl"
+                                className="pl-10 h-12 text-base bg-white/10 border-white/20 text-white placeholder:text-gray-500 focus:bg-white/20 transition-all rounded-xl w-full"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
                         </div>
-                        <Button size="lg" className="h-12 px-8 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl shadow-lg shadow-indigo-500/20">
-                            {txt.search_button}
-                        </Button>
+                        <div className="flex gap-2">
+                            <Button type="submit" size="lg" className="h-12 px-6 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl shadow-lg shadow-indigo-500/20 flex-1 sm:flex-none">
+                                {txt.search_button}
+                            </Button>
+                            <Button type="button" size="lg" variant="outline" className="h-12 px-6 border-white/10 hover:bg-white/5 text-white rounded-xl flex-1 sm:flex-none" asChild>
+                                <Link href="/candidate/jobs">
+                                    Browse All
+                                </Link>
+                            </Button>
+                        </div>
                     </form>
                     <div className="mt-6 flex justify-center gap-4 text-sm text-gray-500">
                         <span>{txt.popular}</span>
