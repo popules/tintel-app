@@ -31,7 +31,7 @@ export function OracleInterface({ sessionId, marketContext, onClose }: OracleInt
 Target Salary: ${marketContext.salary_min || '?'} - ${marketContext.salary_max || '?'} ${marketContext.salary_currency || 'SEK'}
 Hiring Signal: ${marketContext.signal_label} (${marketContext.hiring_velocity > 0 ? '+' : ''}${Math.round(marketContext.hiring_velocity * 100)}% velocity)
 
-I'm here to maximize your chances. Tell me, why makes you the anomaly this market needs?`
+I'm here to maximize your chances. Tell me, what makes you the anomaly this market needs?`
         }]);
     }, []);
 
@@ -117,8 +117,8 @@ I'm here to maximize your chances. Tell me, why makes you the anomaly this marke
                                 className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
                             >
                                 <div className={`max-w-[75%] rounded-2xl p-4 text-sm leading-relaxed ${m.role === 'user'
-                                        ? 'bg-indigo-600 text-white rounded-tr-sm'
-                                        : 'bg-slate-800/80 text-slate-200 border border-slate-700/50 rounded-tl-sm'
+                                    ? 'bg-indigo-600 text-white rounded-tr-sm'
+                                    : 'bg-slate-800/80 text-slate-200 border border-slate-700/50 rounded-tl-sm'
                                     }`}>
                                     <p className="whitespace-pre-line">{m.content}</p>
                                 </div>
