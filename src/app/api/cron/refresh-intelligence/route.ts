@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
+export const dynamic = 'force-dynamic';
+export const maxDuration = 300;
+
 export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const cronSecret = searchParams.get('secret');
