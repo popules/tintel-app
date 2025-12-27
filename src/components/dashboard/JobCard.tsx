@@ -16,6 +16,9 @@ interface JobPost {
     location: string;
     created_at: string
     webbplatsurl: string
+    salary_min?: number;
+    salary_max?: number;
+    salary_currency?: string;
 }
 
 interface JobCardProps {
@@ -261,6 +264,17 @@ export function JobCard({ job, index, initialSaved = false, mode = 'recruiter' }
                                     {t.job_card.full_time}
                                 </span>
                             </div>
+
+                            {/* Salary Estimate Badge */}
+                            {(job.salary_min && job.salary_max) && (
+                                <div className="flex items-center gap-1.5 mt-1">
+                                    <Badge variant="outline" className="px-1.5 h-5 text-[10px] bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-800 flex items-center gap-1">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                        {job.salary_min.toLocaleString()} - {job.salary_max.toLocaleString()} {job.salary_currency}
+                                    </Badge>
+                                </div>
+                            )}
+
                             <CardTitle className="text-lg font-bold tracking-tight text-foreground/90 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-2 leading-tight">
                                 {job.title}
                             </CardTitle>
@@ -512,6 +526,6 @@ export function JobCard({ job, index, initialSaved = false, mode = 'recruiter' }
                     </div>
                 </CardFooter>
             </Card>
-        </motion.div>
+        </motion.div >
     )
 }

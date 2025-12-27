@@ -7,6 +7,7 @@ import { FilterSidebar } from "@/components/dashboard/FilterSidebar";
 import { JobCard } from "@/components/dashboard/JobCard";
 import { CandidateCard } from "@/components/dashboard/CandidateCard";
 import { StatsRow } from "@/components/dashboard/Stats";
+import { MarketPulse } from "@/components/dashboard/MarketPulse";
 import { Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useTranslation } from "@/lib/i18n-context";
@@ -234,6 +235,9 @@ export default function Home() {
 
         <section className="flex-1 p-4 md:p-8 overflow-y-auto h-[calc(100vh-4rem)] bg-muted/5">
           <div className="max-w-7xl mx-auto space-y-8">
+            {/* Market Intelligence Pulse (Recruiter Only View) */}
+            {searchMode === 'jobs' && <MarketPulse />}
+
             <StatsRow />
 
             <div className="flex flex-col gap-4">

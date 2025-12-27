@@ -7,6 +7,14 @@
     {
       "path": "/api/cron/daily-matches",
       "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/cron/refresh-intelligence",
+      "schedule": "0 */6 * * *"
+    },
+    {
+      "path": "/api/cron/salary-backfill",
+      "schedule": "0 * * * *"
     }
   ]
 }
