@@ -18,38 +18,35 @@ export default function PrivacyPage() {
                 <h2>{txt.collect_title}</h2>
                 <p>{txt.collect_text}</p>
                 <ul>
-                    <li>{txt.collect_li_1}</li>
-                    <li>{txt.collect_li_2}</li>
-                    <li>{txt.collect_li_3}</li>
+                    {txt.collect_li_1 && <li>{txt.collect_li_1}</li>}
+                    {txt.collect_li_2 && <li>{txt.collect_li_2}</li>}
+                    {txt.collect_li_3 && <li>{txt.collect_li_3}</li>}
                 </ul>
 
                 <h2>{txt.use_title}</h2>
                 <ul>
-                    <li>{txt.use_li_1}</li>
-                    <li>{txt.use_li_2}</li>
-                    <li>{txt.use_li_3}</li>
-                    <li>{txt.use_li_4}</li>
+                    {txt.use_li_1 && <li>{txt.use_li_1}</li>}
+                    {txt.use_li_2 && <li>{txt.use_li_2}</li>}
+                    {txt.use_li_3 && <li>{txt.use_li_3}</li>}
                 </ul>
 
                 <h2>{txt.processors_title}</h2>
                 <p>{txt.processors_text}</p>
                 <ul>
-                    <li>{txt.processors_li_1}</li>
-                    <li>{txt.processors_li_2}</li>
-                    <li>{txt.processors_li_3}</li>
-                    <li>{txt.processors_li_4}</li>
+                    {txt.processors_li_1 && <li>{txt.processors_li_1}</li>}
+                    {txt.processors_li_2 && <li>{txt.processors_li_2}</li>}
+                    {txt.processors_li_3 && <li>{txt.processors_li_3}</li>}
                 </ul>
                 <p>{txt.visibility_text}</p>
 
                 <h2>{txt.rights_title}</h2>
                 <p>{txt.rights_text}</p>
                 <ul>
-                    <li>{txt.rights_li_1}</li>
-                    <li>{txt.rights_li_2}</li>
-                    <li>{txt.rights_li_3}</li>
-                    <li>{txt.rights_li_4}</li>
+                    {txt.rights_li_1 && <li>{txt.rights_li_1}</li>}
+                    {txt.rights_li_2 && <li>{txt.rights_li_2}</li>}
+                    {txt.rights_li_3 && <li>{txt.rights_li_3}</li>}
                 </ul>
-                <p dangerouslySetInnerHTML={{ __html: txt.contact_text.replace('privacy@tintel.se', '<a href="mailto:privacy@tintel.se">privacy@tintel.se</a>') }} />
+                {txt.contact_text && <p dangerouslySetInnerHTML={{ __html: txt.contact_text.replace('privacy@tintel.se', '<a href="mailto:privacy@tintel.se">privacy@tintel.se</a>') }} />}
 
                 <p className="text-sm text-muted-foreground mt-12 border-t pt-8">{txt.updated}</p>
             </div>
