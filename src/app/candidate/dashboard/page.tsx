@@ -142,7 +142,7 @@ export default function CandidateDashboardPage() {
                             </Button>
                             <Button type="button" size="lg" variant="outline" className="h-12 px-6 border-white/10 hover:bg-white/5 text-white rounded-xl flex-1 sm:flex-none" asChild>
                                 <Link href="/candidate/jobs">
-                                    Browse All
+                                    Visa Alla Jobb
                                 </Link>
                             </Button>
                         </div>

@@ -26,12 +26,12 @@ export function OracleInterface({ sessionId, marketContext, onClose }: OracleInt
     useEffect(() => {
         setMessages([{
             role: 'assistant',
-            content: `Hello. I am The Oracle. I've analyzed the market data for this role.
+            content: `Hej. Jag är Oraklet. Jag har analyserat marknadsdatan för denna roll.
             
-Target Salary: ${marketContext.salary_min || '?'} - ${marketContext.salary_max || '?'} ${marketContext.salary_currency || 'SEK'}
-Hiring Signal: ${marketContext.signal_label} (${marketContext.hiring_velocity > 0 ? '+' : ''}${Math.round(marketContext.hiring_velocity * 100)}% velocity)
+Löneestimat: ${marketContext.salary_min || '?'} - ${marketContext.salary_max || '?'} ${marketContext.salary_currency || 'SEK'}
+Rekryteringssignal: ${marketContext.signal_label} (${marketContext.hiring_velocity > 0 ? '+' : ''}${Math.round(marketContext.hiring_velocity * 100)}% aktivitet)
 
-I'm here to maximize your chances. Tell me, what makes you the anomaly this market needs?`
+Jag är här för att maximera dina chanser. Berätta, vad gör dig till den anomali marknaden behöver?`
         }]);
     }, []);
 
@@ -74,7 +74,7 @@ I'm here to maximize your chances. Tell me, what makes you the anomaly this mark
 
                     <div className="space-y-6">
                         <div>
-                            <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-1">Market Salary</p>
+                            <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-1">Marknadslön</p>
                             <p className="text-xl font-mono text-white">
                                 {marketContext.salary_min ? `${marketContext.salary_min / 1000}k` : '?'} - {marketContext.salary_max ? `${marketContext.salary_max / 1000}k` : '?'}
                             </p>
@@ -82,7 +82,7 @@ I'm here to maximize your chances. Tell me, what makes you the anomaly this mark
                         </div>
 
                         <div>
-                            <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-1">Competition</p>
+                            <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-1">Konkurrens</p>
                             <div className="flex items-center gap-2">
                                 <span className={`inline-block w-2 h-2 rounded-full ${marketContext.hiring_velocity > 0 ? 'bg-emerald-500' : 'bg-slate-500'}`} />
                                 <p className="text-sm font-medium text-slate-200">{marketContext.signal_label}</p>
@@ -91,7 +91,7 @@ I'm here to maximize your chances. Tell me, what makes you the anomaly this mark
 
                         <div className="pt-8 border-t border-slate-800">
                             <p className="text-xs leading-relaxed text-slate-400">
-                                "I do not guess. I calculate."
+                                "Jag gissar inte. Jag beräknar."
                             </p>
                         </div>
                     </div>
@@ -101,7 +101,7 @@ I'm here to maximize your chances. Tell me, what makes you the anomaly this mark
                 <div className="flex-1 flex flex-col bg-gradient-to-br from-slate-950 to-slate-900 relative">
                     {/* Header */}
                     <div className="h-14 border-b border-indigo-500/10 flex items-center justify-between px-6">
-                        <span className="text-xs font-mono text-indigo-500/60 animate-pulse">● LIVE CONNECTION</span>
+                        <span className="text-xs font-mono text-indigo-500/60 animate-pulse">● DIREKTANSLUTNING</span>
                         <Button variant="ghost" size="icon" onClick={onClose} className="rounded-full hover:bg-slate-800 text-slate-400">
                             <X className="w-4 h-4" />
                         </Button>
@@ -129,7 +129,7 @@ I'm here to maximize your chances. Tell me, what makes you the anomaly this mark
                             <div className="flex justify-start">
                                 <div className="bg-slate-800/80 p-4 rounded-2xl rounded-tl-sm border border-slate-700/50 flex items-center gap-2">
                                     <Sparkles className="w-4 h-4 text-indigo-400 animate-spin" />
-                                    <span className="text-xs text-indigo-300">Calculating...</span>
+                                    <span className="text-xs text-indigo-300">Beräknar...</span>
                                 </div>
                             </div>
                         )}
@@ -142,7 +142,7 @@ I'm here to maximize your chances. Tell me, what makes you the anomaly this mark
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
                                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                                placeholder="Consult the Oracle..."
+                                placeholder="Fråga Oraklet..."
                                 className="bg-slate-900 border-slate-800 focus-visible:ring-indigo-500/50 text-slate-200"
                             />
                             <Button onClick={handleSend} disabled={loading || !input.trim()} className="bg-indigo-600 hover:bg-indigo-500">

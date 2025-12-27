@@ -396,44 +396,7 @@ export function JobCard({ job, index, initialSaved = false, mode = 'recruiter' }
                                 </a>
                             </div>
 
-                            {mode === 'candidate' && (
-                                <Button
-                                    className="w-full mt-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg shadow-indigo-500/20 border border-indigo-500/50"
-                                    onClick={async () => {
-                                        toast.loading("Connecting to The Oracle...");
-                                        const result = await startOracleSession(job.id);
-                                        toast.dismiss();
 
-                                        if (result.success) {
-                                            setOracleSessionId(result.sessionId);
-                                            // Context is actually fetched inside the component now via db, 
-                                            // but for immediate UI we can pass a dummy or refetch. 
-                                            // Ideally startOracleSession returns context. 
-                                            // For now, let's just show it.
-                                            // NOTE: backend startOracleSession implementation logic has changed to return just sessionId. 
-                                            // We will pass the job data we have as partial context to avoid delay, 
-                                            // or better, fetch it in OracleInterface. 
-                                            // Let's rely on OracleInterface fetching or pass job props.
-                                            // Update: OracleInterface expects marketContext prop.
-                                            // Let's pass the job data we have here as a fallback until I update the backend to return it.
-
-                                            setOracleContext({
-                                                salary_min: job.salary_min,
-                                                salary_max: job.salary_max,
-                                                salary_currency: job.salary_currency,
-                                                signal_label: "Analyzing...",
-                                                hiring_velocity: 0
-                                            });
-                                            setShowOracle(true);
-                                        } else {
-                                            toast.error("Oracle unavailable: " + result.error);
-                                        }
-                                    }}
-                                >
-                                    <BrainCircuit className="w-4 h-4 mr-2" />
-                                    Consult The Oracle
-                                </Button>
-                            )}
 
                             <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-muted-foreground">
                                 <div className="flex items-center gap-1.5">
