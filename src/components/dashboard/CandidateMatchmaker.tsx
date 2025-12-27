@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { getMatchingJobs } from "@/app/actions/matchmaker";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, ArrowRight, Loader2, MapPin, Briefcase } from "lucide-react";
+import { Sparkles, ArrowRight, Loader2, MapPin, Briefcase, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ExportButton } from "@/components/dashboard/ExportButton";
@@ -96,13 +96,28 @@ export function CandidateMatchmaker() {
                                     <CardTitle className="text-lg line-clamp-1 group-hover:text-indigo-600 transition-colors">
                                         {job.title}
                                     </CardTitle>
-                                    <CardDescription className="font-medium text-foreground/80">{job.company}</CardDescription>
+                                    <CardDescription className="flex items-center gap-2 font-medium text-foreground/80">
+                                        {job.company}
+                                        {job.signal_label === 'Aggressive Hirer' && (
+                                            <Badge variant="outline" className="text-[9px] bg-red-500/10 text-red-500 border-red-500/20 py-0 h-4">
+                                                HOT
+                                            </Badge>
+                                        )}
+                                    </CardDescription>
                                 </div>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                    <MapPin className="h-3 w-3" />
-                                    {job.location}, {job.county}
+                                <div className="flex flex-col gap-1">
+                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                        <MapPin className="h-3 w-3" />
+                                        {job.location}, {job.county}
+                                    </div>
+                                    {job.hiring_velocity > 0 && (
+                                        <div className="text-[10px] font-bold text-emerald-500 flex items-center gap-1">
+                                            <TrendingUp className="h-3 w-3" />
+                                            +{Math.round(job.hiring_velocity * 100)}% {t.dashboard?.hiring_surge || "hiring surge"}
+                                        </div>
+                                    )}
                                 </div>
 
                                 <Link

@@ -85,6 +85,7 @@ export const en = {
         match_score: "% Match",
         opportunity: "Opportunity",
         view_details: "View Details",
+        hiring_surge: "hiring surge",
     },
     job_card: {
         new: "NEW",

@@ -49,10 +49,24 @@ export async function getMatchingJobs(matchCount: number = 5, threshold: number 
             return { success: false, error: fetchError.message };
         }
 
-        // Enrich with similarity score
+        // 4. Fetch Intelligence Signals for these companies
+        const companyNames = jobs?.map(j => j.company).filter(Boolean) || [];
+        const { data: signals } = await supabase
+            .from('company_intelligence')
+            .select('*')
+            .in('company_name', companyNames);
+
+        // Enrich with similarity score and signals
         const enrichedJobs = jobs?.map(job => {
             const match = matches.find((m: any) => String(m.job_id) === String(job.id));
-            return { ...job, match_score: match ? match.similarity : 0 };
+            const signal = signals?.find(s => s.company_name === job.company);
+
+            return {
+                ...job,
+                match_score: match ? match.similarity : 0,
+                signal_label: signal?.signal_label,
+                hiring_velocity: signal?.hiring_velocity_score
+            };
         }).sort((a, b) => b.match_score - a.match_score);
 
         return { success: true, data: enrichedJobs };

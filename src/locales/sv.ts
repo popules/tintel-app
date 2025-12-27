@@ -85,6 +85,7 @@ export const sv = {
         match_score: "% Matchning",
         opportunity: "Möjlighet",
         view_details: "Visa detaljer",
+        hiring_surge: "rekryteringsvåg",
     },
     job_card: {
         new: "NY",
