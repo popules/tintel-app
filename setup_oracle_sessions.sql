@@ -4,7 +4,7 @@ create type oracle_session_status as enum ('active', 'completed', 'abandoned');
 create table oracle_sessions (
     id uuid default gen_random_uuid() primary key,
     candidate_id uuid references auth.users(id) not null,
-    job_id uuid references job_posts(id) not null,
+    job_id bigint references job_posts(id) not null,
     status oracle_session_status default 'active',
     
     -- Structure: [{role: 'user'|'assistant', content: string, timestamp: string}]

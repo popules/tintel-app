@@ -647,7 +647,7 @@ export function JobCard({ job, index, initialSaved = false, mode = 'recruiter' }
         {
         showOracle && oracleSessionId && oracleContext && (
             <OracleInterface
-                sessionId={oracleSessionId}
+                sessionId={oracleSessionId!}
                 marketContext={oracleContext}
                 onClose={() => setShowOracle(false)}
             />
