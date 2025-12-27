@@ -90,10 +90,10 @@ export default function CandidateSignupPage() {
             >
                 <div className="text-center mb-8">
                     <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
-                        Join the Gold Mine
+                        Hitta Drömjobbet
                     </h1>
                     <p className="text-muted-foreground mt-2">
-                        Get discovered by top recruiters. No spam, just jobs.
+                        Bli upptäckt av rekryterare. Inget spam, bara jobb.
                     </p>
                 </div>
 
@@ -107,10 +107,10 @@ export default function CandidateSignupPage() {
                             )}
 
                             <div className="grid gap-2">
-                                <Label htmlFor="fullName">Full Name</Label>
+                                <Label htmlFor="fullName">För- och efternamn</Label>
                                 <Input
                                     id="fullName"
-                                    placeholder="John Doe"
+                                    placeholder="Sven Svensson"
                                     required
                                     value={fullName}
                                     onChange={(e) => setFullName(e.target.value)}
@@ -118,11 +118,11 @@ export default function CandidateSignupPage() {
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="email">Email</Label>
+                                <Label htmlFor="email">E-post</Label>
                                 <Input
                                     id="email"
                                     type="email"
-                                    placeholder="name@example.com"
+                                    placeholder="namn@exempel.se"
                                     required
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
@@ -130,7 +130,7 @@ export default function CandidateSignupPage() {
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="password">Password</Label>
+                                <Label htmlFor="password">Lösenord</Label>
                                 <Input
                                     id="password"
                                     type="password"
@@ -143,12 +143,12 @@ export default function CandidateSignupPage() {
                         <CardFooter className="flex flex-col gap-4">
                             <Button className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:opacity-90 transition-opacity text-white" disabled={loading}>
                                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                Create Candidate Account
+                                Skapa Konto
                             </Button>
                             <p className="text-xs text-center text-muted-foreground">
-                                Already have an account?{' '}
+                                Har du redan ett konto?{' '}
                                 <Link href="/candidate/login" className="underline underline-offset-4 hover:text-indigo-400 transition-colors">
-                                    Sign in
+                                    Logga in
                                 </Link>
                             </p>
                         </CardFooter>
