@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { useTranslation } from "@/lib/i18n-context";
 import { Footer } from "@/components/landing/Footer";
 import { LandingHeader } from "@/components/landing/LandingHeader";
-import { Mail, ArrowRight, MessageCircle, MapPin } from "lucide-react";
+import { Mail, ArrowRight, MapPin, Facebook, Instagram } from "lucide-react";
 
 export default function ContactPage() {
     const { t } = useTranslation();
@@ -92,12 +92,11 @@ export default function ContactPage() {
                                 <h3 className="font-semibold text-white mb-2">{t.public.contact.social_label}</h3>
                                 <p className="text-sm text-gray-500 mb-4">Follow our journey building the future of recruitment.</p>
                                 <div className="flex justify-center gap-4">
-                                    <a href="#" className="p-3 bg-white/5 rounded-full hover:bg-white/10 transition-colors text-gray-300 hover:text-white">
-                                        {/* Simple text or icon placeholders as we don't have real socials yet */}
-                                        <span className="font-bold text-sm">Li</span>
+                                    <a href="https://www.facebook.com/profile.php?id=61585671633187" target="_blank" className="p-3 bg-white/5 rounded-full hover:bg-white/10 transition-colors text-gray-300 hover:text-white">
+                                        <Facebook className="w-5 h-5" />
                                     </a>
-                                    <a href="#" className="p-3 bg-white/5 rounded-full hover:bg-white/10 transition-colors text-gray-300 hover:text-white">
-                                        <span className="font-bold text-sm">X</span>
+                                    <a href="https://instagram.com/tintel.se" target="_blank" className="p-3 bg-white/5 rounded-full hover:bg-white/10 transition-colors text-gray-300 hover:text-white">
+                                        <Instagram className="w-5 h-5" />
                                     </a>
                                 </div>
                             </div>

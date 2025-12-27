@@ -38,9 +38,8 @@ export function LandingHeader() {
                 <nav className="hidden md:flex items-center gap-8">
                     <Link href="#features" className="text-sm font-medium text-muted-foreground hover:text-white transition-colors">{t.nav.features}</Link>
                     <Link href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-white transition-colors">{t.nav.pricing}</Link>
-                    <button onClick={toggleLanguage} className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-white transition-colors uppercase">
-                        <Globe className="h-3 w-3" />
-                        {locale}
+                    <button onClick={toggleLanguage} className="flex items-center gap-1.5 text-lg leading-none hover:scale-110 transition-transform" title={locale === 'en' ? "Byt till Svenska" : "Switch to English"}>
+                        {locale === 'en' ? '🇬🇧' : '🇸🇪'}
                     </button>
                 </nav>
 
@@ -56,9 +55,8 @@ export function LandingHeader() {
 
                 {/* Mobile Menu Toggle */}
                 <div className="md:hidden flex items-center gap-4">
-                    <button onClick={toggleLanguage} className="text-sm font-bold text-white uppercase flex items-center gap-1">
-                        <Globe className="h-3 w-3" />
-                        {locale}
+                    <button onClick={toggleLanguage} className="text-xl leading-none flex items-center gap-1">
+                        {locale === 'en' ? '🇬🇧' : '🇸🇪'}
                     </button>
                     <button
                         className="z-50 p-2 text-white relative"

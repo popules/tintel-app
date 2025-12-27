@@ -475,5 +475,37 @@ export const en = {
         all_cities: "All Cities",
         list: "List",
         map: "Map"
+    },
+    about_recruiters: {
+        badge: "For Recruiters",
+        title_1: "The Operating System",
+        title_2: "for Modern Recruitment.",
+        subtitle: "Find active needs. Identify the right contact. Send the perfect pitch. All in seconds.",
+        cta: "Start Finding Leads",
+        cards: {
+            card_1_title: "Smart Lead Gen",
+            card_1_desc: "We monitor thousands of job boards to identify companies hiring *right now*. Know who has budget before your competitors do.",
+            card_2_title: "Contact Intelligence",
+            card_2_desc: "Stop guessing. We identify the actual Hiring Manager and enrich their profile with verified contact details (email & phone).",
+            card_3_title: "AI Personalization",
+            card_3_desc: "Our AI analyzes the job ad and company news to draft hyper-personalized outreach emails that get replies.",
+            card_4_title: "Active Talent Marketplace",
+            card_4_desc: "Need to fill a role instantly? Access our curated database of pre-vetted candidates who are ready to move."
+        }
+    },
+    about_candidates: {
+        badge: "For Candidates",
+        title_1: "Get noticed.",
+        title_2: "Not lost.",
+        subtitle: "Stop sending applications into the void. Build your profile once, and let the top companies in Sweden come to you.",
+        cta: "Build my Smooth CV",
+        cards: {
+            card_1_title: "AI-Optimized Profile",
+            card_1_desc: "Our AI turns your messy CV into a standardized, beautiful 'Smooth CV' that recruiters love to read.",
+            card_2_title: "Passive Visibility",
+            card_2_desc: "Set your status to 'Open to Work' and appear in search results for verified recruiters, without applying.",
+            card_3_title: "You're in Control",
+            card_3_desc: "Toggle your visibility instantly. Hide from your current employer (coming soon) and control who sees your data."
+        }
     }
 };

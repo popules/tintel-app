@@ -472,5 +472,37 @@ export const sv = {
         all_cities: "Alla Städer",
         list: "Lista",
         map: "Karta"
+    },
+    about_recruiters: {
+        badge: "För Rekryterare",
+        title_1: "Operativsystemet",
+        title_2: "för Modern Rekrytering.",
+        subtitle: "Hitta aktiva behov. Identifiera rätt kontaktperson. Skicka den perfekta pitchen. Allt på sekunder.",
+        cta: "Hitta Leads Nu",
+        cards: {
+            card_1_title: "Smart Lead Gen",
+            card_1_desc: "Vi bevakar tusentals jobbsidor för att identifiera företag som anställer *just nu*. Vet vem som har budget innan dina konkurrenter gör det.",
+            card_2_title: "Kontaktintelligens",
+            card_2_desc: "Sluta gissa. Vi identifierar den faktiska rekryterande chefen och berikar profilen med verifierade kontaktuppgifter (e-post & telefon).",
+            card_3_title: "AI Personifiering",
+            card_3_desc: "Vår AI analyserar jobbannonser och företagsnyheter för att skapa hyper-personifierade mail som får svar.",
+            card_4_title: "Aktiv Talangmarknad",
+            card_4_desc: "Behöver du fylla en roll direkt? Få tillgång till vår databas av redo-att-flytta kandidater."
+        }
+    },
+    about_candidates: {
+        badge: "För Kandidater",
+        title_1: "Bli sedd.",
+        title_2: "Inte bortglömd.",
+        subtitle: "Sluta skicka ansökningar ut i tomma intet. Bygg din profil en gång och låt Sveriges toppbolag komma till dig.",
+        cta: "Skapa mitt Smooth CV",
+        cards: {
+            card_1_title: "AI-Optimerad Profil",
+            card_1_desc: "Vår AI omvandlar ditt röriga CV till ett standardiserat, vackert 'Smooth CV' som rekryterare älskar att läsa.",
+            card_2_title: "Passiv Synlighet",
+            card_2_desc: "Sätt din status till 'Öppen för nya möjligheter' och dyk upp i sökresultat för verifierade rekryterare, utan att behöva ansöka.",
+            card_3_title: "Du har kontrollen",
+            card_3_desc: "Styr din synlighet direkt. Dölj dig för din nuvarande arbetsgivare (kommer snart) och kontrollera vem som ser din data."
+        }
     }
 };

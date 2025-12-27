@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Github, Twitter, Linkedin } from "lucide-react";
+import { Github, Twitter, Linkedin, Facebook, Instagram } from "lucide-react";
 import { useTranslation } from "@/lib/i18n-context";
 
 export function Footer() {
@@ -34,8 +34,8 @@ export function Footer() {
                             <div>
                                 <h4 className="font-bold text-white mb-4">{txt.company}</h4>
                                 <ul className="space-y-2 text-sm text-muted-foreground">
-                                    <li><Link href="/about" className="hover:text-white transition-colors">{txt.about}</Link></li>
-                                    <li><Link href="mailto:hello@tintel.se" className="hover:text-white transition-colors">{txt.contact}</Link></li>
+                                    <li><Link href="/about/recruiters" className="hover:text-white transition-colors">{txt.about}</Link></li>
+                                    <li><Link href="/contact" className="hover:text-white transition-colors">{txt.contact}</Link></li>
                                 </ul>
                             </div>
                             <div>
@@ -55,7 +55,12 @@ export function Footer() {
                         © 2025 Tintel. {txt.rights}
                     </p>
                     <div className="flex gap-4">
-                        {/* Socials placeholder */}
+                        <Link href="https://www.facebook.com/profile.php?id=61585671633187" target="_blank" className="text-muted-foreground hover:text-white transition-colors">
+                            <Facebook className="h-5 w-5" />
+                        </Link>
+                        <Link href="https://instagram.com/tintel.se" target="_blank" className="text-muted-foreground hover:text-white transition-colors">
+                            <Instagram className="h-5 w-5" />
+                        </Link>
                     </div>
                 </div>
             </div>
