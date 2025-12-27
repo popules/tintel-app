@@ -1,6 +1,14 @@
 -- Create oracle_sessions table to store AI interviews
 create type oracle_session_status as enum ('active', 'completed', 'abandoned');
 
+CREATE OR REPLACE FUNCTION update_modified_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = now();
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
 create table oracle_sessions (
     id uuid default gen_random_uuid() primary key,
     candidate_id uuid references auth.users(id) not null,
