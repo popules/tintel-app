@@ -3,7 +3,9 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { MapPin, Building2, ExternalLink, CalendarDays, Briefcase, Bookmark, ChevronRight, Heart, UserSearch, Loader2, Check, Wand2, FileText, X, Sparkles } from "lucide-react"
+import { MapPin, Building2, ExternalLink, CalendarDays, Briefcase, Bookmark, ChevronRight, Heart, UserSearch, Loader2, Check, Wand2, FileText, X, Sparkles, BrainCircuit } from "lucide-react"
+import { startOracleSession } from "@/app/actions/oracle"
+import { OracleInterface } from "@/components/oracle/OracleInterface"
 import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
 import { createClient } from "@/lib/supabase/client"
@@ -178,6 +180,9 @@ export function JobCard({ job, index, initialSaved = false, mode = 'recruiter' }
     const [generatingPitch, setGeneratingPitch] = useState(false)
     const [estimatingSalary, setEstimatingSalary] = useState(false)
     const [localSalary, setLocalSalary] = useState<{ min: number; max: number; currency: string } | null>(null)
+    const [showOracle, setShowOracle] = useState(false)
+    const [oracleSessionId, setOracleSessionId] = useState<string | null>(null)
+    const [oracleContext, setOracleContext] = useState<any>(null)
 
     const handleEstimateSalary = async (e: React.MouseEvent) => {
         e.preventDefault()
@@ -353,6 +358,45 @@ export function JobCard({ job, index, initialSaved = false, mode = 'recruiter' }
                                 {job.company}
                             </a>
                         </div>
+
+                        {mode === 'candidate' && (
+                            <Button
+                                className="w-full mt-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg shadow-indigo-500/20 border border-indigo-500/50"
+                                onClick={async () => {
+                                    toast.loading("Connecting to The Oracle...");
+                                    const result = await startOracleSession(job.id);
+                                    toast.dismiss();
+
+                                    if (result.success) {
+                                        setOracleSessionId(result.sessionId);
+                                        // Context is actually fetched inside the component now via db, 
+                                        // but for immediate UI we can pass a dummy or refetch. 
+                                        // Ideally startOracleSession returns context. 
+                                        // For now, let's just show it.
+                                        // NOTE: backend startOracleSession implementation logic has changed to return just sessionId. 
+                                        // We will pass the job data we have as partial context to avoid delay, 
+                                        // or better, fetch it in OracleInterface. 
+                                        // Let's rely on OracleInterface fetching or pass job props.
+                                        // Update: OracleInterface expects marketContext prop.
+                                        // Let's pass the job data we have here as a fallback until I update the backend to return it.
+
+                                        setOracleContext({
+                                            salary_min: job.salary_min,
+                                            salary_max: job.salary_max,
+                                            salary_currency: job.salary_currency,
+                                            signal_label: "Analyzing...",
+                                            hiring_velocity: 0
+                                        });
+                                        setShowOracle(true);
+                                    } else {
+                                        toast.error("Oracle unavailable: " + result.error);
+                                    }
+                                }}
+                            >
+                                <BrainCircuit className="w-4 h-4 mr-2" />
+                                Consult The Oracle
+                            </Button>
+                        )}
 
                         <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-muted-foreground">
                             <div className="flex items-center gap-1.5">
@@ -600,5 +644,15 @@ export function JobCard({ job, index, initialSaved = false, mode = 'recruiter' }
                 </CardFooter>
             </Card>
         </motion.div >
+        {
+        showOracle && oracleSessionId && oracleContext && (
+            <OracleInterface
+                sessionId={oracleSessionId}
+                marketContext={oracleContext}
+                onClose={() => setShowOracle(false)}
+            />
+        )
+    }
+    </>
     )
 }
