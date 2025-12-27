@@ -84,10 +84,27 @@ export async function parseResume(formData: FormData) {
             "headline": "Professional Headline (e.g. Senior Frontend Engineer)",
             "experience_years": "Number (integer) or 0 if unknown",
             "bio": "Professional summary/bio (max 400 chars)",
-            "skills": "Comma separated string of top 10 technical/soft skills",
+            "skills": [ "Array", "of", "strings" ],
             "linkedin_url": "URL or null",
             "website": "URL or null",
-            "location": "City, Country or null"
+            "location": "City, Country or null",
+            "work_experience": [
+                { 
+                    "company": "Company Name", 
+                    "role": "Title", 
+                    "start_date": "YYYY-MM or YYYY", 
+                    "end_date": "YYYY-MM or YYYY or Present", 
+                    "description": "Short bullet points (max 200 chars)"
+                }
+            ],
+            "education": [
+                {
+                    "school": "School Name",
+                    "degree": "Degree / Field of Study",
+                    "start_date": "YYYY",
+                    "end_date": "YYYY"
+                }
+            ]
         }
         `;
 

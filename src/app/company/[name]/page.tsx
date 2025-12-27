@@ -13,6 +13,8 @@ import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { CompanyIntelligence } from "@/components/companies/CompanyIntelligence";
 import { generateCompanySummary } from "@/app/actions/company-summary";
+import { checkMonitorStatus, toggleMonitorCompany } from "@/app/actions/companies";
+import { toast } from "sonner";
 import { useTranslation } from "@/lib/i18n-context";
 
 export default function CompanyPage() {
@@ -33,15 +35,16 @@ export default function CompanyPage() {
     const handleMonitor = async () => {
         setIsMonitoring(true);
         try {
-            const res = await fetch('/api/companies/monitor', {
-                method: 'POST',
-                body: JSON.stringify({ companyName })
-            });
-            if (res.ok) {
-                setIsMonitored(true);
+            const res = await toggleMonitorCompany(companyName);
+            if (res.success) {
+                setIsMonitored(res.monitored || false);
+                toast.success(res.monitored ? txt.monitoring : txt.monitor_button + " Stopped");
+            } else {
+                toast.error(res.error || "Failed to monitor");
             }
         } catch (err) {
             console.error("Failed to monitor", err);
+            toast.error("Something went wrong");
         } finally {
             setIsMonitoring(false);
         }
@@ -62,17 +65,16 @@ export default function CompanyPage() {
             setLoading(false);
         };
 
-        const checkMonitorStatus = async () => {
-            const res = await fetch('/api/companies/monitor');
-            const data = await res.json();
-            if (data.monitored?.includes(companyName)) {
-                setIsMonitored(true);
+        const checkStatus = async () => {
+            if (companyName) {
+                const isMonitored = await checkMonitorStatus(companyName);
+                setIsMonitored(isMonitored);
             }
         };
 
         if (companyName) {
             fetchCompanyJobs();
-            checkMonitorStatus();
+            checkStatus();
         }
     }, [companyName, supabase]);
 

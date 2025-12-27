@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Sparkles, ArrowRight, Loader2, MapPin, Briefcase } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { ExportButton } from "@/components/dashboard/ExportButton";
 import { useTranslation } from "@/lib/i18n-context";
 
 export function CandidateMatchmaker() {
@@ -60,9 +61,14 @@ export function CandidateMatchmaker() {
                         <p className="text-muted-foreground text-sm">{t.dashboard.matchmaker_desc}</p>
                     </div>
                 </div>
-                <Link href="/candidate/jobs" className="text-sm font-medium text-indigo-600 hover:text-indigo-500 flex items-center gap-1">
-                    {t.dashboard.view_more} <ArrowRight className="h-3 w-3" />
-                </Link>
+                <div className="flex items-center gap-4">
+                    {/* Export Button (Pro) */}
+                    <ExportButton candidates={matches} />
+
+                    <Link href="/candidate/jobs" className="text-sm font-medium text-indigo-600 hover:text-indigo-500 flex items-center gap-1">
+                        {t.dashboard.view_more} <ArrowRight className="h-3 w-3" />
+                    </Link>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

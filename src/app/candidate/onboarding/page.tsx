@@ -15,6 +15,8 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { SWEDISH_COUNTIES } from "@/lib/data/counties";
 import { ResumeUpload } from "@/components/candidate/ResumeUpload";
+import { WorkHistoryForm } from "@/components/candidate/WorkHistoryForm";
+import { EducationForm } from "@/components/candidate/EducationForm";
 
 export default function CandidateOnboarding() {
     const supabase = createClient();
@@ -29,9 +31,12 @@ export default function CandidateOnboarding() {
     const [isEditing, setIsEditing] = useState(false);
 
     // Form State
+    const [workExperience, setWorkExperience] = useState<any[]>([]);
+    const [education, setEducation] = useState<any[]>([]);
     const [headline, setHeadline] = useState("");
     const [bio, setBio] = useState("");
     const [skills, setSkills] = useState("");
+
     const [experience, setExperience] = useState("");
     const [location, setLocation] = useState("");
     const [phone, setPhone] = useState("");
@@ -75,8 +80,10 @@ export default function CandidateOnboarding() {
                     setPhone(candidate.phone || "");
                     setAddress(candidate.address || "");
                     setLinkedin(candidate.linkedin_url || "");
-                    setLinkedin(candidate.linkedin_url || "");
                     setWebsite(candidate.website || "");
+                    // Load structured data
+                    if (candidate.work_experience) setWorkExperience(candidate.work_experience);
+                    if (candidate.education) setEducation(candidate.education);
                     setIsEditing(true);
                 }
             } catch (err) {
@@ -175,9 +182,7 @@ export default function CandidateOnboarding() {
         try {
             if (!user) throw new Error("No user found");
 
-            // 0. Ensure Profile Exists (Critical for FK Constraint)
-            // We force-ensure the public.profiles row exists before inserting into candidates
-            // NOTE: We do NOT insert email here as it's not in the schema (it's in auth.users)
+            // 0. Ensure Profile Exists
             const { error: profileUpsertError } = await supabase
                 .from("profiles")
                 .upsert({
@@ -186,10 +191,7 @@ export default function CandidateOnboarding() {
                     updated_at: new Date().toISOString()
                 }, { onConflict: 'id' });
 
-            if (profileUpsertError) {
-                console.error("Profile auto-creation failed:", profileUpsertError);
-                throw new Error(`Failed to initialize profile: ${profileUpsertError.message}`);
-            }
+            if (profileUpsertError) throw new Error(`Failed to initialize profile: ${profileUpsertError.message}`);
 
             // 1. Update Candidate Table
             const { error: candidateError } = await supabase
@@ -205,53 +207,47 @@ export default function CandidateOnboarding() {
                     address,
                     linkedin_url: linkedin,
                     website,
+                    work_experience: workExperience,
+                    education: education,
                     updated_at: new Date().toISOString(),
                 });
 
             if (candidateError) throw candidateError;
 
-            // 1.5. Generate & Store Vector Embedding (The Matchmaker)
+            // 1.5. Generate & Store Vector Embedding
             try {
-                // Combine text for a rich semantic representation
                 const embeddingText = `
                     Headline: ${headline}
                     Skills: ${skills}
                     Bio: ${bio}
                     Experience: ${experience} years
                     Location: ${location}
+                    Work History: ${JSON.stringify(workExperience)}
+                    Education: ${JSON.stringify(education)}
                 `.trim();
 
-                // Dynamic import to call server action
                 const { generateEmbedding } = await import("@/app/actions/ai");
                 const embedResult = await generateEmbedding(embeddingText);
 
                 if (embedResult.success && embedResult.data) {
-                    // Store in candidate_embeddings table
-                    // NOTE: upsert based on candidate_id (unique constraint)
-                    const { error: embedError } = await supabase
+                    await supabase
                         .from('candidate_embeddings')
                         .upsert({
                             candidate_id: user.id,
                             embedding: embedResult.data,
-                            updated_at: new Date().toISOString() // Assuming schema has updated_at, if not it inserts new or updates
+                            updated_at: new Date().toISOString()
                         }, { onConflict: 'candidate_id' });
-
-                    if (embedError) console.error("Embedding Store Error:", embedError);
                 }
             } catch (aiError) {
                 console.error("Background Embedding Failed (Non-fatal):", aiError);
             }
 
-            if (candidateError) throw candidateError;
-
             // 2. Update Profile Table (Avatar)
             if (avatarUrl) {
-                const { error: profileError } = await supabase
+                await supabase
                     .from("profiles")
                     .update({ avatar_url: avatarUrl })
                     .eq("id", user.id);
-
-                if (profileError) console.warn("Failed to update avatar:", profileError);
             }
 
             setSuccess(true);
@@ -524,6 +520,11 @@ export default function CandidateOnboarding() {
                                         required
                                     />
                                 </div>
+                                <div className="h-px bg-white/5 my-6" />
+                                <WorkHistoryForm items={workExperience} onChange={setWorkExperience} />
+                                <div className="h-px bg-white/5 my-6" />
+                                <EducationForm items={education} onChange={setEducation} />
+                                <div className="h-px bg-white/5 my-6" />
 
                                 <div className="space-y-2">
                                     <Label htmlFor="skills">Skills & Certificates (Optional)</Label>

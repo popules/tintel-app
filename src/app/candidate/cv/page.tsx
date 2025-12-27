@@ -153,18 +153,64 @@ export default function CandidateCVPage() {
                             </p>
                         </div>
 
-                        {/* Experience (Mocked for now if structured data is missing, using 'years' as context) */}
-                        <div className="space-y-4">
-                            <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400 border-b pb-1">Experience</h3>
-                            {/* Since we don't have structured work history rows yet, we display a general statement or the years */}
-                            <div className="flex justify-between items-baseline">
-                                <h4 className="font-bold text-slate-800">Professional Experience</h4>
-                                <span className="text-sm text-slate-500">{candidate.years_of_experience || 0} Years Total</span>
+                        {/* Experience */}
+                        {candidate.work_experience && candidate.work_experience.length > 0 ? (
+                            <div className="space-y-6">
+                                <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400 border-b pb-1">Experience</h3>
+                                <div className="space-y-6 border-l-2 border-indigo-50 ml-1 pl-6 py-2">
+                                    {candidate.work_experience.map((job: any, i: number) => (
+                                        <div key={i} className="relative">
+                                            <div className="absolute -left-[31px] top-1.5 w-3 h-3 rounded-full bg-indigo-500 ring-4 ring-white"></div>
+                                            <div className="space-y-1">
+                                                <div className="flex justify-between items-baseline">
+                                                    <h4 className="font-bold text-slate-900 text-lg">{job.role}</h4>
+                                                    <span className="text-sm font-medium text-slate-500 whitespace-nowrap tabular-nums">
+                                                        {job.start_date} – {job.end_date || "Present"}
+                                                    </span>
+                                                </div>
+                                                <div className="text-indigo-600 font-medium text-base">{job.company}</div>
+                                                {job.description && (
+                                                    <p className="text-slate-600 text-sm leading-relaxed mt-2 whitespace-pre-wrap">
+                                                        {job.description}
+                                                    </p>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
-                            <p className="text-sm text-slate-600 italic">
-                                Detailed work history available upon request.
-                            </p>
-                        </div>
+                        ) : (
+                            <div className="space-y-4">
+                                <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400 border-b pb-1">Experience</h3>
+                                <div className="flex justify-between items-baseline">
+                                    <h4 className="font-bold text-slate-800">Professional Experience</h4>
+                                    <span className="text-sm text-slate-500">{candidate.years_of_experience || 0} Years Total</span>
+                                </div>
+                                <p className="text-sm text-slate-600 italic">
+                                    No detailed work history added.
+                                </p>
+                            </div>
+                        )}
+
+                        {/* Education */}
+                        {candidate.education && candidate.education.length > 0 && (
+                            <div className="space-y-4">
+                                <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400 border-b pb-1">Education</h3>
+                                <div className="space-y-4">
+                                    {candidate.education.map((edu: any, i: number) => (
+                                        <div key={i} className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-1">
+                                            <div>
+                                                <h4 className="font-bold text-slate-900">{edu.school}</h4>
+                                                <div className="text-slate-700">{edu.degree}</div>
+                                            </div>
+                                            <span className="text-sm text-slate-500 tabular-nums">
+                                                {edu.start_date} – {edu.end_date}
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
 
                         {/* Footer Brand (Subtle) */}
                         <div className="mt-auto pt-8 border-t border-slate-100 flex justify-between items-center text-xs text-slate-400">
