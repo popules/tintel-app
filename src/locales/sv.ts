@@ -1,4 +1,10 @@
 export const sv = {
+    common: {
+        cancel: "Avbryt",
+        save: "Spara",
+        edit: "Redigera",
+        delete: "Radera"
+    },
     nav: {
         login: "Logga in",
         signup: "Kom igång",

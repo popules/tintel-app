@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "@/lib/i18n-context";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -30,6 +31,7 @@ export function WorkHistoryForm({ items, onChange }: WorkHistoryFormProps) {
         description: ""
     });
     const [isAdding, setIsAdding] = useState(false);
+    const { t } = useTranslation();
 
     const handleAdd = () => {
         if (!newItem.company || !newItem.role) return;
@@ -152,7 +154,7 @@ export function WorkHistoryForm({ items, onChange }: WorkHistoryFormProps) {
                             />
                         </div>
                         <div className="flex justify-end gap-2 pt-2">
-                            <Button type="button" variant="ghost" onClick={() => setIsAdding(false)}>Cancel</Button>
+                            <Button type="button" variant="ghost" onClick={() => setIsAdding(false)}>{t.common.cancel}</Button>
                             <Button type="button" onClick={handleAdd}>Add Position</Button>
                         </div>
                     </CardContent>

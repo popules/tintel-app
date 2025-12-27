@@ -1,4 +1,10 @@
 export const en = {
+    common: {
+        cancel: "Cancel",
+        save: "Save",
+        edit: "Edit",
+        delete: "Delete"
+    },
     nav: {
         login: "Log in",
         signup: "Get Started",

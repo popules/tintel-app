@@ -4,12 +4,14 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Loader2, Mail, Phone, MapPin, Globe, Linkedin, Download, Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "@/lib/i18n-context";
 
 export default function CandidateCVPage() {
     const supabase = createClient();
     const [loading, setLoading] = useState(true);
     const [profile, setProfile] = useState<any>(null);
     const [candidate, setCandidate] = useState<any>(null);
+    const { t } = useTranslation();
 
     useEffect(() => {
         const loadData = async () => {
@@ -147,7 +149,7 @@ export default function CandidateCVPage() {
 
                         {/* Profile / Summary */}
                         <div className="space-y-2">
-                            <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400 border-b pb-1">Profile</h3>
+                            <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400 border-b pb-1">{t.nav.profile}</h3>
                             <p className="text-slate-700 leading-relaxed text-sm">
                                 {candidate.bio}
                             </p>

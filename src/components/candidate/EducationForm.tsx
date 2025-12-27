@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "@/lib/i18n-context";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus, Trash2, GraduationCap, Calendar } from "lucide-react";
@@ -27,6 +28,7 @@ export function EducationForm({ items, onChange }: EducationFormProps) {
         end_date: ""
     });
     const [isAdding, setIsAdding] = useState(false);
+    const { t } = useTranslation();
 
     const handleAdd = () => {
         if (!newItem.school || !newItem.degree) return;
@@ -137,7 +139,7 @@ export function EducationForm({ items, onChange }: EducationFormProps) {
                             </div>
                         </div>
                         <div className="flex justify-end gap-2 pt-2">
-                            <Button type="button" variant="ghost" onClick={() => setIsAdding(false)}>Cancel</Button>
+                            <Button type="button" variant="ghost" onClick={() => setIsAdding(false)}>{t.common.cancel}</Button>
                             <Button type="button" onClick={handleAdd}>Add</Button>
                         </div>
                     </CardContent>
